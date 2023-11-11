@@ -15,7 +15,7 @@
 - ロット番号の管理を在庫管理に含められれば分かりやすい
 
 ## アプリのイメージ図
-[Inventory-API](https://kumagai6824.github.io/Inventory-API/blob/main/images/draft.png)
+![Inventory-API](images/draft.png)
 
 ## API仕様書
 swagger[Inventory-API](https://kumagai6824.github.io/Inventory-API/swagger/)
