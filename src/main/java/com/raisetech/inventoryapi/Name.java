@@ -1,4 +1,4 @@
-package com.raisetech.work09;
+package com.raisetech.inventoryapi;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
