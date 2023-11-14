@@ -1,4 +1,4 @@
-package com.raisetech.work09;
+package com.raisetech.inventoryapi;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;

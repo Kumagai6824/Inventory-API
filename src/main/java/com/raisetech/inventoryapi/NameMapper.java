@@ -1,4 +1,4 @@
-package com.raisetech.work09;
+package com.raisetech.inventoryapi;
 
 import org.apache.ibatis.annotations.*;
 

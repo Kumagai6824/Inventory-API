@@ -2,7 +2,7 @@ package integrationtest;
 
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.spring.api.DBRider;
-import com.raisetech.work09.Work09Application;
+import com.raisetech.inventoryapi.Work09Application;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
