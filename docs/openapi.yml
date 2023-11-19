@@ -4,165 +4,24 @@ servers:
   - description: SwaggerHub API Auto Mocking
     url: https://virtserver.swaggerhub.com/JMINHOWSAND682/TEST/1.0.0
 info:
-  description: 簡単な在庫管理アプリです
+  description: 製品在庫を管理するAPI
   version: "1.0.0"
-  title: Simple Inventory API
+  title: Inventory API
 tags:
-  - name: Products
-    description: 部品情報の管理機能です
-  - name: Inventory
-    description: 在庫情報の管理機能です
+  - name: InventoryItems
+    description: 在庫管理機能
 paths:
-  /products:
+  /inventoryitems:
     get:
       tags:
-        - Products
-      summary: 部品情報検索
-      operationId: searchProducts
+        - InventoryItems
+      summary: 在庫情報の取得
+      operationId: getInventoryItems
       description: |
-        該当する部品情報を検索する（すべて空欄の場合は全データを返す）
-      parameters:
-        - in: query
-          name: searchByProductName
-          description: 名前と一致する部品情報を検索する
-          required: false
-          schema:
-            type: string
-            example: 'Gear'
-        - in: query
-          name: searchByProductId
-          description: 品番と一致する部品情報を検索する
-          required: false
-          schema:
-            type: string
-            example: 'abc-001'
-        - in: query
-          name: searchByManufacturer
-          description: 製造メーカーが一致する部品情報を検索する
-          required: false
-          schema:
-            type: string
-            example: '熊谷歯車製作所（株）'
+        すべての在庫情報を取得する
       responses:
         '200':
-          description: successfull operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Product'
-        '400':
-          description: Bad Request
-    post:
-      tags:
-        - Products
-      summary: 部品情報登録
-      operationId: addProduct
-      description: 部品情報を新規に登録する
-      responses:
-        '201':
-          description: product created
-        '400':
-          description: 'invalid input, object invalid'
-        '409':
-          description: an existing product already exists
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Product'
-        description: 登録する部品情報
-  /products/{productId}:
-    get:
-      tags:
-        - Products
-      summary: 部品情報検索 by product ID
-      operationId: searchProductsByProductId
-      description: |
-        部品IDでの部品情報検索
-      parameters:
-        - name: productId
-          in: path
-          required: true
-          schema:
-            type: integer
-          example: 1
-      responses:
-        '200':
-          description: successful operation
-    patch:
-      tags:
-        - Products
-      summary: 部品情報更新 by product ID
-      operationId: updateProductsByProductId
-      description: |
-        部品IDでの部品情報更新
-      parameters:
-        - name: productId
-          in: path
-          required: true
-          schema:
-            type: integer
-          example: 1
-      responses:
-        '200':
-          description: successful operation
-    delete:
-      tags:
-        - Products
-      summary: 部品情報削除　by product ID
-      operationId: deleteProductsByProductId
-      description: |
-        部品IDでの部品情報削除
-      parameters:
-        - name: productId
-          in: path
-          required: true
-          schema:
-            type: integer
-            example: 1
-      responses:
-        '200':
-          description: successful operation
-  /inventory:
-    get:
-      tags:
-        - Inventory
-      summary: 在庫検索
-      operationId: searchInventory
-      description: |
-        必要な情報を入力し、該当する在庫情報を検索する
-      parameters:
-        - in: query
-          name: searchByProductName
-          description: 名前と一致する在庫情報を検索する
-          required: false
-          schema:
-            type: string
-            example: 'Gear'
-        - in: query
-          name: searchByProductId
-          description: 品番（productId）と一致する在庫情報を検索する
-          schema:
-            type: string
-            example: abc-001
-        - in: query
-          name: searchByInStockDate
-          description: 入荷日で在庫情報を検索する
-          schema:
-            type: object
-            format: localDate
-            example: 2023-10-01
-        - in: query
-          name: searchByLotNumber
-          description: ロット番号で在庫情報を検索する
-          schema:
-            type: string
-            example: '230901-001'
-      responses:
-        '200':
-          description: 検索条件と合致する在庫情報が見つかりました
+          description: OK
           content:
             application/json:
               schema:
@@ -171,95 +30,198 @@ paths:
                   $ref: '#/components/schemas/InventoryItem'
         '400':
           description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/400BadRequest'
     post:
       tags:
-        - Inventory
-      summary: 入荷処理？
-      operationId: addInventory
-      description: Adds an item to the system
-      responses:
-        '201':
-          description: item created
-        '400':
-          description: 'invalid input, object invalid'
-        '409':
-          description: an existing item already exists
+        - InventoryItems
+      summary: 在庫情報の登録
+      operationId: createInventoryItem
+      description: |
+        在庫情報を新規に登録する
       requestBody:
+        description: 登録する部品情報
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/InventoryItem'
-        description: Inventory item to add
-  /inventory/{productId}:
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/201Created'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/400BadRequest'
+  /inventoryitems/{productId}:
+    get:
+      tags:
+        - InventoryItems
+      summary: 商品IDによる在庫情報の取得
+      operationId: getInventoryItemsByProductId
+      description: |
+        指定した商品IDと一致する在庫情報を取得する
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InventoryItem'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/404NotFound'
     patch:
       tags:
-        - Inventory
-      summary: 在庫情報修正、または出荷処理？
-      operationId: updateInventory
-      description: change or update inventory
+        - InventoryItems
+      summary: 商品IDによる在庫情報の更新
+      operationId: patchInventoryItemsByProductId
+      description: |
+        指定した商品IDと一致する在庫情報を更新する
       parameters:
-        - in: path
-          name: productId
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        description: 登録する部品情報
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/200OK'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/404NotFound'
+    delete:
+      tags:
+        - InventoryItems
+      summary: 商品IDによる在庫情報の削除
+      operationId: deleteInventoryItemsByProductId
+      description: |
+        指定した商品IDと一致する在庫情報を削除する
+      parameters:
+        - name: productId
+          in: path
           required: true
           schema:
             type: integer
             example: 1
       responses:
         '200':
-          description: successful operation
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/200OK'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/404NotFound'
 components:
   schemas:
     InventoryItem:
       type: object
       required:
-        - product
-        - quantity        
-        - inStockDate
-        - lotNumber
-      properties:
-        product:
-          $ref: '#/components/schemas/Product'
-        quantity:
-          type: integer
-          example: 1000
-        inStockDate:
-          type: string
-          format: date-time
-          example: '2023-10-01T09:12:33.001Z'
-        lotNumber:
-          type: string
-          example: 230901-001
-    Product:
-      type: object
-      required:
         - productId
-        - productNumber
         - productName
-        - manufacturer
+        - quantity
       properties:
         productId:
           type: integer
           example: 1
-        productNumber:
-          type: string
-          example: 'abc-001'
         productName:
           type: string
-          example: 'Gear'
-        manufacturer:
-          $ref: '#/components/schemas/Manufacturer'
-    Manufacturer:
-      required:
-        - name
-      properties:
-        companyName:
-          type: string
-          example: 熊谷歯車製作所（株）
-        companyId:
+          example: 'Gear main'
+        quantity:
           type: integer
-          format: int32
-          example: 2023001
-        phone:
-          type: string
-          example: 408-867-5309
+          example: 1000
+    PatchRequestBody:
       type: object
+      properties:
+        productName:
+          type: string
+          example: 'Gear assy 1'
+        quantity:
+          type: integer
+          example: 2000
+    200OK:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: 'Successfull operation'
+    201Created:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: 'New inventory item was successfully created'
+    400BadRequest:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: 'Bad request'
+    404NotFound:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: 'Product ID does not exist'
