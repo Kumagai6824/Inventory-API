@@ -15,9 +15,9 @@ public class CreateForm {
         this.name = name;
     }
 
-    public Name convertToNameEntity() {
-        Name name = new Name();
-        name.setName(this.name);
-        return name;
+    public Inventory convertToNameEntity() {
+        Inventory inventory = new Inventory();
+        inventory.setName(this.name);
+        return inventory;
     }
 }
