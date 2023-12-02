@@ -16,10 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @MybatisTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 //Replace.NONE：テスト用データベースの設定を手動で行う
-class NameMapperTest {
+class InventoryMapperTest {
 
     @Autowired
-    NameMapper nameMapper;
+    InventoryMapper inventoryMapper;
 
     @Test
     @Sql(
@@ -28,13 +28,13 @@ class NameMapperTest {
     )
     @Transactional
     void すべてのユーザーが取得できること() {
-        List<Name> names = nameMapper.findAll();
-        assertThat(names)
+        List<Inventory> inventories = inventoryMapper.findAll();
+        assertThat(inventories)
                 .hasSize(3)
                 .contains(
-                        new Name(1, "Shimizu"),
-                        new Name(2, "Koyama"),
-                        new Name(3, "Tanaka")
+                        new Inventory(1, "Shimizu"),
+                        new Inventory(2, "Koyama"),
+                        new Inventory(3, "Tanaka")
                 );
     }
 
@@ -45,8 +45,8 @@ class NameMapperTest {
     )
     @Transactional
     void レコードが存在しないときに取得されるListが空であること() {
-        List<Name> names = nameMapper.findAll();
-        assertThat(names).isEmpty();
+        List<Inventory> inventories = inventoryMapper.findAll();
+        assertThat(inventories).isEmpty();
     }
 
     @Test
@@ -56,11 +56,11 @@ class NameMapperTest {
     )
     @Transactional
     void 登録処理が完了して引数のユーザーと新しく採番されたIDが設定されること() {
-        Name name = new Name();
-        name.setName("Kumagai");
-        nameMapper.createName(name);
-        assertNotNull(name.getId());
-        assertThat(nameMapper.findById(1)).contains(new Name(1, "Kumagai"));
+        Inventory inventory = new Inventory();
+        inventory.setName("Kumagai");
+        inventoryMapper.createName(inventory);
+        assertNotNull(inventory.getId());
+        assertThat(inventoryMapper.findById(1)).contains(new Inventory(1, "Kumagai"));
     }
 
 }

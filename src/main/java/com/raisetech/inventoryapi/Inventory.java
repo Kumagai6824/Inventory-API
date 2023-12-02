@@ -7,15 +7,15 @@ import java.util.Objects;
 
 @RequiredArgsConstructor
 @Setter
-public class Name {
+public class Inventory {
     private int id;
     private String name;
 
-    public Name(String name) {
+    public Inventory(String name) {
         this.name = name;
     }
 
-    public Name(int id, String name) {
+    public Inventory(int id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -31,8 +31,8 @@ public class Name {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Name name1)) return false;
-        return id == name1.id && name.equals(name1.name);
+        if (!(o instanceof Inventory inventory1)) return false;
+        return id == inventory1.id && name.equals(inventory1.name);
     }
 
     @Override
