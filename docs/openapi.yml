@@ -11,7 +11,7 @@ tags:
   - name: InventoryItems
     description: 在庫管理機能
 paths:
-  /inventoryitems:
+  /inventory-items:
     get:
       tags:
         - InventoryItems
@@ -66,7 +66,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/400BadRequest'
-  /inventoryitems/{productId}:
+  /inventory-items/{productId}:
     get:
       tags:
         - InventoryItems
