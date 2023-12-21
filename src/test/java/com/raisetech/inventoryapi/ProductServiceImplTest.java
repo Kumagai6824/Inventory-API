@@ -13,25 +13,25 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
-class InventoryServiceImplTest {
+class ProductServiceImplTest {
     @InjectMocks
-    InventoryServiceImpl nameServiceImpl;
+    ProductServiceImpl productServiceImpl;
     @Mock
-    InventoryMapper inventoryMapper;
+    ProductMapper productMapper;
 
     @Test
     public void 存在するユーザーIDを指定したときに正常にユーザーが返されること() throws Exception {
-        doReturn(Optional.of(new Inventory("koyama"))).when(inventoryMapper).findById(1);
+        doReturn(Optional.of(new Product("koyama"))).when(productMapper).findById(1);
         //findById(1)実行時、必ずid:1, name:yoshihito koyama　を返す
 
-        Inventory actual = nameServiceImpl.findById(1);
-        assertThat(actual).isEqualTo(new Inventory("koyama"));
+        Product actual = productServiceImpl.findById(1);
+        assertThat(actual).isEqualTo(new Product("koyama"));
     }
 
     @Test
     public void 存在しないユーザーIDを指定したときに期待通り例外を返すこと() {
-        doReturn(Optional.empty()).when(inventoryMapper).findById(0);
-        assertThatThrownBy(() -> nameServiceImpl.findById(0))
+        doReturn(Optional.empty()).when(productMapper).findById(0);
+        assertThatThrownBy(() -> productServiceImpl.findById(0))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("resource not found with id: 0");
     }

@@ -15,8 +15,8 @@ public class UpdateForm {
         this.name = name;
     }
 
-    public Inventory convertToNameEntity() {
-        Inventory inventory = new Inventory(this.name);
-        return inventory;
+    public Product convertToNameEntity() {
+        Product product = new Product(this.name);
+        return product;
     }
 }

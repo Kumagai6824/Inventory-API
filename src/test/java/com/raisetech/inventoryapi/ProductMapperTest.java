@@ -16,10 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @MybatisTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 //Replace.NONE：テスト用データベースの設定を手動で行う
-class InventoryMapperTest {
+class ProductMapperTest {
 
     @Autowired
-    InventoryMapper inventoryMapper;
+    ProductMapper productMapper;
 
     @Test
     @Sql(
@@ -28,13 +28,13 @@ class InventoryMapperTest {
     )
     @Transactional
     void すべてのユーザーが取得できること() {
-        List<Inventory> inventories = inventoryMapper.findAll();
-        assertThat(inventories)
+        List<Product> products = productMapper.findAll();
+        assertThat(products)
                 .hasSize(3)
                 .contains(
-                        new Inventory(1, "Shimizu"),
-                        new Inventory(2, "Koyama"),
-                        new Inventory(3, "Tanaka")
+                        new Product(1, "Shimizu"),
+                        new Product(2, "Koyama"),
+                        new Product(3, "Tanaka")
                 );
     }
 
@@ -45,8 +45,8 @@ class InventoryMapperTest {
     )
     @Transactional
     void レコードが存在しないときに取得されるListが空であること() {
-        List<Inventory> inventories = inventoryMapper.findAll();
-        assertThat(inventories).isEmpty();
+        List<Product> products = productMapper.findAll();
+        assertThat(products).isEmpty();
     }
 
     @Test
@@ -56,11 +56,11 @@ class InventoryMapperTest {
     )
     @Transactional
     void 登録処理が完了して引数のユーザーと新しく採番されたIDが設定されること() {
-        Inventory inventory = new Inventory();
-        inventory.setName("Kumagai");
-        inventoryMapper.createName(inventory);
-        assertNotNull(inventory.getId());
-        assertThat(inventoryMapper.findById(1)).contains(new Inventory(1, "Kumagai"));
+        Product product = new Product();
+        product.setName("Kumagai");
+        productMapper.createName(product);
+        assertNotNull(product.getId());
+        assertThat(productMapper.findById(1)).contains(new Product(1, "Kumagai"));
     }
 
 }
