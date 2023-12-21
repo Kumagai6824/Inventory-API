@@ -8,17 +8,19 @@ info:
   version: "1.0.0"
   title: Inventory API
 tags:
-  - name: InventoryItems
-    description: 在庫管理機能
+  - name: Products
+    description: 商品管理
+  - name: InventoryProducts
+    description: 在庫管理
 paths:
-  /inventoryitems:
+  /products:
     get:
       tags:
-        - InventoryItems
-      summary: 在庫情報の取得
-      operationId: getInventoryItems
+        - Products
+      summary: 商品情報の取得
+      operationId: getProducts
       description: |
-        すべての在庫情報を取得する
+        すべての商品情報を取得する
       responses:
         '200':
           description: OK
@@ -27,7 +29,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/InventoryItem'
+                  $ref: '#/components/schemas/Products'
         '400':
           description: Bad Request
           content:
@@ -38,17 +40,17 @@ paths:
                   $ref: '#/components/schemas/400BadRequest'
     post:
       tags:
-        - InventoryItems
-      summary: 在庫情報の登録
-      operationId: createInventoryItem
+        - Products
+      summary: 商品の登録
+      operationId: createProducts
       description: |
-        在庫情報を新規に登録する
+        商品を新規に登録する
       requestBody:
-        description: 登録する部品情報
+        description: 登録する商品情報
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InventoryItem'
+              $ref: '#/components/schemas/Products'
       responses:
         '201':
           description: created
@@ -66,10 +68,165 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/400BadRequest'
-  /inventoryitems/{productId}:
+  /products/{id}:
     get:
       tags:
-        - InventoryItems
+        - Products
+      summary: IDによる商品情報の取得
+      operationId: getProductsById
+      description: |
+        指定した商品IDと一致する商品情報を取得する
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Products'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/404NotFound'
+    patch:
+      tags:
+        - Products
+      summary: 商品IDによる商品情報の更新
+      operationId: patchProductsById
+      description: |
+        指定した商品IDと一致する商品情報を更新する
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        description: 登録する商品情報
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Products'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/200OK'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/404NotFound'
+    delete:
+      tags:
+        - Products
+      summary: 商品IDによる商品情報の削除
+      operationId: deleteProductsById
+      description: |
+        指定した商品IDと一致する商品情報を削除する
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/200OK'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/404NotFound'
+  /inventory-products:
+    get:
+      tags:
+        - InventoryProducts
+      summary: 在庫情報の取得
+      operationId: getInventoryItems
+      description: |
+        すべての在庫情報を取得する
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/200OK'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/400BadRequest'
+    post:
+      tags:
+        - InventoryProducts
+      summary: 在庫情報の登録
+      operationId: createInventoryItem
+      description: |
+        在庫情報を新規に登録する
+      requestBody:
+        description: 登録する部品情報
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryProducts'
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/201Created'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/400BadRequest'
+  /inventory-products/{productId}:
+    get:
+      tags:
+        - InventoryProducts
       summary: 商品IDによる在庫情報の取得
       operationId: getInventoryItemsByProductId
       description: |
@@ -89,7 +246,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/InventoryItem'
+                  $ref: '#/components/schemas/InventoryProducts'
         '404':
           description: Not Found
           content:
@@ -100,7 +257,7 @@ paths:
                   $ref: '#/components/schemas/404NotFound'
     patch:
       tags:
-        - InventoryItems
+        - InventoryProducts
       summary: 商品IDによる在庫情報の更新
       operationId: patchInventoryItemsByProductId
       description: |
@@ -137,7 +294,7 @@ paths:
                   $ref: '#/components/schemas/404NotFound'
     delete:
       tags:
-        - InventoryItems
+        - InventoryProducts
       summary: 商品IDによる在庫情報の削除
       operationId: deleteInventoryItemsByProductId
       description: |
@@ -168,22 +325,39 @@ paths:
                   $ref: '#/components/schemas/404NotFound'
 components:
   schemas:
-    InventoryItem:
+    Products:
       type: object
       required:
-        - productId
-        - productName
-        - quantity
+        - id
+        - name
       properties:
-        productId:
+        id:
           type: integer
           example: 1
-        productName:
+        name:
           type: string
           example: 'Gear main'
+    InventoryProducts:
+      type: object
+      required:
+        - id
+        - product_Id
+        - quantity
+        - history
+      properties:
+        id:
+          type: integer
+          example: 1
+        product_Id:
+          type: integer
+          example: 1
         quantity:
           type: integer
           example: 1000
+        history:
+          type: string
+          example: '2020-01-31T23:59:59+09:00'
+          format: date-time
     PatchRequestBody:
       type: object
       properties:
