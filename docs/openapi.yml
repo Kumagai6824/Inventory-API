@@ -129,6 +129,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/200OK'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/400BadRequest'
         '404':
           description: Not Found
           content:
@@ -284,6 +292,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/200OK'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/400BadRequest'
         '404':
           description: Not Found
           content:
