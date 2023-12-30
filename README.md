@@ -27,4 +27,4 @@ swagger[Inventory-API](https://kumagai6824.github.io/Inventory-API/swagger/)
 
 ## E-R図
 
-![ERD](images/ERD Inventory API.png)
+![ERD](images/ERD.png)

@@ -1,10 +1,10 @@
-DROP TABLE IF EXISTS names;
+DROP TABLE IF EXISTS products;
 
-CREATE TABLE names (
+CREATE TABLE products (
   id int unsigned AUTO_INCREMENT,
-  name VARCHAR(20) NOT NULL,
+  name VARCHAR(30) NOT NULL,
   PRIMARY KEY(id)
 );
 
-INSERT INTO names (id, name) VALUES (1, "kumagai");
-INSERT INTO names (id, name) VALUES (2, "suzuki");
+INSERT INTO products (id, name) VALUES (1, "Bolt 1");
+INSERT INTO products (id, name) VALUES (2, "Washer");
