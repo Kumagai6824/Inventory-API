@@ -2,12 +2,12 @@ package com.raisetech.inventoryapi;
 
 import java.util.List;
 
-public interface InventoryService {
-    List<Inventory> findAll();
+public interface ProductService {
+    List<Product> findAll();
 
-    Inventory findById(int id) throws Exception;
+    Product findById(int id) throws Exception;
 
-    void createName(Inventory inventory);
+    void createName(Product product);
 
     void patchById(int id, String name) throws Exception;
 
