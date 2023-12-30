@@ -17,17 +17,17 @@ import java.util.Map;
 
 @RestController
 @Validated
-public class InventoryController {
-    private final InventoryService inventoryService;
+public class ProductController {
+    private final ProductService productService;
 
 
-    public InventoryController(InventoryService inventoryService) {
-        this.inventoryService = inventoryService;
+    public ProductController(ProductService productService) {
+        this.productService = productService;
     }
 
-    @GetMapping("/names")
-    public List<Inventory> getNames() {
-        return inventoryService.findAll();
+    @GetMapping("/products")
+    public List<Product> getProducts() {
+        return productService.findAll();
     }
 
     @GetMapping("/postcodes")
@@ -45,17 +45,17 @@ public class InventoryController {
     }
 
     @GetMapping("/names/{id}")
-    public Inventory findById(
+    public Product findById(
             @PathVariable(value = "id")
             int id) throws Exception {
-        return inventoryService.findById(id);
+        return productService.findById(id);
 
     }
 
     @PostMapping("/names")
     public ResponseEntity<Map<String, String>> postUser(@RequestBody @Validated CreateForm form, UriComponentsBuilder uriComponentsBuilder) {
-        Inventory entity = form.convertToNameEntity();
-        inventoryService.createName(entity);
+        Product entity = form.convertToNameEntity();
+        productService.createName(entity);
         int id = entity.getId();
         String name = entity.getName();
         URI url = uriComponentsBuilder.path("/names/" + id).build().toUri();
@@ -66,9 +66,9 @@ public class InventoryController {
     public ResponseEntity<Map<String, String>> patchById(
             @RequestBody @Validated UpdateForm form,
             @PathVariable(value = "id") int id) throws Exception {
-        Inventory entity = form.convertToNameEntity();
+        Product entity = form.convertToNameEntity();
         String name = entity.getName();
-        inventoryService.patchById(id, name);
+        productService.patchById(id, name);
         return ResponseEntity.ok(Map.of("message", "id < " + id + " > was successfully updated to " + name));
     }
 
@@ -76,7 +76,7 @@ public class InventoryController {
     public Map<String, String> deleteById(
             @PathVariable(value = "id")
             int id) throws Exception {
-        inventoryService.deleteById(id);
+        productService.deleteById(id);
         return Map.of("message", "id: " + id + " was successfully deleted");
     }
 
