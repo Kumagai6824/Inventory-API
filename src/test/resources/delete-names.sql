@@ -1,1 +1,2 @@
-DELETE FROM names;
+DELETE FROM products
+;

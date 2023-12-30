@@ -30,7 +30,7 @@ public class UserRestApiIntegrationTest {
     @DataSet(value = "users.yml")
     @Transactional
     void ユーザーが全件取得できること() throws Exception {
-        String response = mockMvc.perform(MockMvcRequestBuilders.get("/names"))
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/products"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
 
