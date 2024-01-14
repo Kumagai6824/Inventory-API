@@ -27,9 +27,9 @@ public class UserRestApiIntegrationTest {
     MockMvc mockMvc;
 
     @Test
-    @DataSet(value = "users.yml")
+    @DataSet(value = "products.yml")
     @Transactional
-    void ユーザーが全件取得できること() throws Exception {
+    void 商品情報が全件取得できること() throws Exception {
         String response = mockMvc.perform(MockMvcRequestBuilders.get("/products"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
@@ -38,15 +38,11 @@ public class UserRestApiIntegrationTest {
                          [
                             {
                                "id":1,
-                               "name":"清水"
+                               "name":"Bolt 1"
                             },
                             {
                                "id":2,
-                               "name":"小山"
-                            },
-                            {
-                               "id":3,
-                               "name":"田中"
+                               "name":"Washer"
                             }
                          ]           
                         """

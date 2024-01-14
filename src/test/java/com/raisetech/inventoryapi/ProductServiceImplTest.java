@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -18,6 +19,15 @@ class ProductServiceImplTest {
     ProductServiceImpl productServiceImpl;
     @Mock
     ProductMapper productMapper;
+
+    @Test
+    public void 製品情報を全件取得できること() {
+        List<Product> productList = List.of(new Product("Bolt 1"), new Product("Washer"));
+
+        doReturn(productList).when(productMapper).findAll();
+        List<Product> actual = productServiceImpl.findAll();
+        assertThat(actual).isEqualTo(productList);
+    }
 
     @Test
     public void 存在するユーザーIDを指定したときに正常にユーザーが返されること() throws Exception {
