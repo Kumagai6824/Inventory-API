@@ -49,4 +49,23 @@ public class UserRestApiIntegrationTest {
                 , response, JSONCompareMode.STRICT);
 
     }
+
+    @Test
+    @DataSet(value = "products.yml")
+    @Transactional
+    void 指定したIDの商品情報を取得できること() throws Exception {
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/products/1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        JSONAssert.assertEquals("""
+                        {
+                           "id":1,
+                           "name":"Bolt 1"
+                        }
+                        """
+                , response, JSONCompareMode.STRICT);
+
+    }
+
 }

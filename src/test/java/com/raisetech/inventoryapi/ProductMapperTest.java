@@ -8,6 +8,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -15,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-//Replace.NONE：テスト用データベースの設定を手動で行う
 class ProductMapperTest {
 
     @Autowired
@@ -46,6 +46,30 @@ class ProductMapperTest {
     void レコードが存在しないときに取得されるListが空であること() {
         List<Product> products = productMapper.findAll();
         assertThat(products).isEmpty();
+    }
+
+    @Test
+    @Sql(
+            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Transactional
+    void 指定した商品IDのデータを返すこと() {
+        Optional<Product> product = productMapper.findById(1);
+        assertThat(product).contains(new Product(1, "Bolt 1"));
+    }
+
+    @Test
+    @Sql(
+            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Transactional
+    void 存在しない商品IDを指定したときに空で返すこと() {
+        Optional<Product> product = productMapper.findById(0);
+        assertThat(product).isEmpty();
+        Optional<Product> product2 = productMapper.findById(10);
+        assertThat(product2).isEmpty();
     }
 
     @Test
