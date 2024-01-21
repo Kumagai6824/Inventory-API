@@ -44,7 +44,7 @@ public class ProductController {
         return json;
     }
 
-    @GetMapping("/names/{id}")
+    @GetMapping("/products/{id}")
     public Product findById(
             @PathVariable(value = "id")
             int id) throws Exception {

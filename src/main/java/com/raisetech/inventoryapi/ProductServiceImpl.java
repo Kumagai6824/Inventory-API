@@ -19,7 +19,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product findById(int id) {
-        return this.productMapper.findById(id).orElseThrow(() -> new ResourceNotFoundException("resource not found with id: " + id));
+        return this.productMapper.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product ID:" + id + " does not exist"));
     }
 
     @Override

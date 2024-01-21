@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -20,19 +21,27 @@ class ProductServiceImplTest {
     ProductMapper productMapper;
 
     @Test
-    public void 存在するユーザーIDを指定したときに正常にユーザーが返されること() throws Exception {
-        doReturn(Optional.of(new Product("koyama"))).when(productMapper).findById(1);
-        //findById(1)実行時、必ずid:1, name:yoshihito koyama　を返す
+    public void 製品情報を全件取得できること() {
+        List<Product> productList = List.of(new Product("Bolt 1"), new Product("Washer"));
 
-        Product actual = productServiceImpl.findById(1);
-        assertThat(actual).isEqualTo(new Product("koyama"));
+        doReturn(productList).when(productMapper).findAll();
+        List<Product> actual = productServiceImpl.findAll();
+        assertThat(actual).isEqualTo(productList);
     }
 
     @Test
-    public void 存在しないユーザーIDを指定したときに期待通り例外を返すこと() {
+    public void 存在する商品IDを指定したときに正常に商品情報が返されること() throws Exception {
+        doReturn(Optional.of(new Product("Bolt 1"))).when(productMapper).findById(1);
+
+        Product actual = productServiceImpl.findById(1);
+        assertThat(actual).isEqualTo(new Product("Bolt 1"));
+    }
+
+    @Test
+    public void 存在しない商品IDを指定したときに期待通り例外を返すこと() {
         doReturn(Optional.empty()).when(productMapper).findById(0);
         assertThatThrownBy(() -> productServiceImpl.findById(0))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage("resource not found with id: 0");
+                .hasMessage("Product ID:" + 0 + " does not exist");
     }
 }
