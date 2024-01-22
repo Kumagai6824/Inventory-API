@@ -15,7 +15,7 @@ public class CreateForm {
         this.name = name;
     }
 
-    public Product convertToNameEntity() {
+    public Product convertToProductEntity() {
         Product product = new Product();
         product.setName(this.name);
         return product;

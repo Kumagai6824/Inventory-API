@@ -35,14 +35,15 @@ public class ProductController {
 
     }
 
-    @PostMapping("/names")
-    public ResponseEntity<Map<String, String>> postUser(@RequestBody @Validated CreateForm form, UriComponentsBuilder uriComponentsBuilder) {
-        Product entity = form.convertToNameEntity();
+    @PostMapping("/products")
+    public ResponseEntity<Map<String, String>> createProduct
+            (@RequestBody @Validated CreateForm form, UriComponentsBuilder uriComponentsBuilder) {
+        Product entity = form.convertToProductEntity();
         productService.createName(entity);
         int id = entity.getId();
         String name = entity.getName();
-        URI url = uriComponentsBuilder.path("/names/" + id).build().toUri();
-        return ResponseEntity.created(url).body(Map.of("message", "name:" + name + " was successfully registered"));
+        URI url = uriComponentsBuilder.path("/products/" + id).build().toUri();
+        return ResponseEntity.created(url).body(Map.of("message", "name:" + name + " was successfully created"));
     }
 
     @PatchMapping("/names/{id}")
