@@ -3,14 +3,11 @@ package com.raisetech.inventoryapi;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -28,20 +25,6 @@ public class ProductController {
     @GetMapping("/products")
     public List<Product> getProducts() {
         return productService.findAll();
-    }
-
-    @GetMapping("/postcodes")
-    public String response() {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://map.yahooapis.jp/search/zip/V1/zipCodeSearch?query=105-0011&appid=dj00aiZpPWdpNUJZcWhVN2Q4NyZzPWNvbnN1bWVyc2VjcmV0Jng9NjU-"; //IDはpush時削除
-        restTemplate.getMessageConverters()
-                .stream()
-                .filter(StringHttpMessageConverter.class::isInstance)
-                .map(StringHttpMessageConverter.class::cast)
-                .forEach(converter -> converter.setDefaultCharset(StandardCharsets.UTF_8));
-        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        String json = new String(response.getBody().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
-        return json;
     }
 
     @GetMapping("/products/{id}")
