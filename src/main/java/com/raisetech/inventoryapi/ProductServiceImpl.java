@@ -23,8 +23,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void createName(Product product) {
-        productMapper.createName(product);
+    public void createProduct(Product product) {
+        productMapper.createProduct(product);
     }
 
     @Override

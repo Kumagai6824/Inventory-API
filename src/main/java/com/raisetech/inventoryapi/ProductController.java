@@ -39,7 +39,7 @@ public class ProductController {
     public ResponseEntity<Map<String, String>> createProduct
             (@RequestBody @Validated CreateForm form, UriComponentsBuilder uriComponentsBuilder) {
         Product entity = form.convertToProductEntity();
-        productService.createName(entity);
+        productService.createProduct(entity);
         int id = entity.getId();
         String name = entity.getName();
         URI url = uriComponentsBuilder.path("/products/" + id).build().toUri();

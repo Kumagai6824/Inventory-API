@@ -15,7 +15,7 @@ public interface ProductMapper {
 
     @Insert("INSERT INTO products (name) values (#{name})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    void createName(Product product);
+    void createProduct(Product product);
 
     @Update("UPDATE products SET name = #{name} WHERE id =#{id}")
     void patchById(int id, String name);
