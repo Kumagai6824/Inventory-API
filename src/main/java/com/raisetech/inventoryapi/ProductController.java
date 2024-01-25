@@ -3,14 +3,11 @@ package com.raisetech.inventoryapi;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -30,20 +27,6 @@ public class ProductController {
         return productService.findAll();
     }
 
-    @GetMapping("/postcodes")
-    public String response() {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://map.yahooapis.jp/search/zip/V1/zipCodeSearch?query=105-0011&appid=dj00aiZpPWdpNUJZcWhVN2Q4NyZzPWNvbnN1bWVyc2VjcmV0Jng9NjU-"; //IDはpush時削除
-        restTemplate.getMessageConverters()
-                .stream()
-                .filter(StringHttpMessageConverter.class::isInstance)
-                .map(StringHttpMessageConverter.class::cast)
-                .forEach(converter -> converter.setDefaultCharset(StandardCharsets.UTF_8));
-        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        String json = new String(response.getBody().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
-        return json;
-    }
-
     @GetMapping("/products/{id}")
     public Product findById(
             @PathVariable(value = "id")
@@ -52,14 +35,15 @@ public class ProductController {
 
     }
 
-    @PostMapping("/names")
-    public ResponseEntity<Map<String, String>> postUser(@RequestBody @Validated CreateForm form, UriComponentsBuilder uriComponentsBuilder) {
-        Product entity = form.convertToNameEntity();
-        productService.createName(entity);
+    @PostMapping("/products")
+    public ResponseEntity<Map<String, String>> createProduct
+            (@RequestBody @Validated CreateForm form, UriComponentsBuilder uriComponentsBuilder) {
+        Product entity = form.convertToProductEntity();
+        productService.createProduct(entity);
         int id = entity.getId();
         String name = entity.getName();
-        URI url = uriComponentsBuilder.path("/names/" + id).build().toUri();
-        return ResponseEntity.created(url).body(Map.of("message", "name:" + name + " was successfully registered"));
+        URI url = uriComponentsBuilder.path("/products/" + id).build().toUri();
+        return ResponseEntity.created(url).body(Map.of("message", "name:" + name + " was successfully created"));
     }
 
     @PatchMapping("/names/{id}")

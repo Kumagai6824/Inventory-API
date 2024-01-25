@@ -81,7 +81,7 @@ class ProductMapperTest {
     void 登録処理が完了して引数のユーザーと新しく採番されたIDが設定されること() {
         Product product = new Product();
         product.setName("Gear1");
-        productMapper.createName(product);
+        productMapper.createProduct(product);
         assertNotNull(product.getId());
         assertThat(productMapper.findById(1)).contains(new Product(1, "Gear1"));
     }

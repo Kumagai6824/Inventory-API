@@ -11,7 +11,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
@@ -43,5 +43,14 @@ class ProductServiceImplTest {
         assertThatThrownBy(() -> productServiceImpl.findById(0))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Product ID:" + 0 + " does not exist");
+    }
+
+    @Test
+    public void 商品が正しく1件登録されること() {
+        Product product = new Product();
+        doNothing().when(productMapper).createProduct(product);
+        productServiceImpl.createProduct(product);
+        verify(productMapper, times(1)).createProduct(product);
+
     }
 }
