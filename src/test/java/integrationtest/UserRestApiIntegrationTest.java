@@ -1,8 +1,10 @@
 package integrationtest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.jayway.jsonpath.JsonPath;
+import com.raisetech.inventoryapi.Product;
 import com.raisetech.inventoryapi.Work09Application;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -72,7 +75,7 @@ public class UserRestApiIntegrationTest {
                 , response, JSONCompareMode.STRICT);
 
     }
-    
+
     @DataSet(value = "products.yml")
     @Transactional
     @ParameterizedTest
@@ -86,5 +89,25 @@ public class UserRestApiIntegrationTest {
         assertEquals("/products/" + productId, JsonPath.read(response, "$.path"));
         assertEquals("Not Found", JsonPath.read(response, "$.error"));
         assertEquals("Product ID:" + productId + " does not exist", JsonPath.read(response, "$.message"));
+    }
+
+    @Test
+    @DataSet(value = "products.yml")
+    @Transactional
+    void 新規商品を登録でき201を返すこと() throws Exception {
+        Product request = new Product("Shaft");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
+        String response = mockMvc.perform(MockMvcRequestBuilders.post("/products")
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andReturn().getResponse().getContentAsString((StandardCharsets.UTF_8));
+
+        JSONAssert.assertEquals("""
+                        {
+                           "message":"name:Shaft was successfully created"
+                        }
+                        """
+                , response, JSONCompareMode.STRICT);
     }
 }
