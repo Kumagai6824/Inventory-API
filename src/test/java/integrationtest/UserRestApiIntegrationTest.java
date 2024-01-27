@@ -110,4 +110,30 @@ public class UserRestApiIntegrationTest {
                         """
                 , response, JSONCompareMode.STRICT);
     }
+
+    @Test
+    @DataSet(value = "products.yml")
+    @Transactional
+    void 新規登録後DBにレコードが登録されていること() throws Exception {
+        Product request = new Product("Shaft");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
+        mockMvc.perform(MockMvcRequestBuilders.post("/products")
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/products/0"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        JSONAssert.assertEquals("""
+                        {
+                           "id":0,
+                           "name":"Shaft"
+                        }
+                        """
+                , response, JSONCompareMode.STRICT);
+    }
+
 }
