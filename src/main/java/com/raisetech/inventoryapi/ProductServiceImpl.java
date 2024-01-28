@@ -24,6 +24,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void createProduct(Product product) {
+        if (product == null || product.getName() == null) {
+            throw new BadRequestException("Bad request");
+        }
         productMapper.createProduct(product);
     }
 

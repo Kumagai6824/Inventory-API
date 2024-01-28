@@ -7,7 +7,7 @@ public interface ProductService {
 
     Product findById(int id) throws Exception;
 
-    void createProduct(Product product);
+    void createProduct(Product product) throws Exception;
 
     void patchById(int id, String name) throws Exception;
 
