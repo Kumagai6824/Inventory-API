@@ -76,8 +76,8 @@ public class UserRestApiIntegrationTest {
 
     }
 
-    @DataSet(value = "products.yml")
     @Transactional
+    @DataSet(value = "products.yml")
     @ParameterizedTest
     @ValueSource(ints = {0, 100})
     void 存在しないIDを指定した際期待通り404を返すこと(int productId) throws Exception {
@@ -115,21 +115,20 @@ public class UserRestApiIntegrationTest {
     @DataSet(value = "products.yml")
     @Transactional
     void 新規登録後DBにレコードが登録されていること() throws Exception {
-        Product request = new Product("Shaft");
+        Product request = new Product(3, "Shaft");
         ObjectMapper objectMapper = new ObjectMapper();
         String requestJson = objectMapper.writeValueAsString(request);
         mockMvc.perform(MockMvcRequestBuilders.post("/products")
                         .content(requestJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isCreated());
 
-
-        String response = mockMvc.perform(MockMvcRequestBuilders.get("/products/0"))
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/products/3"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
 
         JSONAssert.assertEquals("""
                         {
-                           "id":0,
+                           "id":3,
                            "name":"Shaft"
                         }
                         """
