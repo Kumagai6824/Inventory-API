@@ -34,7 +34,7 @@ public class ProductController {
 
     @PostMapping("/products")
     public ResponseEntity<Map<String, String>> createProduct
-            (@RequestBody @Validated CreateForm form, UriComponentsBuilder uriComponentsBuilder) {
+            (@RequestBody @Validated CreateForm form, UriComponentsBuilder uriComponentsBuilder) throws Exception {
         Product entity = form.convertToProductEntity();
         productService.createProduct(entity);
         int id = entity.getId();
@@ -60,6 +60,6 @@ public class ProductController {
         productService.deleteById(id);
         return Map.of("message", "id: " + id + " was successfully deleted");
     }
-    
+
 
 }
