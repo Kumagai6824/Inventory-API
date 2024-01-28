@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
@@ -115,24 +116,26 @@ public class UserRestApiIntegrationTest {
     @DataSet(value = "products.yml")
     @Transactional
     void 新規登録後DBにレコードが登録されていること() throws Exception {
-        Product request = new Product(3, "Shaft");
+        Product request = new Product("Shaft");
         ObjectMapper objectMapper = new ObjectMapper();
         String requestJson = objectMapper.writeValueAsString(request);
-        mockMvc.perform(MockMvcRequestBuilders.post("/products")
+        MvcResult postResult = mockMvc.perform(MockMvcRequestBuilders.post("/products")
                         .content(requestJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andReturn();
 
-        String response = mockMvc.perform(MockMvcRequestBuilders.get("/products/3"))
+        String locationHeader = postResult.getResponse().getHeader("Location");
+        String[] locationParts = locationHeader.split("/");
+        int id = Integer.parseInt(locationParts[locationParts.length - 1]);
+        MvcResult getResult = mockMvc.perform(MockMvcRequestBuilders.get("/products/" + id))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+                .andReturn();
 
-        JSONAssert.assertEquals("""
-                        {
-                           "id":3,
-                           "name":"Shaft"
-                        }
-                        """
-                , response, JSONCompareMode.STRICT);
+        String response = getResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        assertEquals(id, (Integer) JsonPath.read(response, "$.id"));
+        assertEquals("Shaft", JsonPath.read(response, "$.name"));
+
+
     }
 
 }
