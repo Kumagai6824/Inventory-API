@@ -15,6 +15,11 @@ public class CreateForm {
         this.name = name;
     }
 
+    public boolean isValid() {
+        int len = name.length();
+        return name != null && !name.isEmpty() && len < 31;
+    }
+
     public Product convertToProductEntity() {
         Product product = new Product();
         product.setName(this.name);
