@@ -47,7 +47,7 @@ class ProductServiceImplTest {
 
     @Test
     public void 商品が正しく1件登録されること() throws Exception {
-        Product product = new Product();
+        Product product = new Product("test product");
         doNothing().when(productMapper).createProduct(product);
         productServiceImpl.createProduct(product);
         verify(productMapper, times(1)).createProduct(product);
