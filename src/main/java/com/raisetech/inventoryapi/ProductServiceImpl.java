@@ -24,11 +24,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void createProduct(Product product) {
-        String name = product.getName();
-        CreateForm form = new CreateForm(name);
-        if (!form.isValid()) {
-            throw new BadRequestException("Bad request");
-        }
         productMapper.createProduct(product);
     }
 

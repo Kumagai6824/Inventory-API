@@ -5,6 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.validation.BindingResult;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,8 @@ class ProductServiceImplTest {
     ProductServiceImpl productServiceImpl;
     @Mock
     ProductMapper productMapper;
+    @MockBean
+    private BindingResult bindingResult;
 
     @Test
     public void 製品情報を全件取得できること() {

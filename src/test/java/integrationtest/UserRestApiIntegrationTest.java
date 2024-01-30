@@ -137,5 +137,26 @@ public class UserRestApiIntegrationTest {
 
 
     }
+/*    Exception handlerを実装してから、テスト実装
+
+    @Transactional
+    @DataSet(value = "products.yml")
+    @ParameterizedTest
+    @ValueSource(strings = {"Pneumonoultramicroscopicsilicovolcanoconiosis", ""}, ints = {})
+    void 新規登録時リクエスト内容が要件を満たしていないときに400を返すこと(String str) throws Exception {
+        Product request = new Product(str);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        String response = mockMvc.perform(MockMvcRequestBuilders.post("/products")
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn().getResponse().getContentAsString((StandardCharsets.UTF_8));
+
+        assertEquals("400", JsonPath.read(response, "$.status"));
+        assertEquals("/products", JsonPath.read(response, "$.path"));
+        assertEquals("Not Found", JsonPath.read(response, "$.error"));
+        assertEquals("Bad request", JsonPath.read(response, "$.message"));
+    }*/
 
 }

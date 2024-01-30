@@ -1,6 +1,7 @@
 package com.raisetech.inventoryapi;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -34,13 +35,17 @@ public class ProductController {
 
     @PostMapping("/products")
     public ResponseEntity<Map<String, String>> createProduct
-            (@RequestBody @Validated CreateForm form, UriComponentsBuilder uriComponentsBuilder) throws Exception {
+            (@RequestBody @Validated CreateForm form, BindingResult result, UriComponentsBuilder uriComponentsBuilder) throws Exception {
+        if (result.hasErrors()) {
+            throw new BadRequestException("Bad request");
+        }
         Product entity = form.convertToProductEntity();
         productService.createProduct(entity);
         int id = entity.getId();
         String name = entity.getName();
         URI url = uriComponentsBuilder.path("/products/" + id).build().toUri();
-        return ResponseEntity.created(url).body(Map.of("message", "name:" + name + " was successfully created"));
+        return ResponseEntity.created(url).
+                body(Map.of("message", "name:" + name + " was successfully created"));
     }
 
     @PatchMapping("/names/{id}")
