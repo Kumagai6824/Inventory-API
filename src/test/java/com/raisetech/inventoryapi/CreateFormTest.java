@@ -38,7 +38,7 @@ class CreateFormTest {
         assertThat(violations).hasSize(1);
         assertThat(violations)
                 .extracting(violation -> violation.getPropertyPath().toString(), ConstraintViolation::getMessage)
-                .containsExactlyInAnyOrder(tuple("name", "空白は許可されていません"));
+                .containsExactlyInAnyOrder(tuple("name", "must not be blank"));
     }
 
     @Test
@@ -48,7 +48,7 @@ class CreateFormTest {
         assertThat(violations).hasSize(1);
         assertThat(violations)
                 .extracting(violation -> violation.getPropertyPath().toString(), ConstraintViolation::getMessage)
-                .containsExactlyInAnyOrder(tuple("name", "0 から 30 の間のサイズにしてください"));
+                .containsExactlyInAnyOrder(tuple("name", "size must be between 0 and 30"));
     }
 
     @Test
