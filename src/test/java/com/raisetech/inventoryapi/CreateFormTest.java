@@ -45,7 +45,8 @@ class CreateFormTest {
 
     @Test
     public void nameが31文字以上のときにバリデーションエラーとなること() {
-        CreateForm createForm = new CreateForm("1234567890123456789012345678901");
+        String name = "Shaft";
+        CreateForm createForm = new CreateForm(name.repeat(6) + "1");
         Set<ConstraintViolation<CreateForm>> violations = validator.validate(createForm);
         assertThat(violations).hasSize(1);
         assertThat(violations)
