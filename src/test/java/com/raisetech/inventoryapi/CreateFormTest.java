@@ -7,6 +7,7 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.Locale;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,6 +18,7 @@ class CreateFormTest {
 
     @BeforeAll
     public static void setUpValidator() {
+        Locale.setDefault(Locale.JAPAN);
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
@@ -28,7 +30,7 @@ class CreateFormTest {
         assertThat(violations).hasSize(2);
         assertThat(violations)
                 .extracting(violation -> violation.getPropertyPath().toString(), ConstraintViolation::getMessage)
-                .containsExactlyInAnyOrder(tuple("name", "must not be blank"), tuple("name", "must not be null"));
+                .containsExactlyInAnyOrder(tuple("name", "空白は許可されていません"), tuple("name", "null は許可されていません"));
     }
 
     @Test
@@ -38,7 +40,7 @@ class CreateFormTest {
         assertThat(violations).hasSize(1);
         assertThat(violations)
                 .extracting(violation -> violation.getPropertyPath().toString(), ConstraintViolation::getMessage)
-                .containsExactlyInAnyOrder(tuple("name", "must not be blank"));
+                .containsExactlyInAnyOrder(tuple("name", "空白は許可されていません"));
     }
 
     @Test
@@ -48,7 +50,7 @@ class CreateFormTest {
         assertThat(violations).hasSize(1);
         assertThat(violations)
                 .extracting(violation -> violation.getPropertyPath().toString(), ConstraintViolation::getMessage)
-                .containsExactlyInAnyOrder(tuple("name", "size must be between 0 and 30"));
+                .containsExactlyInAnyOrder(tuple("name", "0 から 30 の間のサイズにしてください"));
     }
 
     @Test
