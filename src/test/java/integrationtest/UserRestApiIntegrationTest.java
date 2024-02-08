@@ -8,6 +8,7 @@ import com.raisetech.inventoryapi.Product;
 import com.raisetech.inventoryapi.Work09Application;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -137,26 +138,86 @@ public class UserRestApiIntegrationTest {
 
 
     }
-/*    Exception handlerを実装してから、テスト実装
 
     @Transactional
     @DataSet(value = "products.yml")
     @ParameterizedTest
-    @ValueSource(strings = {"Pneumonoultramicroscopicsilicovolcanoconiosis", ""}, ints = {})
-    void 新規登録時リクエスト内容が要件を満たしていないときに400を返すこと(String str) throws Exception {
+    @NullAndEmptySource
+    @ValueSource(strings = {"1234567890123456789012345678901"})
+    void 新規登録時nullまたは空文字または31文字以上のリクエストの場合400を返すこと(String str) throws Exception {
         Product request = new Product(str);
         ObjectMapper objectMapper = new ObjectMapper();
         String requestJson = objectMapper.writeValueAsString(request);
-
-        String response = mockMvc.perform(MockMvcRequestBuilders.post("/products")
+        String responseActual = mockMvc.perform(MockMvcRequestBuilders.post("/products")
                         .content(requestJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andReturn().getResponse().getContentAsString((StandardCharsets.UTF_8));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
 
-        assertEquals("400", JsonPath.read(response, "$.status"));
-        assertEquals("/products", JsonPath.read(response, "$.path"));
-        assertEquals("Not Found", JsonPath.read(response, "$.error"));
-        assertEquals("Bad request", JsonPath.read(response, "$.message"));
-    }*/
+        String responseNullCaseA = """
+                {
+                   "status":"BAD_REQUEST",
+                   "message":"Bad request",
+                   "errors":[
+                      {
+                         "field":"name",
+                         "message":"must not be blank"
+                      },
+                      {
+                         "field":"name",
+                         "message":"must not be null"
+                      }
+                   ]
+                }
+                """;
+        String responseNullCaseB = """
+                {
+                   "status":"BAD_REQUEST",
+                   "message":"Bad request",
+                   "errors":[
+                      {
+                         "field":"name",
+                         "message":"must not be null"
+                      },
+                      {
+                         "field":"name",
+                         "message":"must not be blank"
+                      }
+                   ]
+                }
+                """;
+        String responseEmpltyCase = """
+                {
+                   "status":"BAD_REQUEST",
+                   "message":"Bad request",
+                   "errors":[
+                      {
+                         "field":"name",
+                         "message":"must not be blank"
+                      }
+                   ]
+                }
+                """;
+        String responseLengthCase = """
+                {
+                   "status":"BAD_REQUEST",
+                   "message":"Bad request",
+                   "errors":[
+                      {
+                         "field":"name",
+                         "message":"size must be between 0 and 30"
+                      }
+                   ]
+                }
+                """;
 
+        if (str == null) {
+            try {
+                JSONAssert.assertEquals(responseNullCaseA, responseActual, JSONCompareMode.STRICT);
+            } catch (AssertionError e) {
+                JSONAssert.assertEquals(responseNullCaseB, responseActual, JSONCompareMode.STRICT);
+            }
+        } else if (str == "") {
+            JSONAssert.assertEquals(responseEmpltyCase, responseActual, JSONCompareMode.STRICT);
+        } else JSONAssert.assertEquals(responseLengthCase, responseActual, JSONCompareMode.STRICT);
+    }
 }
