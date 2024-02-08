@@ -44,14 +44,14 @@ public class ProductController {
                 body(Map.of("message", "name:" + name + " was successfully created"));
     }
 
-    @PatchMapping("/names/{id}")
-    public ResponseEntity<Map<String, String>> patchById(
+    @PatchMapping("/products/{id}")
+    public ResponseEntity<Map<String, String>> updateProductById(
             @RequestBody @Validated UpdateForm form,
             @PathVariable(value = "id") int id) throws Exception {
         Product entity = form.convertToNameEntity();
         String name = entity.getName();
-        productService.patchById(id, name);
-        return ResponseEntity.ok(Map.of("message", "id < " + id + " > was successfully updated to " + name));
+        productService.updateProductById(id, name);
+        return ResponseEntity.ok(Map.of("message", "Successful operation"));
     }
 
     @DeleteMapping("/names/{id}")
