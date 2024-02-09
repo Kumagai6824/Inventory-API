@@ -415,14 +415,24 @@ components:
         errors:
           type: array
           items:
-            type: object
-            properties:
-              field:
-                type: string
-                example: 'name'
-              message:
-                type: string
-                example: '空白は許可されていません'
+            oneOf:
+              - type: object
+                properties:
+                  field:
+                    type: string
+                    example: 'name'
+                  message:
+                    type: string
+                    example: '空白は許可されていません'
+              - type: object
+                properties:
+                  field:
+                    type: string
+                    example: 'name'
+                  message:
+                    type: string
+                    example: '0 から 30 の間のサイズにしてください'
+
     404NotFound:
       type: object
       required:
