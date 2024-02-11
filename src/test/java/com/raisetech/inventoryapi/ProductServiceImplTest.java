@@ -2,6 +2,8 @@ package com.raisetech.inventoryapi;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -56,5 +58,15 @@ class ProductServiceImplTest {
         productServiceImpl.createProduct(product);
         verify(productMapper, times(1)).createProduct(product);
 
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"1", "100"})
+    public void 商品IDを指定して更新したときに商品情報が更新されること(int id) throws Exception {
+        String initialName = "Bolt";
+        String renewedName = "audience participation program";
+        when(productMapper.findById(id)).thenReturn(Optional.of(new Product(id, initialName)));
+        productServiceImpl.updateProductById(id, renewedName);
+        verify(productMapper, times(1)).updateProductById(id, renewedName);
     }
 }
