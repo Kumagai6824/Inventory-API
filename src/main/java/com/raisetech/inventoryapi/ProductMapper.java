@@ -18,7 +18,7 @@ public interface ProductMapper {
     void createProduct(Product product);
 
     @Update("UPDATE products SET name = #{name} WHERE id =#{id}")
-    void patchById(int id, String name);
+    void updateProductById(int id, String name);
 
     @Delete("DELETE FROM products where id = #{id}")
     void deleteById(int id);

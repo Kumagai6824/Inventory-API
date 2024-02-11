@@ -9,7 +9,7 @@ public interface ProductService {
 
     void createProduct(Product product);
 
-    void patchById(int id, String name) throws Exception;
+    void updateProductById(int id, String name) throws Exception;
 
     void deleteById(int id) throws Exception;
 }

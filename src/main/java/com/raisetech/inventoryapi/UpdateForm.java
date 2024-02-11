@@ -1,6 +1,8 @@
 package com.raisetech.inventoryapi;
 
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,6 +11,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class UpdateForm {
+    @NotBlank
+    @Size(max = 30)
     private String name;
 
     public UpdateForm(String name) {

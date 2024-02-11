@@ -28,9 +28,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void patchById(int id, String name) {
+    public void updateProductById(int id, String name) {
         productMapper.findById(id).orElseThrow(() -> new ResourceNotFoundException("resource not found with id: " + id));
-        productMapper.patchById(id, name);
+        productMapper.updateProductById(id, name);
     }
 
     @Override
