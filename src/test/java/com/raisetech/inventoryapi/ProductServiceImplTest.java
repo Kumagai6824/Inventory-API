@@ -69,4 +69,15 @@ class ProductServiceImplTest {
         productServiceImpl.updateProductById(id, renewedName);
         verify(productMapper, times(1)).updateProductById(id, renewedName);
     }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0})
+    public void 存在しない商品IDを指定して更新したときに期待通り例外を返すこと(Integer id) throws Exception {
+        String initialName = "Bolt";
+        String renewedName = "audience participation program";
+        when(productMapper.findById(id)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> productServiceImpl.updateProductById(id, renewedName))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("resource not found with id: " + id);
+    }
 }
