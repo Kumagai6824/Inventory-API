@@ -61,7 +61,7 @@ class ProductServiceImplTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"1", "100"})
+    @ValueSource(ints = {1, 100})
     public void 商品IDを指定して更新したときに商品情報が更新されること(int id) throws Exception {
         String initialName = "Bolt";
         String renewedName = "Shaft";
@@ -72,7 +72,7 @@ class ProductServiceImplTest {
 
     @ParameterizedTest
     @ValueSource(ints = {0})
-    public void 存在しない商品IDを指定して更新したときに期待通り例外を返すこと(Integer id) throws Exception {
+    public void 存在しない商品IDを指定して更新したときに期待通り例外を返すこと(int id) throws Exception {
         String renewedName = "Shaft";
         when(productMapper.findById(id)).thenReturn(Optional.empty());
         assertThatThrownBy(() -> productServiceImpl.updateProductById(id, renewedName))
