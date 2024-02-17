@@ -64,7 +64,7 @@ class ProductServiceImplTest {
     @ValueSource(strings = {"1", "100"})
     public void 商品IDを指定して更新したときに商品情報が更新されること(int id) throws Exception {
         String initialName = "Bolt";
-        String renewedName = "audience participation program";
+        String renewedName = "Shaft";
         when(productMapper.findById(id)).thenReturn(Optional.of(new Product(id, initialName)));
         productServiceImpl.updateProductById(id, renewedName);
         verify(productMapper, times(1)).updateProductById(id, renewedName);
@@ -73,8 +73,7 @@ class ProductServiceImplTest {
     @ParameterizedTest
     @ValueSource(ints = {0})
     public void 存在しない商品IDを指定して更新したときに期待通り例外を返すこと(Integer id) throws Exception {
-        String initialName = "Bolt";
-        String renewedName = "audience participation program";
+        String renewedName = "Shaft";
         when(productMapper.findById(id)).thenReturn(Optional.empty());
         assertThatThrownBy(() -> productServiceImpl.updateProductById(id, renewedName))
                 .isInstanceOf(ResourceNotFoundException.class)
