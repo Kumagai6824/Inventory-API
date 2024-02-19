@@ -2,6 +2,8 @@ package com.raisetech.inventoryapi;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -56,5 +58,25 @@ class ProductServiceImplTest {
         productServiceImpl.createProduct(product);
         verify(productMapper, times(1)).createProduct(product);
 
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 100})
+    public void 商品IDを指定して更新したときに商品情報が更新されること(int id) throws Exception {
+        String initialName = "Bolt";
+        String renewedName = "Shaft";
+        when(productMapper.findById(id)).thenReturn(Optional.of(new Product(id, initialName)));
+        productServiceImpl.updateProductById(id, renewedName);
+        verify(productMapper, times(1)).updateProductById(id, renewedName);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0})
+    public void 存在しない商品IDを指定して更新したときに期待通り例外を返すこと(int id) throws Exception {
+        String renewedName = "Shaft";
+        when(productMapper.findById(id)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> productServiceImpl.updateProductById(id, renewedName))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("resource not found with id: " + id);
     }
 }

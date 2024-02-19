@@ -55,6 +55,14 @@ class CreateFormTest {
     }
 
     @Test
+    public void nameが30文字のときバリデーションエラーとならないこと() {
+        String name = "Shaft";
+        CreateForm createForm = new CreateForm(name.repeat(6));
+        Set<ConstraintViolation<CreateForm>> violations = validator.validate(createForm);
+        assertThat(violations).isEmpty();
+    }
+
+    @Test
     public void nameに値があるときバリデーションエラーとならないこと() {
         CreateForm createForm = new CreateForm("Shaft");
         Set<ConstraintViolation<CreateForm>> violations = validator.validate(createForm);
