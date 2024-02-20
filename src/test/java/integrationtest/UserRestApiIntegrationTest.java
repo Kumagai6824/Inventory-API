@@ -220,4 +220,46 @@ public class UserRestApiIntegrationTest {
             JSONAssert.assertEquals(responseEmpltyCase, responseActual, JSONCompareMode.STRICT);
         } else JSONAssert.assertEquals(responseLengthCase, responseActual, JSONCompareMode.STRICT);
     }
+
+    @Test
+    @DataSet(value = "products.yml")
+    @Transactional
+    void 商品を更新でき200を返すこと() throws Exception {
+        Product request = new Product("Shaft");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
+        String response = mockMvc.perform(MockMvcRequestBuilders.patch("/products/1")
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse().getContentAsString((StandardCharsets.UTF_8));
+
+        JSONAssert.assertEquals("""
+                        {
+                           "message":"Successful operation"
+                        }
+                        """
+                , response, JSONCompareMode.STRICT);
+    }
+
+    @Test
+    @DataSet(value = "products.yml")
+    @Transactional
+    void 更新後DBに更新されたレコードがあること() throws Exception {
+        int id = 1;
+        Product request = new Product("Shaft");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
+        MvcResult updateResult = mockMvc.perform(MockMvcRequestBuilders.patch("/products/" + id)
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        MvcResult getResult = mockMvc.perform(MockMvcRequestBuilders.get("/products/" + id))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        String response = getResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        assertEquals(id, (Integer) JsonPath.read(response, "$.id"));
+        assertEquals("Shaft", JsonPath.read(response, "$.name"));
+    }
 }
