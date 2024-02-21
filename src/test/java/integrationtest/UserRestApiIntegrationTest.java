@@ -2,6 +2,7 @@ package integrationtest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.jayway.jsonpath.JsonPath;
 import com.raisetech.inventoryapi.Product;
@@ -223,12 +224,14 @@ public class UserRestApiIntegrationTest {
 
     @Test
     @DataSet(value = "products.yml")
+    @ExpectedDataSet(value = {"/dataset/expectedUpdatedProducts.yml"}, ignoreCols = {"id"})
     @Transactional
-    void 商品を更新でき200を返すこと() throws Exception {
+    void 商品を更新後DBに更新されたレコードがあり200を返すこと() throws Exception {
+        int id = 1;
         Product request = new Product("Shaft");
         ObjectMapper objectMapper = new ObjectMapper();
         String requestJson = objectMapper.writeValueAsString(request);
-        String response = mockMvc.perform(MockMvcRequestBuilders.patch("/products/1")
+        String updateResult = mockMvc.perform(MockMvcRequestBuilders.patch("/products/" + id)
                         .content(requestJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn().getResponse().getContentAsString((StandardCharsets.UTF_8));
@@ -238,28 +241,6 @@ public class UserRestApiIntegrationTest {
                            "message":"Successful operation"
                         }
                         """
-                , response, JSONCompareMode.STRICT);
-    }
-
-    @Test
-    @DataSet(value = "products.yml")
-    @Transactional
-    void 更新後DBに更新されたレコードがあること() throws Exception {
-        int id = 1;
-        Product request = new Product("Shaft");
-        ObjectMapper objectMapper = new ObjectMapper();
-        String requestJson = objectMapper.writeValueAsString(request);
-        MvcResult updateResult = mockMvc.perform(MockMvcRequestBuilders.patch("/products/" + id)
-                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-
-        MvcResult getResult = mockMvc.perform(MockMvcRequestBuilders.get("/products/" + id))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-
-        String response = getResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
-        assertEquals(id, (Integer) JsonPath.read(response, "$.id"));
-        assertEquals("Shaft", JsonPath.read(response, "$.name"));
+                , updateResult, JSONCompareMode.STRICT);
     }
 }
