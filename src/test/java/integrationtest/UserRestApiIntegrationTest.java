@@ -243,4 +243,23 @@ public class UserRestApiIntegrationTest {
                         """
                 , updateResult, JSONCompareMode.STRICT);
     }
+
+    @Transactional
+    @DataSet(value = "products.yml")
+    @ParameterizedTest
+    @ValueSource(ints = {0, 100})
+    void 商品更新時存在しないiIDを指定した際に404を返すこと(int productId) throws Exception {
+        Product request = new Product("Shaft");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString((request));
+        String response = mockMvc.perform(MockMvcRequestBuilders.patch("/products/" + productId)
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        assertEquals("404", JsonPath.read(response, "$.status"));
+        assertEquals("/products/" + productId, JsonPath.read(response, "$.path"));
+        assertEquals("Not Found", JsonPath.read(response, "$.error"));
+        assertEquals("resource not found with id: " + productId, JsonPath.read(response, "$.message"));
+    }
 }
