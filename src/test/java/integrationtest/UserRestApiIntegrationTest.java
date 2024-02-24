@@ -2,6 +2,7 @@ package integrationtest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.jayway.jsonpath.JsonPath;
 import com.raisetech.inventoryapi.Product;
@@ -219,5 +220,27 @@ public class UserRestApiIntegrationTest {
         } else if (str == "") {
             JSONAssert.assertEquals(responseEmpltyCase, responseActual, JSONCompareMode.STRICT);
         } else JSONAssert.assertEquals(responseLengthCase, responseActual, JSONCompareMode.STRICT);
+    }
+
+    @Test
+    @DataSet(value = "products.yml")
+    @ExpectedDataSet(value = {"/dataset/expectedUpdatedProducts.yml"}, ignoreCols = {"id"})
+    @Transactional
+    void 商品を更新後DBに更新されたレコードがあり200を返すこと() throws Exception {
+        int id = 1;
+        Product request = new Product("Shaft");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
+        String updateResult = mockMvc.perform(MockMvcRequestBuilders.patch("/products/" + id)
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse().getContentAsString((StandardCharsets.UTF_8));
+
+        JSONAssert.assertEquals("""
+                        {
+                           "message":"Successful operation"
+                        }
+                        """
+                , updateResult, JSONCompareMode.STRICT);
     }
 }
