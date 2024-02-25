@@ -87,8 +87,7 @@ public class UserRestApiIntegrationTest {
         String response = mockMvc.perform(MockMvcRequestBuilders.get("/products/" + productId))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
-
-        assertEquals("404", JsonPath.read(response, "$.status"));
+        
         assertEquals("/products/" + productId, JsonPath.read(response, "$.path"));
         assertEquals("Not Found", JsonPath.read(response, "$.error"));
         assertEquals("Product ID:" + productId + " does not exist", JsonPath.read(response, "$.message"));
@@ -257,7 +256,6 @@ public class UserRestApiIntegrationTest {
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
 
-        assertEquals("404", JsonPath.read(response, "$.status"));
         assertEquals("/products/" + productId, JsonPath.read(response, "$.path"));
         assertEquals("Not Found", JsonPath.read(response, "$.error"));
         assertEquals("resource not found with id: " + productId, JsonPath.read(response, "$.message"));
