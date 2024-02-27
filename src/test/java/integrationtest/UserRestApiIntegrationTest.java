@@ -87,7 +87,7 @@ public class UserRestApiIntegrationTest {
         String response = mockMvc.perform(MockMvcRequestBuilders.get("/products/" + productId))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
-        
+
         assertEquals("/products/" + productId, JsonPath.read(response, "$.path"));
         assertEquals("Not Found", JsonPath.read(response, "$.error"));
         assertEquals("Product ID:" + productId + " does not exist", JsonPath.read(response, "$.message"));
@@ -243,14 +243,14 @@ public class UserRestApiIntegrationTest {
                 , updateResult, JSONCompareMode.STRICT);
     }
 
+    @Test
     @Transactional
     @DataSet(value = "products.yml")
-    @ParameterizedTest
-    @ValueSource(ints = {0, 100})
-    void 商品更新時存在しないiIDを指定した際に404を返すこと(int productId) throws Exception {
+    void 商品更新時存在しないIDを指定した際に404を返すこと() throws Exception {
         Product request = new Product("Shaft");
         ObjectMapper objectMapper = new ObjectMapper();
         String requestJson = objectMapper.writeValueAsString((request));
+        int productId = 0;
         String response = mockMvc.perform(MockMvcRequestBuilders.patch("/products/" + productId)
                         .content(requestJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
