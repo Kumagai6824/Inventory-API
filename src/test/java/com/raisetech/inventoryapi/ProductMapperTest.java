@@ -78,7 +78,7 @@ class ProductMapperTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Transactional
-    void 登録処理が完了して引数のユーザーと新しく採番されたIDが設定されること() {
+    void 登録処理が完了して商品情報と新しく採番されたIDが設定されること() {
         Product product = new Product();
         product.setName("Gear1");
         productMapper.createProduct(product);
