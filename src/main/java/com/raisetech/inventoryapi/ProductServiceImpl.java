@@ -34,8 +34,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteById(int id) {
+    public void deleteProductById(int id) {
         productMapper.findById(id).orElseThrow(() -> new ResourceNotFoundException("resource not found with id: " + id));
-        productMapper.deleteById(id);
+        productMapper.deleteProductById(id);
     }
 }
