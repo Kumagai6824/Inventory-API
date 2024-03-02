@@ -54,12 +54,12 @@ public class ProductController {
         return ResponseEntity.ok(Map.of("message", "Successful operation"));
     }
 
-    @DeleteMapping("/names/{id}")
-    public Map<String, String> deleteById(
+    @DeleteMapping("/products/{id}")
+    public Map<String, String> deleteProductById(
             @PathVariable(value = "id")
             int id) throws Exception {
-        productService.deleteById(id);
-        return Map.of("message", "id: " + id + " was successfully deleted");
+        productService.deleteProductById(id);
+        return Map.of("message", "Successful operation");
     }
 
 

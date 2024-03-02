@@ -21,6 +21,6 @@ public interface ProductMapper {
     void updateProductById(int id, String name);
 
     @Delete("DELETE FROM products where id = #{id}")
-    void deleteById(int id);
+    void deleteProductById(int id);
 
 }
