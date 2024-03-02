@@ -86,4 +86,15 @@ class ProductMapperTest {
         assertThat(productMapper.findById(1)).contains(new Product(1, "Gear1"));
     }
 
+    @Test
+    @Sql(
+            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Transactional
+    void 更新処理が完了して正しく商品情報が設定されること() {
+        productMapper.updateProductById(1, "Shaft");
+        assertThat(productMapper.findById(1)).contains(new Product(1, "Shaft"));
+    }
+
 }
