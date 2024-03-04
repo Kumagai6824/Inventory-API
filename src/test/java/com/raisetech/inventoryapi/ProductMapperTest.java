@@ -113,4 +113,22 @@ class ProductMapperTest {
                 );
     }
 
+    @Test
+    @Sql(
+            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Transactional
+    void 削除処理時に存在しないIDを指定した場合空で返すこと() {
+        productMapper.deleteProductById(3);
+        List<Product> products = productMapper.findAll();
+        assertThat(productMapper.findById(3)).isEmpty();
+        assertThat(products)
+                .hasSize(2)
+                .contains(
+                        new Product(1, "Bolt 1"),
+                        new Product(2, "Washer")
+                );
+    }
+
 }
