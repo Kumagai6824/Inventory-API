@@ -78,12 +78,23 @@ class ProductMapperTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Transactional
-    void 登録処理が完了して引数のユーザーと新しく採番されたIDが設定されること() {
+    void 登録処理が完了して商品情報と新しく採番されたIDが設定されること() {
         Product product = new Product();
         product.setName("Gear1");
         productMapper.createProduct(product);
         assertNotNull(product.getId());
         assertThat(productMapper.findById(1)).contains(new Product(1, "Gear1"));
+    }
+
+    @Test
+    @Sql(
+            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Transactional
+    void 更新処理が完了して正しく商品情報が設定されること() {
+        productMapper.updateProductById(1, "Shaft");
+        assertThat(productMapper.findById(1)).contains(new Product(1, "Shaft"));
     }
 
 }
