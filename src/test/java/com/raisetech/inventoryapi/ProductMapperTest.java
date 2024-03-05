@@ -119,7 +119,7 @@ class ProductMapperTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Transactional
-    void 削除処理時に存在しないIDを指定した場合空で返すこと() {
+    void 削除処理時に存在しないIDを指定した場合何も削除されないこと() {
         productMapper.deleteProductById(3);
         List<Product> products = productMapper.findAll();
         assertThat(productMapper.findById(3)).isEmpty();
