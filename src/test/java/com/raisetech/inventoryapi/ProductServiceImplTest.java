@@ -89,7 +89,7 @@ class ProductServiceImplTest {
     }
 
     @Test
-    public void 存在しない商品IDを指定して削除したときに期待通り例外を返すこと() {
+    public void 存在しない商品IDを指定して場合に例外を返すこと() {
         int id = 0;
         doReturn(Optional.empty()).when(productMapper).findById(id);
         assertThatThrownBy(() -> productServiceImpl.deleteProductById(id))
