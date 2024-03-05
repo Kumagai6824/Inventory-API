@@ -97,4 +97,38 @@ class ProductMapperTest {
         assertThat(productMapper.findById(1)).contains(new Product(1, "Shaft"));
     }
 
+    @Test
+    @Sql(
+            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Transactional
+    void 削除処理が完了して商品情報が削除されること() {
+        productMapper.deleteProductById(1);
+        List<Product> products = productMapper.findAll();
+        assertThat(products)
+                .hasSize(1)
+                .contains(
+                        new Product(2, "Washer")
+                );
+    }
+
+    @Test
+    @Sql(
+            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Transactional
+    void 削除処理時に存在しないIDを指定した場合何も削除されないこと() {
+        productMapper.deleteProductById(3);
+        List<Product> products = productMapper.findAll();
+        assertThat(productMapper.findById(3)).isEmpty();
+        assertThat(products)
+                .hasSize(2)
+                .contains(
+                        new Product(1, "Bolt 1"),
+                        new Product(2, "Washer")
+                );
+    }
+
 }

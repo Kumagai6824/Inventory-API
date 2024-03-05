@@ -79,4 +79,21 @@ class ProductServiceImplTest {
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("resource not found with id: " + id);
     }
+
+    @Test
+    public void 商品IDを指定して削除したときに正しく削除されること() throws Exception {
+        int id = 1;
+        when(productMapper.findById(id)).thenReturn(Optional.of(new Product()));
+        productServiceImpl.deleteProductById(id);
+        verify(productMapper, times(1)).deleteProductById(id);
+    }
+
+    @Test
+    public void 存在しない商品IDを指定して場合に例外を返すこと() {
+        int id = 0;
+        doReturn(Optional.empty()).when(productMapper).findById(id);
+        assertThatThrownBy(() -> productServiceImpl.deleteProductById(id))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("resource not found with id: " + id);
+    }
 }
