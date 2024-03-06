@@ -278,4 +278,18 @@ public class UserRestApiIntegrationTest {
                         """
                 , deleteResult, JSONCompareMode.STRICT);
     }
+
+    @Test
+    @Transactional
+    @DataSet(value = "products.yml")
+    void 商品削除時存在しないIDを指定した際に404を返すこと() throws Exception {
+        int id = 0;
+        String response = mockMvc.perform(MockMvcRequestBuilders.delete("/products/" + id))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        assertEquals("/products/" + id, JsonPath.read(response, "$.path"));
+        assertEquals("Not Found", JsonPath.read(response, "$.error"));
+        assertEquals("resource not found with id: " + id, JsonPath.read(response, "$.message"));
+    }
 }
