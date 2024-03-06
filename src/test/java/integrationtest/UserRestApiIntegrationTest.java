@@ -260,4 +260,22 @@ public class UserRestApiIntegrationTest {
         assertEquals("Not Found", JsonPath.read(response, "$.error"));
         assertEquals("resource not found with id: " + productId, JsonPath.read(response, "$.message"));
     }
+
+    @Test
+    @DataSet(value = "products.yml")
+    @ExpectedDataSet(value = {"/dataset/expectedDeletedProducts.yml"}, ignoreCols = {"id"})
+    @Transactional
+    void 商品の削除処理後DBの当該レコードが削除され200を返すこと() throws Exception {
+        int id = 1;
+        String deleteResult = mockMvc.perform(MockMvcRequestBuilders.delete("/products/" + id))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse().getContentAsString((StandardCharsets.UTF_8));
+
+        JSONAssert.assertEquals("""
+                        {
+                           "message":"Successful operation"
+                        }
+                        """
+                , deleteResult, JSONCompareMode.STRICT);
+    }
 }
