@@ -11,11 +11,11 @@ INSERT INTO products (id, name) VALUES (1, "Bolt 1");
 INSERT INTO products (id, name) VALUES (2, "Washer");
 
 CREATE TABLE inventoryProducts (
-  id int unsigned AUTO_INCREMENT,
-  product_id int,
+  inventory_id int unsigned AUTO_INCREMENT,
+  product_id int unsigned,
   quantity int DEFAULT 0,
   history DATETIME NOT NULL,
-  PRIMARY KEY(id),
+  PRIMARY KEY(inventory_id),
   CONSTRAINT fk_product_id FOREIGN KEY (product_id) REFERENCES products (id)
 );
 
