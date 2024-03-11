@@ -16,7 +16,9 @@ CREATE TABLE inventoryProducts (
   quantity int DEFAULT 0,
   history DATETIME NOT NULL,
   PRIMARY KEY(id),
-  CONSTRAINT fk_product_id FOREIGN KEY (product_id) REFERENCES products (id)
+  FOREIGN KEY fk_product_id (product_id) REFERENCES products (id)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE
 );
 
 INSERT INTO inventoryProducts (product_id, quantity, history) VALUES (1, 100, '2023-12-10 23:58:10');
