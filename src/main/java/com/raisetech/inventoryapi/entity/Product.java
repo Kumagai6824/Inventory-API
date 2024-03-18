@@ -1,4 +1,4 @@
-package com.raisetech.inventoryapi;
+package com.raisetech.inventoryapi.entity;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

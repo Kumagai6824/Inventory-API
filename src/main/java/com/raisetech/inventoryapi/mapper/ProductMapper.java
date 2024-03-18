@@ -1,5 +1,6 @@
-package com.raisetech.inventoryapi;
+package com.raisetech.inventoryapi.mapper;
 
+import com.raisetech.inventoryapi.entity.Product;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

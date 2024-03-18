@@ -1,6 +1,7 @@
-package com.raisetech.inventoryapi;
+package com.raisetech.inventoryapi.form;
 
 
+import com.raisetech.inventoryapi.entity.Product;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;

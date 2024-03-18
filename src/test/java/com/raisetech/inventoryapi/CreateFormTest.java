@@ -1,5 +1,6 @@
 package com.raisetech.inventoryapi;
 
+import com.raisetech.inventoryapi.form.CreateForm;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
