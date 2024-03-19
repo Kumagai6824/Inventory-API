@@ -1,5 +1,9 @@
-package com.raisetech.inventoryapi;
+package com.raisetech.inventoryapi.controller;
 
+import com.raisetech.inventoryapi.entity.Product;
+import com.raisetech.inventoryapi.form.CreateForm;
+import com.raisetech.inventoryapi.form.UpdateForm;
+import com.raisetech.inventoryapi.service.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,4 @@
-package com.raisetech.inventoryapi;
+package com.raisetech.inventoryapi.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException() {

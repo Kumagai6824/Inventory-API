@@ -1,5 +1,8 @@
-package com.raisetech.inventoryapi;
+package com.raisetech.inventoryapi.service;
 
+import com.raisetech.inventoryapi.entity.Product;
+import com.raisetech.inventoryapi.exception.ResourceNotFoundException;
+import com.raisetech.inventoryapi.mapper.ProductMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
