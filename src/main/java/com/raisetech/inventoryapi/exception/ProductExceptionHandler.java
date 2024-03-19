@@ -1,4 +1,4 @@
-package com.raisetech.inventoryapi;
+package com.raisetech.inventoryapi.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;

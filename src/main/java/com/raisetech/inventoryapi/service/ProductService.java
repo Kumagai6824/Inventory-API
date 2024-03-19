@@ -1,4 +1,6 @@
-package com.raisetech.inventoryapi;
+package com.raisetech.inventoryapi.service;
+
+import com.raisetech.inventoryapi.entity.Product;
 
 import java.util.List;
 
