@@ -1,6 +1,5 @@
 package com.raisetech.inventoryapi.entity;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -9,7 +8,6 @@ import java.util.Objects;
 
 @RequiredArgsConstructor
 @Setter
-@Getter
 public class InventoryProduct {
     private int id;
     private int productId;
@@ -21,6 +19,22 @@ public class InventoryProduct {
         this.productId = productId;
         this.quantity = quantity;
         this.history = history;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getProductId() {
+        return productId;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public OffsetDateTime getHistory() {
+        return history;
     }
 
     @Override
