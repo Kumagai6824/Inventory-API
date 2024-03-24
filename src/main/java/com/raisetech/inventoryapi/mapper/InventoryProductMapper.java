@@ -9,5 +9,5 @@ import java.util.Optional;
 @Mapper
 public interface InventoryProductMapper {
     @Select("SELECT * FROM inventoryProducts where product_id = #{product_id}")
-    Optional<InventoryProduct> findInventoryByProductId(int product_id);
+    Optional<InventoryProduct> findInventoryByProductId(int productId);
 }
