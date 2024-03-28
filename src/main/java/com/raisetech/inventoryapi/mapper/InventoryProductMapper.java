@@ -11,6 +11,9 @@ public interface InventoryProductMapper {
     @Select("SELECT * FROM inventoryProducts where product_id = #{product_id}")
     Optional<InventoryProduct> findInventoryByProductId(int productId);
 
+/*    @Select("SELECT SUM(quantity) FROM inventoryProducts where product_id = #{product_id}")
+    Optional<Integer> getQuantityByProductId(int productId);*/
+
     @Select("SELECT SUM(quantity) FROM inventoryProducts where product_id = #{product_id}")
-    Optional<Integer> getQuantityByProductId(int productId);
+    Integer getQuantityByProductId(int productId);
 }

@@ -1,6 +1,5 @@
 package com.raisetech.inventoryapi.service;
 
-import com.raisetech.inventoryapi.exception.ResourceNotFoundException;
 import com.raisetech.inventoryapi.mapper.InventoryProductMapper;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +11,14 @@ public class InventoryProductServiceImpl implements InventoryProductService {
         this.inventoryProductMapper = inventoryProductMapper;
     }
 
+/*    @Override
+    public Integer getQuantityByProductId(int productId) {
+        return this.inventoryProductMapper.getQuantityByProductId(productId).orElseThrow(() -> new ResourceNotFoundException("no id"));
+    }*/
+
     @Override
     public Integer getQuantityByProductId(int productId) {
-        return this.inventoryProductMapper.getQuantityByProductId(productId).orElseThrow(() -> new ResourceNotFoundException("Product ID:" + productId + " does not exist"));
+        return this.inventoryProductMapper.getQuantityByProductId(productId);
     }
 
 }
