@@ -28,3 +28,12 @@ swagger[Inventory-API](https://kumagai6824.github.io/Inventory-API/swagger/)
 ## E-R図
 
 ![ERD](images/ERD.png)
+
+## 環境変数
+
+|変数名|役割|デフォルト値|
+|----|----|----|
+|SPRING_DATASOURCE_URL|MySQLのURL|jdbc:mysql://localhost:3308/name_list|
+|SPRING_DATASOURCE_USERNAME|MySQLのユーザ名|user|
+|SPRING_DATASOURCE_PASSWORD|MySQLのパスワード|password|
+
