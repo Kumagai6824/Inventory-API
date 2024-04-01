@@ -1,9 +1,9 @@
 cacheConnection: false
 cacheTableNames: false
 properties:
-  schema: name_list
+  schema: inventory_database
 caseInsensitiveStrategy: LOWERCASE
 connectionConfig:
-  url: "jdbc:mysql://localhost:3308/name_list"
+  url: "jdbc:mysql://localhost:3308/inventory_database"
   user: "user"
   password: "password"
