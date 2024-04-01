@@ -18,14 +18,6 @@ public class InventoryProductController {
         this.inventoryProductService = inventoryProductService;
     }
 
-/*    @GetMapping("/inventory-products/{product_id}")
-    public Map<String, Integer> getQuantityByProductId(
-            @PathVariable(value = "product_id")
-            int product_id) throws Exception {
-        Integer quantity = inventoryProductService.getQuantityByProductId(product_id);
-        return Map.of("Quantity", quantity);
-    }*/
-
     @GetMapping("/inventory-products/{product_id}")
     public Map<String, Integer> getQuantityByProductId(
             @PathVariable(value = "product_id")

@@ -10,15 +10,11 @@ public class InventoryProductServiceImpl implements InventoryProductService {
     public InventoryProductServiceImpl(InventoryProductMapper inventoryProductMapper) {
         this.inventoryProductMapper = inventoryProductMapper;
     }
-
-/*    @Override
-    public Integer getQuantityByProductId(int productId) {
-        return this.inventoryProductMapper.getQuantityByProductId(productId).orElseThrow(() -> new ResourceNotFoundException("no id"));
-    }*/
-
+    
     @Override
     public Integer getQuantityByProductId(int productId) {
-        return this.inventoryProductMapper.getQuantityByProductId(productId);
+        Integer quantity = this.inventoryProductMapper.getQuantityByProductId(productId);
+        return quantity;
     }
 
 }
