@@ -1,7 +1,9 @@
 package com.raisetech.inventoryapi;
 
+import com.raisetech.inventoryapi.entity.InventoryProduct;
 import com.raisetech.inventoryapi.entity.Product;
 import com.raisetech.inventoryapi.exception.ResourceNotFoundException;
+import com.raisetech.inventoryapi.mapper.InventoryProductMapper;
 import com.raisetech.inventoryapi.mapper.ProductMapper;
 import com.raisetech.inventoryapi.service.ProductServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -29,6 +31,8 @@ class ProductServiceImplTest {
     ProductMapper productMapper;
     @MockBean
     private BindingResult bindingResult;
+    @Mock
+    InventoryProductMapper inventoryProductMapper;
 
     @Test
     public void 製品情報を全件取得できること() {
@@ -85,15 +89,26 @@ class ProductServiceImplTest {
     }
 
     @Test
-    public void 商品IDを指定して削除したときに正しく削除されること() throws Exception {
+    public void 商品を削除した際在庫が0個なら削除されること() throws Exception {
         int id = 1;
-        when(productMapper.findById(id)).thenReturn(Optional.of(new Product()));
+        Product product = new Product();
+        product.setId(id);
+
+        int quantity = 0;
+
+        InventoryProduct inventoryProduct = new InventoryProduct();
+        inventoryProduct.setQuantity(quantity);
+
+        when(productMapper.findById(id)).thenReturn(Optional.of(product));
+        when(inventoryProductMapper.getQuantityByProductId(id)).thenReturn(quantity);
+
         productServiceImpl.deleteProductById(id);
+
         verify(productMapper, times(1)).deleteProductById(id);
     }
 
     @Test
-    public void 存在しない商品IDを指定して場合に例外を返すこと() {
+    public void 存在しない商品IDを指定して削除した場合に例外を返すこと() {
         int id = 0;
         doReturn(Optional.empty()).when(productMapper).findById(id);
         assertThatThrownBy(() -> productServiceImpl.deleteProductById(id))
