@@ -1,5 +1,10 @@
-package com.raisetech.inventoryapi;
+package com.raisetech.inventoryapi.service;
 
+import com.raisetech.inventoryapi.entity.Product;
+import com.raisetech.inventoryapi.exception.InventoryStillExistsException;
+import com.raisetech.inventoryapi.exception.ResourceNotFoundException;
+import com.raisetech.inventoryapi.mapper.InventoryProductMapper;
+import com.raisetech.inventoryapi.mapper.ProductMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -7,9 +12,11 @@ import java.util.List;
 @Service
 public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
+    private final InventoryProductMapper inventoryProductMapper;
 
-    public ProductServiceImpl(ProductMapper productMapper) {
+    public ProductServiceImpl(ProductMapper productMapper, InventoryProductMapper inventoryProductMapper) {
         this.productMapper = productMapper;
+        this.inventoryProductMapper = inventoryProductMapper;
     }
 
     @Override
@@ -36,6 +43,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteProductById(int id) {
         productMapper.findById(id).orElseThrow(() -> new ResourceNotFoundException("resource not found with id: " + id));
-        productMapper.deleteProductById(id);
+        Integer quantity = inventoryProductMapper.getQuantityByProductId(id);
+
+        if (quantity == 0) {
+            productMapper.deleteProductById(id);
+        } else {
+            throw new InventoryStillExistsException("Cannot delete Product because the quantity is not 0");
+        }
     }
 }
