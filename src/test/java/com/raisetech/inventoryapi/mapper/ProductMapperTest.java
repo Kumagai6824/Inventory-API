@@ -1,7 +1,6 @@
-package com.raisetech.inventoryapi;
+package com.raisetech.inventoryapi.mapper;
 
 import com.raisetech.inventoryapi.entity.Product;
-import com.raisetech.inventoryapi.mapper.ProductMapper;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;

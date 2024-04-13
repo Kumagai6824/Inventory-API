@@ -1,11 +1,10 @@
-package com.raisetech.inventoryapi;
+package com.raisetech.inventoryapi.service;
 
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 import com.raisetech.inventoryapi.entity.Product;
 import com.raisetech.inventoryapi.exception.ResourceNotFoundException;
 import com.raisetech.inventoryapi.mapper.InventoryProductMapper;
 import com.raisetech.inventoryapi.mapper.ProductMapper;
-import com.raisetech.inventoryapi.service.ProductServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
