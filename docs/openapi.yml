@@ -192,7 +192,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/200OK'
+                  $ref: '#/components/schemas/InventoryProducts'
         '400':
           description: Bad Request
           content:
