@@ -1,6 +1,5 @@
-package com.raisetech.inventoryapi;
+package com.raisetech.inventoryapi.form;
 
-import com.raisetech.inventoryapi.form.CreateForm;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -14,7 +13,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
-class CreateFormTest {
+class UpdateFormTest {
     private static Validator validator;
 
     @BeforeAll
@@ -26,18 +25,18 @@ class CreateFormTest {
 
     @Test
     public void nameがnullのときにバリデーションエラーとなること() {
-        CreateForm createForm = new CreateForm(null);
-        Set<ConstraintViolation<CreateForm>> violations = validator.validate(createForm);
-        assertThat(violations).hasSize(2);
+        UpdateForm updateForm = new UpdateForm(null);
+        Set<ConstraintViolation<UpdateForm>> violations = validator.validate(updateForm);
+        assertThat(violations).hasSize(1);
         assertThat(violations)
                 .extracting(violation -> violation.getPropertyPath().toString(), ConstraintViolation::getMessage)
-                .containsExactlyInAnyOrder(tuple("name", "空白は許可されていません"), tuple("name", "null は許可されていません"));
+                .containsExactlyInAnyOrder(tuple("name", "空白は許可されていません"));
     }
 
     @Test
     public void nameが空文字のときにバリデーションエラーとなること() {
-        CreateForm createForm = new CreateForm("");
-        Set<ConstraintViolation<CreateForm>> violations = validator.validate(createForm);
+        UpdateForm updateForm = new UpdateForm("");
+        Set<ConstraintViolation<UpdateForm>> violations = validator.validate(updateForm);
         assertThat(violations).hasSize(1);
         assertThat(violations)
                 .extracting(violation -> violation.getPropertyPath().toString(), ConstraintViolation::getMessage)
@@ -47,8 +46,8 @@ class CreateFormTest {
     @Test
     public void nameが31文字以上のときにバリデーションエラーとなること() {
         String name = "Shaft";
-        CreateForm createForm = new CreateForm(name.repeat(6) + "1");
-        Set<ConstraintViolation<CreateForm>> violations = validator.validate(createForm);
+        UpdateForm updateForm = new UpdateForm(name.repeat(6) + "1");
+        Set<ConstraintViolation<UpdateForm>> violations = validator.validate(updateForm);
         assertThat(violations).hasSize(1);
         assertThat(violations)
                 .extracting(violation -> violation.getPropertyPath().toString(), ConstraintViolation::getMessage)
@@ -58,15 +57,15 @@ class CreateFormTest {
     @Test
     public void nameが30文字のときバリデーションエラーとならないこと() {
         String name = "Shaft";
-        CreateForm createForm = new CreateForm(name.repeat(6));
-        Set<ConstraintViolation<CreateForm>> violations = validator.validate(createForm);
+        UpdateForm updateForm = new UpdateForm(name.repeat(6));
+        Set<ConstraintViolation<UpdateForm>> violations = validator.validate(updateForm);
         assertThat(violations).isEmpty();
     }
 
     @Test
     public void nameに値があるときバリデーションエラーとならないこと() {
-        CreateForm createForm = new CreateForm("Shaft");
-        Set<ConstraintViolation<CreateForm>> violations = validator.validate(createForm);
+        UpdateForm updateForm = new UpdateForm("Shaft");
+        Set<ConstraintViolation<UpdateForm>> violations = validator.validate(updateForm);
         assertThat(violations).isEmpty();
     }
 }

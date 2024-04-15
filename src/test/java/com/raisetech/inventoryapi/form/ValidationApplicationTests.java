@@ -1,4 +1,4 @@
-package com.raisetech.inventoryapi;
+package com.raisetech.inventoryapi.form;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
