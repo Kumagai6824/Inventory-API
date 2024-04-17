@@ -27,4 +27,12 @@ class InventoryProductMapperTest {
         assertThat(quantity).isEqualTo(100);
     }
 
+    @Test
+    @Transactional
+    void 存在しない商品IDを指定したときに0を返すこと() {
+        int id = 0;
+        Integer quantity = inventoryProductMapper.getQuantityByProductId(id);
+        assertThat(quantity).isEqualTo(0);
+    }
+
 }
