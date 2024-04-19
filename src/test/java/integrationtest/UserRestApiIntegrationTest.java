@@ -49,11 +49,13 @@ public class UserRestApiIntegrationTest {
                          [
                             {
                                "id":1,
-                               "name":"Bolt 1"
+                               "name":"Bolt 1",
+                               "deletedAt":null
                             },
                             {
                                "id":2,
-                               "name":"Washer"
+                               "name":"Washer",
+                               "deletedAt":null
                             }
                          ]           
                         """
@@ -72,7 +74,8 @@ public class UserRestApiIntegrationTest {
         JSONAssert.assertEquals("""
                         {
                            "id":1,
-                           "name":"Bolt 1"
+                           "name":"Bolt 1",
+                           "deletedAt":null
                         }
                         """
                 , response, JSONCompareMode.STRICT);
