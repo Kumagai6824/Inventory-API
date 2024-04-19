@@ -33,8 +33,8 @@ class ProductMapperTest {
         assertThat(products)
                 .hasSize(2)
                 .contains(
-                        new Product(1, "Bolt 1"),
-                        new Product(2, "Washer")
+                        new Product(1, "Bolt 1", null),
+                        new Product(2, "Washer", null)
                 );
     }
 
@@ -57,7 +57,7 @@ class ProductMapperTest {
     @Transactional
     void 指定した商品IDのデータを返すこと() {
         Optional<Product> product = productMapper.findById(1);
-        assertThat(product).contains(new Product(1, "Bolt 1"));
+        assertThat(product).contains(new Product(1, "Bolt 1", null));
     }
 
     @Test
@@ -84,7 +84,7 @@ class ProductMapperTest {
         product.setName("Gear1");
         productMapper.createProduct(product);
         assertNotNull(product.getId());
-        assertThat(productMapper.findById(1)).contains(new Product(1, "Gear1"));
+        assertThat(productMapper.findById(1)).contains(new Product(1, "Gear1", null));
     }
 
     @Test
@@ -95,7 +95,7 @@ class ProductMapperTest {
     @Transactional
     void 更新処理が完了して正しく商品情報が設定されること() {
         productMapper.updateProductById(1, "Shaft");
-        assertThat(productMapper.findById(1)).contains(new Product(1, "Shaft"));
+        assertThat(productMapper.findById(1)).contains(new Product(1, "Shaft", null));
     }
 
     @Test
@@ -110,7 +110,7 @@ class ProductMapperTest {
         assertThat(products)
                 .hasSize(1)
                 .contains(
-                        new Product(2, "Washer")
+                        new Product(2, "Washer", null)
                 );
     }
 
@@ -127,8 +127,8 @@ class ProductMapperTest {
         assertThat(products)
                 .hasSize(2)
                 .contains(
-                        new Product(1, "Bolt 1"),
-                        new Product(2, "Washer")
+                        new Product(1, "Bolt 1", null),
+                        new Product(2, "Washer", null)
                 );
     }
 
