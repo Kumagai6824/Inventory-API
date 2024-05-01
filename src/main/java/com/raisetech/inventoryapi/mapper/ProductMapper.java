@@ -9,9 +9,11 @@ import java.util.Optional;
 @Mapper
 public interface ProductMapper {
     @Select("SELECT * FROM products")
+    @Result(property = "deletedAt", column = "deleted_at")
     List<Product> findAll();
 
     @Select("SELECT * FROM products where id = #{id}")
+    @Result(property = "deletedAt", column = "deleted_at")
     Optional<Product> findById(int id);
 
     @Insert("INSERT INTO products (name) values (#{name})")
@@ -23,5 +25,8 @@ public interface ProductMapper {
 
     @Delete("DELETE FROM products where id = #{id}")
     void deleteProductById(int id);
+
+    @Update("UPDATE products SET deleted_at = now() where id =#{id}")
+    void logicalDeleteProductById(int id);
 
 }

@@ -1,2 +1,2 @@
-INSERT INTO products (id, name) VALUES (1,"Bolt 1");
-INSERT INTO products (id, name) VALUES (2,"Washer");
+INSERT INTO products (id, name, deleted_at) VALUES (1,"Bolt 1", null);
+INSERT INTO products (id, name, deleted_at) VALUES (2,"Washer", null);

@@ -66,5 +66,13 @@ public class ProductController {
         return Map.of("message", "Successful operation");
     }
 
+    @DeleteMapping("/products/logicaldeletion/{id}")
+    public Map<String, String> logicalDeleteProductById(
+            @PathVariable(value = "id")
+            int id) throws Exception {
+        productService.logicalDeleteProductById(id);
+        return Map.of("message", "Successful operation");
+    }
+
 
 }
