@@ -10,6 +10,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -114,9 +115,9 @@ class ProductMapperTest {
     )
     @Transactional
     void 論理削除後にdeletedAtがnullではないこと() {
-        OffsetDateTime beforeDeletion = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        OffsetDateTime beforeDeletion = OffsetDateTime.now(ZoneOffset.ofHours(9)).truncatedTo(ChronoUnit.SECONDS);
         productMapper.deleteProductById(1);
-        OffsetDateTime afterDeletion = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        OffsetDateTime afterDeletion = OffsetDateTime.now(ZoneOffset.ofHours(9)).truncatedTo(ChronoUnit.SECONDS);
         List<Product> products = productMapper.findAll();
         assertThat(products)
                 .hasSize(2)
