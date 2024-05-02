@@ -8,6 +8,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -98,22 +100,27 @@ class ProductMapperTest {
         assertThat(productMapper.findById(1)).contains(new Product(1, "Shaft", null));
     }
 
-/*    @Test
+    @Test
     @Sql(
             scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Transactional
     void 論理削除でdeletedAtに処理日時が入ること() {
-        productMapper.logicalDeleteProductById(1);
+        OffsetDateTime beforeDeletion = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        productMapper.deleteProductById(1);
+        OffsetDateTime afterDeletion = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+
         List<Product> products = productMapper.findAll();
 
         assertThat(products)
                 .hasSize(2)
-                .contains(
-                        new Product(1, "Bolt 1", ),
-                        new Product(2, "Washer", null)
-                );
-    }*/
+                .filteredOn(product -> product.getId() == 1)
+                .first()
+                .satisfies(product -> {
+                    assertThat(product.getDeletedAt()).isNotNull();
+                    assertThat(product.getDeletedAt()).isBetween(beforeDeletion, afterDeletion);
+                });
+    }
 
 }
