@@ -41,18 +41,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProductById(int id) {
-        productMapper.findById(id).orElseThrow(() -> new ResourceNotFoundException("resource not found with id: " + id));
-        Integer quantity = inventoryProductMapper.getQuantityByProductId(id);
-
-        if (quantity == 0) {
-            productMapper.deleteProductById(id);
-        } else {
-            throw new InventoryStillExistsException("Cannot delete Product because the quantity is not 0");
-        }
-    }
-
-    @Override
     public void logicalDeleteProductById(int id) {
         productMapper.findById(id).orElseThrow(() -> new ResourceNotFoundException("resource not found with id: " + id));
         Integer quantity = inventoryProductMapper.getQuantityByProductId(id);
