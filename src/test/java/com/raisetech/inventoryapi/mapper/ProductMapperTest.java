@@ -115,9 +115,9 @@ class ProductMapperTest {
     )
     @Transactional
     void 論理削除後にdeletedAtがnullではないこと() {
-        OffsetDateTime beforeDeletion = OffsetDateTime.now(ZoneOffset.ofHours(9)).truncatedTo(ChronoUnit.SECONDS);
+        OffsetDateTime beforeDeletion = OffsetDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS);
         productMapper.deleteProductById(1);
-        OffsetDateTime afterDeletion = OffsetDateTime.now(ZoneOffset.ofHours(9)).truncatedTo(ChronoUnit.SECONDS);
+        OffsetDateTime afterDeletion = OffsetDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS);
         List<Product> products = productMapper.findAll();
         assertThat(products)
                 .hasSize(2)
