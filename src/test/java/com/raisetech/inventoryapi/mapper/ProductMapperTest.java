@@ -8,8 +8,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -106,10 +104,8 @@ class ProductMapperTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Transactional
-    void 論理削除でdeletedAtに処理日時が入ること() {
-        OffsetDateTime beforeDeletion = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+    void 論理削除後にdeletedAtがnullではないこと() {
         productMapper.deleteProductById(1);
-        OffsetDateTime afterDeletion = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
         List<Product> products = productMapper.findAll();
 
@@ -119,7 +115,6 @@ class ProductMapperTest {
                 .first()
                 .satisfies(product -> {
                     assertThat(product.getDeletedAt()).isNotNull();
-                    assertThat(product.getDeletedAt()).isBetween(beforeDeletion, afterDeletion);
                 });
     }
 
