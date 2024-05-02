@@ -28,7 +28,7 @@ class ProductMapperTest {
 
     @BeforeEach
     public void setDefaultTimeZone() {
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Tokyo"));
     }
 
     @Test
