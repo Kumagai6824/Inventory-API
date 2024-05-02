@@ -1,6 +1,7 @@
 package com.raisetech.inventoryapi.mapper;
 
 import com.raisetech.inventoryapi.entity.Product;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +9,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -21,6 +25,11 @@ class ProductMapperTest {
 
     @Autowired
     ProductMapper productMapper;
+
+    @BeforeAll
+    public static void setDefaultTimeZone() {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC+09:00"));
+    }
 
     @Test
     @Sql(
@@ -105,7 +114,22 @@ class ProductMapperTest {
     )
     @Transactional
     void 論理削除後にdeletedAtがnullではないこと() {
+        OffsetDateTime beforeDeletion = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         productMapper.deleteProductById(1);
+        OffsetDateTime afterDeletion = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        List<Product> products = productMapper.findAll();
+        assertThat(products)
+                .hasSize(2)
+                .filteredOn(product -> product.getId() == 1)
+                .first()
+                .satisfies(product -> {
+                    assertThat(product.getDeletedAt()).isNotNull();
+                    assertThat(product.getDeletedAt()).isBetween(beforeDeletion, afterDeletion);
+                });
+
+
+    }
+/*        productMapper.deleteProductById(1);
 
         List<Product> products = productMapper.findAll();
 
@@ -116,6 +140,6 @@ class ProductMapperTest {
                 .satisfies(product -> {
                     assertThat(product.getDeletedAt()).isNotNull();
                 });
-    }
+    }*/
 
 }
