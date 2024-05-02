@@ -13,5 +13,5 @@ public interface ProductService {
 
     void updateProductById(int id, String name) throws Exception;
 
-    void logicalDeleteProductById(int id) throws Exception;
+    void deleteProductById(int id) throws Exception;
 }

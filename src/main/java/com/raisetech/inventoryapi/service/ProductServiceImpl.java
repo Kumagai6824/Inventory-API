@@ -41,12 +41,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void logicalDeleteProductById(int id) {
+    public void deleteProductById(int id) {
         productMapper.findById(id).orElseThrow(() -> new ResourceNotFoundException("resource not found with id: " + id));
         Integer quantity = inventoryProductMapper.getQuantityByProductId(id);
 
         if (quantity == 0) {
-            productMapper.logicalDeleteProductById(id);
+            productMapper.deleteProductById(id);
         } else {
             throw new InventoryStillExistsException("Cannot delete Product because the quantity is not 0");
         }
