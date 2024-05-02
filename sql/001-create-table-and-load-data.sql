@@ -4,11 +4,12 @@ DROP TABLE IF EXISTS products;
 CREATE TABLE products (
   id int unsigned AUTO_INCREMENT,
   name VARCHAR(30) NOT NULL,
+  deleted_at DATETIME,
   PRIMARY KEY(id)
 );
 
-INSERT INTO products (id, name) VALUES (1, "Bolt 1");
-INSERT INTO products (id, name) VALUES (2, "Washer");
+INSERT INTO products (id, name, deleted_at) VALUES (1, "Bolt 1", null);
+INSERT INTO products (id, name, deleted_at) VALUES (2, "Washer", null);
 
 CREATE TABLE inventoryProducts (
   id int unsigned AUTO_INCREMENT,

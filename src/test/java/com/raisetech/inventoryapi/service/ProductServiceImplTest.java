@@ -72,7 +72,7 @@ class ProductServiceImplTest {
     public void 商品IDを指定して更新したときに商品情報が更新されること(int id) throws Exception {
         String initialName = "Bolt";
         String renewedName = "Shaft";
-        when(productMapper.findById(id)).thenReturn(Optional.of(new Product(id, initialName)));
+        when(productMapper.findById(id)).thenReturn(Optional.of(new Product(id, initialName, null)));
         productServiceImpl.updateProductById(id, renewedName);
         verify(productMapper, times(1)).updateProductById(id, renewedName);
     }

@@ -7,6 +7,8 @@ import com.github.database.rider.spring.api.DBRider;
 import com.jayway.jsonpath.JsonPath;
 import com.raisetech.inventoryapi.Work09Application;
 import com.raisetech.inventoryapi.entity.Product;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -25,7 +27,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = Work09Application.class)
@@ -49,11 +54,13 @@ public class UserRestApiIntegrationTest {
                          [
                             {
                                "id":1,
-                               "name":"Bolt 1"
+                               "name":"Bolt 1",
+                               "deletedAt":null
                             },
                             {
                                "id":2,
-                               "name":"Washer"
+                               "name":"Washer",
+                               "deletedAt":null
                             }
                          ]           
                         """
@@ -72,7 +79,8 @@ public class UserRestApiIntegrationTest {
         JSONAssert.assertEquals("""
                         {
                            "id":1,
-                           "name":"Bolt 1"
+                           "name":"Bolt 1",
+                           "deletedAt":null
                         }
                         """
                 , response, JSONCompareMode.STRICT);
@@ -263,13 +271,12 @@ public class UserRestApiIntegrationTest {
 
     @Test
     @DataSet(value = "products.yml")
-    @ExpectedDataSet(value = {"/dataset/expectedDeletedProducts.yml"}, ignoreCols = {"id"})
     @Transactional
-    void 商品の削除処理後DBの当該レコードが削除され200を返すこと() throws Exception {
+    void 商品の削除処理後当該レコードの削除フラグに日付が入り200を返すこと() throws Exception {
         int id = 1;
         String deleteResult = mockMvc.perform(MockMvcRequestBuilders.delete("/products/" + id))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn().getResponse().getContentAsString((StandardCharsets.UTF_8));
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
 
         JSONAssert.assertEquals("""
                         {
@@ -277,6 +284,41 @@ public class UserRestApiIntegrationTest {
                         }
                         """
                 , deleteResult, JSONCompareMode.STRICT);
+
+        //Define the expected dataset as a JSON string
+        String expectedDeletedProductsJson = """
+                {
+                  "products": [
+                    {
+                      "id": 1,
+                      "name": "Bolt 1",
+                      "deletedAt": "2024-04-22T10:00:00Z"
+                    },
+                    {
+                      "id": 2,
+                      "name": "Washer",
+                      "deletedAt": null
+                    }
+                  ]
+                }                
+                """;
+
+        //Parse the JSON string and extract the 'deletedAt' field for the specific product
+        JSONArray expectedDeletedProductsArray = new JSONObject(expectedDeletedProductsJson)
+                .getJSONArray("products");
+
+        for (int i = 0; i < expectedDeletedProductsArray.length(); i++) {
+            JSONObject expectedProduct = expectedDeletedProductsArray.getJSONObject(i);
+            int expectedProductId = expectedProduct.getInt("id");
+            if (expectedProductId == id) {
+                OffsetDateTime expectedDeletedAt = expectedProduct.isNull("deletedAt") ? null :
+                        OffsetDateTime.parse(expectedProduct.getString("deletedAt"),
+                                DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+
+                //Perform assertions on the 'deletedAt' field
+                assertThat(expectedDeletedAt).isNotNull();
+            }
+        }
     }
 
     @Test
