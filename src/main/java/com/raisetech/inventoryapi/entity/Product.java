@@ -3,7 +3,7 @@ package com.raisetech.inventoryapi.entity;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 @RequiredArgsConstructor
@@ -11,13 +11,13 @@ import java.util.Objects;
 public class Product {
     private int id;
     private String name;
-    private OffsetDateTime deletedAt;
+    private ZonedDateTime deletedAt;
 
     public Product(String name) {
         this.name = name;
     }
 
-    public Product(int id, String name, OffsetDateTime deletedAt) {
+    public Product(int id, String name, ZonedDateTime deletedAt) {
         this.id = id;
         this.name = name;
         this.deletedAt = deletedAt;
@@ -31,7 +31,7 @@ public class Product {
         return name;
     }
 
-    public OffsetDateTime getDeletedAt() {
+    public ZonedDateTime getDeletedAt() {
         return deletedAt;
     }
 
