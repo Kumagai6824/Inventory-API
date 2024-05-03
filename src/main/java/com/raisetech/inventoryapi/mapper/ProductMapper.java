@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Mapper
 public interface ProductMapper {
-    @Select("SELECT * FROM products")
+    @Select("SELECT * FROM products where deleted_at IS NULL")
     @Result(property = "deletedAt", column = "deleted_at")
     List<Product> findAll();
 
