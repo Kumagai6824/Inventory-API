@@ -130,4 +130,21 @@ class ProductMapperTest {
 
     }
 
+    @Test
+    @Sql(
+            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Transactional
+    void 存在しない商品IDで削除してもレコードに影響がないこと() {
+        productMapper.deleteProductById(0);
+        List<Product> products = productMapper.findAll();
+        assertThat(products)
+                .hasSize(2)
+                .contains(
+                        new Product(1, "Bolt 1", null),
+                        new Product(2, "Washer", null)
+                );
+    }
+
 }
