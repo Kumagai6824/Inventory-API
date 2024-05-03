@@ -113,7 +113,7 @@ class ProductMapperTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Transactional
-    void 論理削除後にdeletedAtがnullではないこと() {
+    void 論理削除後にdeletedAtに処理日時が入ること() {
         OffsetDateTime beforeDeletion = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         productMapper.deleteProductById(1);
         OffsetDateTime afterDeletion = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
