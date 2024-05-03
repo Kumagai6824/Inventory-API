@@ -129,17 +129,5 @@ class ProductMapperTest {
 
 
     }
-/*        productMapper.deleteProductById(1);
-
-        List<Product> products = productMapper.findAll();
-
-        assertThat(products)
-                .hasSize(2)
-                .filteredOn(product -> product.getId() == 1)
-                .first()
-                .satisfies(product -> {
-                    assertThat(product.getDeletedAt()).isNotNull();
-                });
-    }*/
 
 }
