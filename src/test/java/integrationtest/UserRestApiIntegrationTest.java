@@ -285,7 +285,6 @@ public class UserRestApiIntegrationTest {
                         """
                 , deleteResult, JSONCompareMode.STRICT);
 
-        //Define the expected dataset as a JSON string
         String expectedDeletedProductsJson = """
                 {
                   "products": [
@@ -303,7 +302,6 @@ public class UserRestApiIntegrationTest {
                 }                
                 """;
 
-        //Parse the JSON string and extract the 'deletedAt' field for the specific product
         JSONArray expectedDeletedProductsArray = new JSONObject(expectedDeletedProductsJson)
                 .getJSONArray("products");
 
@@ -314,8 +312,7 @@ public class UserRestApiIntegrationTest {
                 OffsetDateTime expectedDeletedAt = expectedProduct.isNull("deletedAt") ? null :
                         OffsetDateTime.parse(expectedProduct.getString("deletedAt"),
                                 DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-
-                //Perform assertions on the 'deletedAt' field
+                
                 assertThat(expectedDeletedAt).isNotNull();
             }
         }
