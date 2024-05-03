@@ -30,7 +30,7 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
       - name: Conduct Tests
-        run: gradle test
+        run: TZ=Asia/Tokyo gradle test
         if: always()
 
       - name: Publish Test Report
