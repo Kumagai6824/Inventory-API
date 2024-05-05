@@ -59,6 +59,26 @@ class ProductServiceImplTest {
     }
 
     @Test
+    public void 削除した商品IDを指定したときに例外を返すこと() {
+        int id = 1;
+        int quantity = 0;
+        InventoryProduct inventoryProduct = new InventoryProduct();
+        inventoryProduct.setQuantity(quantity);
+        when(inventoryProductMapper.getQuantityByProductId(id)).thenReturn(quantity);
+
+        when(productMapper.findById(id)).thenReturn(Optional.of(new Product()));
+
+        productServiceImpl.deleteProductById(id);
+        verify(productMapper).findById(id);
+
+        when(productMapper.findById(id)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> productServiceImpl.findById(id))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Product ID:" + id + " does not exist");
+    }
+
+    @Test
     public void 商品が正しく1件登録されること() throws Exception {
         Product product = new Product("test product");
         doNothing().when(productMapper).createProduct(product);
