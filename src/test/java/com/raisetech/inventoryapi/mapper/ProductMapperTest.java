@@ -82,6 +82,18 @@ class ProductMapperTest {
 
     @Test
     @Sql(
+            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Transactional
+    void 削除した商品IDを指定したときに空で返すこと() {
+        productMapper.deleteProductById(1);
+        Optional<Product> product = productMapper.findById(1);
+        assertThat(product).isEmpty();
+    }
+
+    @Test
+    @Sql(
             scripts = {"classpath:/delete-products.sql", "classpath:/reset-id.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
