@@ -102,6 +102,21 @@ public class UserRestApiIntegrationTest {
     }
 
     @Test
+    @Transactional
+    @DataSet(value = "products.yml")
+    void 削除したIDを指定した際404を返すこと() throws Exception {
+        int productId = 1;
+        mockMvc.perform(MockMvcRequestBuilders.delete("/products/" + productId));
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/products/" + productId))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        assertEquals("/products/" + productId, JsonPath.read(response, "$.path"));
+        assertEquals("Not Found", JsonPath.read(response, "$.error"));
+        assertEquals("Product ID:" + productId + " does not exist", JsonPath.read(response, "$.message"));
+    }
+
+    @Test
     @DataSet(value = "products.yml")
     @Transactional
     void 新規商品を登録でき201を返すこと() throws Exception {
@@ -312,7 +327,7 @@ public class UserRestApiIntegrationTest {
                 OffsetDateTime expectedDeletedAt = expectedProduct.isNull("deletedAt") ? null :
                         OffsetDateTime.parse(expectedProduct.getString("deletedAt"),
                                 DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-                
+
                 assertThat(expectedDeletedAt).isNotNull();
             }
         }
