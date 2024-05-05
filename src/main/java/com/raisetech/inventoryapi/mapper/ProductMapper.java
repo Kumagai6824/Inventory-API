@@ -11,8 +11,8 @@ public interface ProductMapper {
     @Select("SELECT * FROM products where deleted_at IS NULL")
     @Result(property = "deletedAt", column = "deleted_at")
     List<Product> findAll();
-    
-    @Select("SELECT * FROM products where id = #{id}")
+
+    @Select("SELECT * FROM products where id = #{id} and deleted_at IS NULL")
     @Result(property = "deletedAt", column = "deleted_at")
     Optional<Product> findById(int id);
 
