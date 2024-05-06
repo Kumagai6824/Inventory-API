@@ -285,6 +285,25 @@ public class UserRestApiIntegrationTest {
     }
 
     @Test
+    @Transactional
+    @DataSet(value = "products.yml")
+    void 削除した商品を更新した際に404を返すこと() throws Exception {
+        Product request = new Product("Shaft");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString((request));
+        int productId = 1;
+        mockMvc.perform(MockMvcRequestBuilders.delete("/products/" + productId));
+        String response = mockMvc.perform(MockMvcRequestBuilders.patch("/products/" + productId)
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        assertEquals("/products/" + productId, JsonPath.read(response, "$.path"));
+        assertEquals("Not Found", JsonPath.read(response, "$.error"));
+        assertEquals("resource not found with id: " + productId, JsonPath.read(response, "$.message"));
+    }
+
+    @Test
     @DataSet(value = "products.yml")
     @Transactional
     void 商品の削除処理後当該レコードの削除フラグに日付が入り200を返すこと() throws Exception {
