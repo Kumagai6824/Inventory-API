@@ -108,6 +108,22 @@ class ProductServiceImplTest {
     }
 
     @Test
+    public void 削除済み商品を更新したときに例外を返すこと() throws Exception {
+        int id = 1;
+        String renewedName = "Shaft";
+        when(productMapper.findById(id)).thenReturn(Optional.of(new Product()));
+
+        productServiceImpl.deleteProductById(id);
+        verify(productMapper).deleteProductById(id);
+        
+        when(productMapper.findById(id)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> productServiceImpl.updateProductById(id, renewedName))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("resource not found with id: " + id);
+    }
+
+    @Test
     public void 商品を削除した際在庫が0個なら削除されること() throws Exception {
         int id = 1;
         Product product = new Product();
