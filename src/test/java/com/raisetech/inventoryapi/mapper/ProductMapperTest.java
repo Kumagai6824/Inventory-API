@@ -123,6 +123,19 @@ class ProductMapperTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Transactional
+    void 削除済みレコードを更新しても処理されないこと() {
+        productMapper.deleteProductById(1);
+        productMapper.updateProductById(1, "updatedName");
+        assertThat(productMapper.findById(1)).isEmpty();
+
+    }
+
+    @Test
+    @Sql(
+            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Transactional
     void 削除後に論理削除されたレコードが取得されないこと() {
         productMapper.deleteProductById(1);
         List<Product> products = productMapper.findAll();
