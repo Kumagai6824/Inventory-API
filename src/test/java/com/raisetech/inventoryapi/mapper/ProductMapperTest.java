@@ -1,6 +1,7 @@
 package com.raisetech.inventoryapi.mapper;
 
 import com.raisetech.inventoryapi.entity.Product;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -21,6 +23,11 @@ class ProductMapperTest {
 
     @Autowired
     ProductMapper productMapper;
+
+    @BeforeEach
+    public void setDefaultTimeZone() {
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Tokyo"));
+    }
 
     @Test
     @Sql(
@@ -75,6 +82,18 @@ class ProductMapperTest {
 
     @Test
     @Sql(
+            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Transactional
+    void 削除した商品IDを指定したときに空で返すこと() {
+        productMapper.deleteProductById(1);
+        Optional<Product> product = productMapper.findById(1);
+        assertThat(product).isEmpty();
+    }
+
+    @Test
+    @Sql(
             scripts = {"classpath:/delete-products.sql", "classpath:/reset-id.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
@@ -98,22 +117,50 @@ class ProductMapperTest {
         assertThat(productMapper.findById(1)).contains(new Product(1, "Shaft", null));
     }
 
-/*    @Test
+    @Test
     @Sql(
             scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Transactional
-    void 論理削除でdeletedAtに処理日時が入ること() {
-        productMapper.logicalDeleteProductById(1);
-        List<Product> products = productMapper.findAll();
+    void 削除済みレコードを更新しても処理されないこと() {
+        productMapper.deleteProductById(1);
+        productMapper.updateProductById(1, "updatedName");
+        assertThat(productMapper.findById(1)).isEmpty();
 
+    }
+
+    @Test
+    @Sql(
+            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Transactional
+    void 削除後に論理削除されたレコードが取得されないこと() {
+        productMapper.deleteProductById(1);
+        List<Product> products = productMapper.findAll();
+        assertThat(products)
+                .hasSize(1)
+                .contains(
+                        new Product(2, "Washer", null)
+                );
+    }
+
+    @Test
+    @Sql(
+            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Transactional
+    void 存在しない商品IDで削除してもレコードに影響がないこと() {
+        productMapper.deleteProductById(0);
+        List<Product> products = productMapper.findAll();
         assertThat(products)
                 .hasSize(2)
                 .contains(
-                        new Product(1, "Bolt 1", ),
+                        new Product(1, "Bolt 1", null),
                         new Product(2, "Washer", null)
                 );
-    }*/
+    }
 
 }
