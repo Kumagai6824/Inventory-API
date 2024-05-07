@@ -26,4 +26,7 @@ public interface ProductMapper {
     @Update("UPDATE products SET deleted_at = now() where id =#{id}")
     void deleteProductById(int id);
 
+    @Select("SELECT ip.id, ip.product_id, p.name, ip.quantity, ip.history FROM inventoryProducts ip INNER JOIN products p ON ip.product_id = p.id WHERE p.id = #{id}")
+    void findHistoryByProductId(int id);
+
 }
