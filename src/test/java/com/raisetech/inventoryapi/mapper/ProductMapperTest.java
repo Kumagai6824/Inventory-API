@@ -9,8 +9,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.TimeZone;
@@ -84,6 +82,18 @@ class ProductMapperTest {
 
     @Test
     @Sql(
+            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Transactional
+    void 削除した商品IDを指定したときに空で返すこと() {
+        productMapper.deleteProductById(1);
+        Optional<Product> product = productMapper.findById(1);
+        assertThat(product).isEmpty();
+    }
+
+    @Test
+    @Sql(
             scripts = {"classpath:/delete-products.sql", "classpath:/reset-id.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
@@ -113,21 +123,27 @@ class ProductMapperTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Transactional
-    void 論理削除後にdeletedAtに処理日時が入ること() {
-        OffsetDateTime beforeDeletion = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+    void 削除済みレコードを更新しても処理されないこと() {
         productMapper.deleteProductById(1);
-        OffsetDateTime afterDeletion = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        productMapper.updateProductById(1, "updatedName");
+        assertThat(productMapper.findById(1)).isEmpty();
+
+    }
+
+    @Test
+    @Sql(
+            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Transactional
+    void 削除後に論理削除されたレコードが取得されないこと() {
+        productMapper.deleteProductById(1);
         List<Product> products = productMapper.findAll();
         assertThat(products)
-                .hasSize(2)
-                .filteredOn(product -> product.getId() == 1)
-                .first()
-                .satisfies(product -> {
-                    assertThat(product.getDeletedAt()).isNotNull();
-                    assertThat(product.getDeletedAt()).isBetween(beforeDeletion, afterDeletion);
-                });
-
-
+                .hasSize(1)
+                .contains(
+                        new Product(2, "Washer", null)
+                );
     }
 
     @Test

@@ -59,6 +59,26 @@ class ProductServiceImplTest {
     }
 
     @Test
+    public void 削除した商品IDを指定したときに例外を返すこと() {
+        int id = 1;
+        int quantity = 0;
+        InventoryProduct inventoryProduct = new InventoryProduct();
+        inventoryProduct.setQuantity(quantity);
+        when(inventoryProductMapper.getQuantityByProductId(id)).thenReturn(quantity);
+
+        when(productMapper.findById(id)).thenReturn(Optional.of(new Product()));
+
+        productServiceImpl.deleteProductById(id);
+        verify(productMapper).findById(id);
+
+        when(productMapper.findById(id)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> productServiceImpl.findById(id))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Product ID:" + id + " does not exist");
+    }
+
+    @Test
     public void 商品が正しく1件登録されること() throws Exception {
         Product product = new Product("test product");
         doNothing().when(productMapper).createProduct(product);
@@ -82,6 +102,22 @@ class ProductServiceImplTest {
     public void 存在しない商品IDを指定して更新したときに期待通り例外を返すこと(int id) throws Exception {
         String renewedName = "Shaft";
         when(productMapper.findById(id)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> productServiceImpl.updateProductById(id, renewedName))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("resource not found with id: " + id);
+    }
+
+    @Test
+    public void 削除済み商品を更新したときに例外を返すこと() throws Exception {
+        int id = 1;
+        String renewedName = "Shaft";
+        when(productMapper.findById(id)).thenReturn(Optional.of(new Product()));
+
+        productServiceImpl.deleteProductById(id);
+        verify(productMapper).deleteProductById(id);
+        
+        when(productMapper.findById(id)).thenReturn(Optional.empty());
+
         assertThatThrownBy(() -> productServiceImpl.updateProductById(id, renewedName))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("resource not found with id: " + id);
