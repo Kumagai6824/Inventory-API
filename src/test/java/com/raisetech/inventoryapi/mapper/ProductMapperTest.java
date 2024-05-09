@@ -1,5 +1,6 @@
 package com.raisetech.inventoryapi.mapper;
 
+import com.raisetech.inventoryapi.entity.InventoryHistory;
 import com.raisetech.inventoryapi.entity.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.TimeZone;
@@ -163,7 +165,7 @@ class ProductMapperTest {
                 );
     }
 
-/*
+
     @Test
     @Sql(
             scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql", "classpath:/delete-inventory-products.sql", "classpath:/insert-inventory-products.sql"},
@@ -179,6 +181,5 @@ class ProductMapperTest {
                         new InventoryHistory(1, 1, "Bolt 1", 100, expectedDateTime)
                 );
     }
-*/
 
 }
