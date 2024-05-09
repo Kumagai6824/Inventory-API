@@ -1,6 +1,5 @@
 package com.raisetech.inventoryapi.controller;
 
-import com.raisetech.inventoryapi.entity.InventoryHistory;
 import com.raisetech.inventoryapi.entity.Product;
 import com.raisetech.inventoryapi.form.CreateForm;
 import com.raisetech.inventoryapi.form.UpdateForm;
@@ -37,12 +36,12 @@ public class ProductController {
 
     }
 
-    @GetMapping("/products/history/{id}")
+/*    @GetMapping("/products/history/{id}")
     public List<InventoryHistory> findHistoryByProductId(
             @PathVariable(value = "id")
             int id) throws Exception {
         return productService.findHistoriesByProductId(id);
-    }
+    }*/
 
     @PostMapping("/products")
     public ResponseEntity<Map<String, String>> createProduct
