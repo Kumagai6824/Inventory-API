@@ -1,5 +1,6 @@
 package com.raisetech.inventoryapi.mapper;
 
+import com.raisetech.inventoryapi.entity.InventoryHistory;
 import com.raisetech.inventoryapi.entity.Product;
 import org.apache.ibatis.annotations.*;
 
@@ -27,6 +28,7 @@ public interface ProductMapper {
     void deleteProductById(int id);
 
     @Select("SELECT ip.id, ip.product_id, p.name, ip.quantity, ip.history FROM inventoryProducts ip INNER JOIN products p ON ip.product_id = p.id WHERE p.id = #{id}")
-    void findHistoryByProductId(int id);
+    @Result(property = "productId", column = "product_id")
+    List<InventoryHistory> findHistoriesByProductId(int id);
 
 }
