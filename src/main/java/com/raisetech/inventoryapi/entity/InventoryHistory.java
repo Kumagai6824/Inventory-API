@@ -1,13 +1,11 @@
 package com.raisetech.inventoryapi.entity;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
 @RequiredArgsConstructor
-@Setter
 public class InventoryHistory {
     private int id;
     private int productId;
