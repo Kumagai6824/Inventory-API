@@ -35,13 +35,7 @@ public class ProductController {
         return productService.findById(id);
 
     }
-
-/*    @GetMapping("/products/history/{id}")
-    public List<InventoryHistory> findHistoryByProductId(
-            @PathVariable(value = "id")
-            int id) throws Exception {
-        return productService.findHistoriesByProductId(id);
-    }*/
+    
 
     @PostMapping("/products")
     public ResponseEntity<Map<String, String>> createProduct
