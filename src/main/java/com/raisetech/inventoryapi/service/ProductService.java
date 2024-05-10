@@ -14,6 +14,4 @@ public interface ProductService {
     void updateProductById(int id, String name) throws Exception;
 
     void deleteProductById(int id) throws Exception;
-
-    /*    List<InventoryHistory> findHistoriesByProductId(int id) throws Exception;*/
 }
