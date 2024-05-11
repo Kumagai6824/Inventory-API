@@ -12,8 +12,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.validation.BindingResult;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,8 +26,6 @@ class ProductServiceImplTest {
     ProductServiceImpl productServiceImpl;
     @Mock
     ProductMapper productMapper;
-    @MockBean
-    private BindingResult bindingResult;
     @Mock
     InventoryProductMapper inventoryProductMapper;
 
@@ -115,7 +111,7 @@ class ProductServiceImplTest {
 
         productServiceImpl.deleteProductById(id);
         verify(productMapper).deleteProductById(id);
-        
+
         when(productMapper.findById(id)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> productServiceImpl.updateProductById(id, renewedName))
