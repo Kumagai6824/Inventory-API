@@ -40,10 +40,12 @@ class ProductMapperTest {
     void すべての製品情報が取得できること() {
         List<Product> products = productMapper.findAll();
         assertThat(products)
-                .hasSize(2)
+                .hasSize(4)
                 .contains(
                         new Product(1, "Bolt 1", null),
-                        new Product(2, "Washer", null)
+                        new Product(2, "Washer", null),
+                        new Product(3, "Gear", null),
+                        new Product(4, "Shaft", null)
                 );
     }
 
@@ -142,9 +144,11 @@ class ProductMapperTest {
         productMapper.deleteProductById(1);
         List<Product> products = productMapper.findAll();
         assertThat(products)
-                .hasSize(1)
+                .hasSize(3)
                 .contains(
-                        new Product(2, "Washer", null)
+                        new Product(2, "Washer", null),
+                        new Product(3, "Gear", null),
+                        new Product(4, "Shaft", null)
                 );
     }
 
@@ -158,10 +162,12 @@ class ProductMapperTest {
         productMapper.deleteProductById(0);
         List<Product> products = productMapper.findAll();
         assertThat(products)
-                .hasSize(2)
+                .hasSize(4)
                 .contains(
                         new Product(1, "Bolt 1", null),
-                        new Product(2, "Washer", null)
+                        new Product(2, "Washer", null),
+                        new Product(3, "Gear", null),
+                        new Product(4, "Shaft", null)
                 );
     }
 
