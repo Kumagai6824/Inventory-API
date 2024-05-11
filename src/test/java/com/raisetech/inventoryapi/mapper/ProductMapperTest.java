@@ -204,4 +204,15 @@ class ProductMapperTest {
                 );
     }
 
+    @Test
+    @Sql(
+            scripts = {"classpath:/delete-inventory-products.sql", "classpath:/delete-products.sql", "classpath:/insert-products.sql", "classpath:/insert-inventory-products.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Transactional
+    void 指定した商品IDの在庫が未登録の場合空を返すこと() {
+        List<InventoryHistory> inventoryHistory = productMapper.findHistoriesByProductId(4);
+        assertThat(inventoryHistory).isEmpty();
+    }
+
 }
