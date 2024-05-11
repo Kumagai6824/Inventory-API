@@ -188,4 +188,20 @@ class ProductMapperTest {
                 );
     }
 
+    @Test
+    @Sql(
+            scripts = {"classpath:/delete-inventory-products.sql", "classpath:/delete-products.sql", "classpath:/insert-products.sql", "classpath:/insert-inventory-products.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Transactional
+    void 指定した商品IDの在庫がゼロ個の場合在庫履歴を取得できること() {
+        List<InventoryHistory> inventoryHistory = productMapper.findHistoriesByProductId(3);
+        OffsetDateTime expectedDateTime = OffsetDateTime.parse("2024-05-11T19:13:10+09:00");
+        assertThat(inventoryHistory)
+                .hasSize(1)
+                .contains(
+                        new InventoryHistory(3, 3, "Gear", 0, expectedDateTime)
+                );
+    }
+
 }
