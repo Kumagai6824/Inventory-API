@@ -51,9 +51,4 @@ public class ProductServiceImpl implements ProductService {
             throw new InventoryStillExistsException("Cannot delete Product because the quantity is not 0");
         }
     }
-
-/*    @Override
-    public List<InventoryHistory> findHistoriesByProductId(int id) {
-        return this.productMapper.findHistoriesByProductId(id);
-    }*/
 }
