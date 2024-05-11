@@ -21,6 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Sql(
+        scripts = {"classpath:/delete-inventory-products.sql", "classpath:/delete-products.sql", "classpath:/insert-products.sql", "classpath:/insert-inventory-products.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+)
 class ProductMapperTest {
 
     @Autowired
@@ -32,10 +36,6 @@ class ProductMapperTest {
     }
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void すべての製品情報が取得できること() {
         List<Product> products = productMapper.findAll();
@@ -61,10 +61,6 @@ class ProductMapperTest {
     }
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void 指定した商品IDのデータを返すこと() {
         Optional<Product> product = productMapper.findById(1);
@@ -72,10 +68,6 @@ class ProductMapperTest {
     }
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void 存在しない商品IDを指定したときに空で返すこと() {
         Optional<Product> product = productMapper.findById(0);
@@ -85,10 +77,6 @@ class ProductMapperTest {
     }
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void 削除した商品IDを指定したときに空で返すこと() {
         productMapper.deleteProductById(1);
@@ -111,10 +99,6 @@ class ProductMapperTest {
     }
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void 更新処理が完了して正しく商品情報が設定されること() {
         productMapper.updateProductById(1, "Shaft");
@@ -122,10 +106,6 @@ class ProductMapperTest {
     }
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void 削除済みレコードを更新しても処理されないこと() {
         productMapper.deleteProductById(1);
@@ -135,10 +115,6 @@ class ProductMapperTest {
     }
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void 削除後に論理削除されたレコードが取得されないこと() {
         productMapper.deleteProductById(1);
@@ -153,10 +129,6 @@ class ProductMapperTest {
     }
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void 存在しない商品IDで削除してもレコードに影響がないこと() {
         productMapper.deleteProductById(0);
@@ -173,10 +145,6 @@ class ProductMapperTest {
 
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql", "classpath:/delete-inventory-products.sql", "classpath:/insert-inventory-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void 指定した商品IDの在庫履歴が取得できること() {
         List<InventoryHistory> inventoryHistory = productMapper.findHistoriesByProductId(1);
@@ -189,10 +157,6 @@ class ProductMapperTest {
     }
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-inventory-products.sql", "classpath:/delete-products.sql", "classpath:/insert-products.sql", "classpath:/insert-inventory-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void 指定した商品IDの在庫がゼロ個の場合在庫履歴を取得できること() {
         List<InventoryHistory> inventoryHistory = productMapper.findHistoriesByProductId(3);
@@ -205,10 +169,6 @@ class ProductMapperTest {
     }
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-inventory-products.sql", "classpath:/delete-products.sql", "classpath:/insert-products.sql", "classpath:/insert-inventory-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void 指定した商品IDの在庫が未登録の場合空を返すこと() {
         List<InventoryHistory> inventoryHistory = productMapper.findHistoriesByProductId(4);
