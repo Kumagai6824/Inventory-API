@@ -150,13 +150,14 @@ class ProductServiceImplTest {
                 .hasMessage("resource not found with id: " + id);
     }
 
-    @Test
-    public void 指定した商品IDの在庫履歴を取得できること() {
+    @ParameterizedTest
+    @ValueSource(ints = {100, 0})
+    public void 指定した商品IDの在庫履歴を取得できること(int quantity) {
         int inventoryId = 1;
         int productId = 1;
         OffsetDateTime dateTime = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
         List<InventoryHistory> history = new ArrayList<InventoryHistory>();
-        history.add(new InventoryHistory(inventoryId, productId, "Test", 100, dateTime));
+        history.add(new InventoryHistory(inventoryId, productId, "Test", quantity, dateTime));
 
         doReturn(history).when(productMapper).findHistoriesByProductId(productId);
         List<InventoryHistory> actual = productServiceImpl.findHistoriesByProductId(productId);
