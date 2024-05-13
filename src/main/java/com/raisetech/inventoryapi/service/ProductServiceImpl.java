@@ -1,5 +1,6 @@
 package com.raisetech.inventoryapi.service;
 
+import com.raisetech.inventoryapi.entity.InventoryHistory;
 import com.raisetech.inventoryapi.entity.Product;
 import com.raisetech.inventoryapi.exception.InventoryStillExistsException;
 import com.raisetech.inventoryapi.exception.ResourceNotFoundException;
@@ -50,5 +51,10 @@ public class ProductServiceImpl implements ProductService {
         } else {
             throw new InventoryStillExistsException("Cannot delete Product because the quantity is not 0");
         }
+    }
+
+    @Override
+    public List<InventoryHistory> findHistoriesByProductId(int id) {
+        return productMapper.findHistoriesByProductId(id);
     }
 }
