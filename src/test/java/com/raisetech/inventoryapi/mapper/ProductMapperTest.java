@@ -182,4 +182,15 @@ class ProductMapperTest {
         assertThat(inventoryHistory).isEmpty();
     }
 
+    @Test
+    @Transactional
+    void 論理削除した商品IDで在庫履歴が取得できること() {
+        productMapper.deleteProductById(1);
+        List<InventoryHistory> inventoryHistory = productMapper.findHistoriesByProductId(1);
+        OffsetDateTime expectedDateTime = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
+        assertThat(inventoryHistory)
+                .hasSize(1)
+                .contains(new InventoryHistory(1, 1, "Bolt 1", 100, expectedDateTime));
+    }
+
 }
