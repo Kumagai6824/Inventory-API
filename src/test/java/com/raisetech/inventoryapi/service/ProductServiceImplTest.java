@@ -15,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -150,14 +149,25 @@ class ProductServiceImplTest {
                 .hasMessage("resource not found with id: " + id);
     }
 
-    @ParameterizedTest
-    @ValueSource(ints = {100, 0})
-    public void 指定した商品IDの在庫履歴を取得できること(int quantity) {
+    @Test
+    public void 指定した商品IDの在庫履歴を取得できること() {
         int inventoryId = 1;
         int productId = 1;
         OffsetDateTime dateTime = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
-        List<InventoryHistory> history = new ArrayList<InventoryHistory>();
-        history.add(new InventoryHistory(inventoryId, productId, "Test", quantity, dateTime));
+        List<InventoryHistory> history = List.of(new InventoryHistory(inventoryId, productId, "Test", 100, dateTime));
+
+        doReturn(Optional.of(new Product("Test"))).when(productMapper).findById(productId);
+        doReturn(history).when(productMapper).findHistoriesByProductId(productId);
+        List<InventoryHistory> actual = productServiceImpl.findHistoriesByProductId(productId);
+        assertThat(actual).isEqualTo(history);
+    }
+
+    @Test
+    public void 在庫がゼロの時指定した商品IDの在庫履歴を取得できること() {
+        int inventoryId = 1;
+        int productId = 1;
+        OffsetDateTime dateTime = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
+        List<InventoryHistory> history = List.of(new InventoryHistory(inventoryId, productId, "Test", 0, dateTime));
 
         doReturn(Optional.of(new Product("Test"))).when(productMapper).findById(productId);
         doReturn(history).when(productMapper).findHistoriesByProductId(productId);
