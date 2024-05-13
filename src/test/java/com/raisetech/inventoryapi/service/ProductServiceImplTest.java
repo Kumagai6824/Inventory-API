@@ -163,4 +163,13 @@ class ProductServiceImplTest {
         List<InventoryHistory> actual = productServiceImpl.findHistoriesByProductId(productId);
         assertThat(actual).isEqualTo(history);
     }
+
+    @Test
+    public void 存在しない商品IDで在庫履歴取得時例外を返すこと() {
+        int id = 0;
+        doReturn(Optional.empty()).when(productMapper).findById(id);
+        assertThatThrownBy(() -> productServiceImpl.findHistoriesByProductId(id))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("resource not found with id: " + id);
+    }
 }
