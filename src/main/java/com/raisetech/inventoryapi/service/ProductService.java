@@ -1,5 +1,6 @@
 package com.raisetech.inventoryapi.service;
 
+import com.raisetech.inventoryapi.entity.InventoryHistory;
 import com.raisetech.inventoryapi.entity.Product;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface ProductService {
     void updateProductById(int id, String name) throws Exception;
 
     void deleteProductById(int id) throws Exception;
+
+    List<InventoryHistory> findHistoriesByProductId(int id);
 }

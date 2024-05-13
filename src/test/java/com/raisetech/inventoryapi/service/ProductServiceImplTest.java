@@ -1,5 +1,6 @@
 package com.raisetech.inventoryapi.service;
 
+import com.raisetech.inventoryapi.entity.InventoryHistory;
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 import com.raisetech.inventoryapi.entity.Product;
 import com.raisetech.inventoryapi.exception.ResourceNotFoundException;
@@ -13,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -143,6 +145,41 @@ class ProductServiceImplTest {
         int id = 0;
         doReturn(Optional.empty()).when(productMapper).findById(id);
         assertThatThrownBy(() -> productServiceImpl.deleteProductById(id))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("resource not found with id: " + id);
+    }
+
+    @Test
+    public void 指定した商品IDの在庫履歴を取得できること() {
+        int inventoryId = 1;
+        int productId = 1;
+        OffsetDateTime dateTime = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
+        List<InventoryHistory> history = List.of(new InventoryHistory(inventoryId, productId, "Test", 100, dateTime));
+
+        doReturn(Optional.of(new Product("Test"))).when(productMapper).findById(productId);
+        doReturn(history).when(productMapper).findHistoriesByProductId(productId);
+        List<InventoryHistory> actual = productServiceImpl.findHistoriesByProductId(productId);
+        assertThat(actual).isEqualTo(history);
+    }
+
+    @Test
+    public void 在庫がゼロの時指定した商品IDの在庫履歴を取得できること() {
+        int inventoryId = 1;
+        int productId = 1;
+        OffsetDateTime dateTime = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
+        List<InventoryHistory> history = List.of(new InventoryHistory(inventoryId, productId, "Test", 0, dateTime));
+
+        doReturn(Optional.of(new Product("Test"))).when(productMapper).findById(productId);
+        doReturn(history).when(productMapper).findHistoriesByProductId(productId);
+        List<InventoryHistory> actual = productServiceImpl.findHistoriesByProductId(productId);
+        assertThat(actual).isEqualTo(history);
+    }
+
+    @Test
+    public void 存在しない商品IDで在庫履歴取得時例外を返すこと() {
+        int id = 0;
+        doReturn(Optional.empty()).when(productMapper).findById(id);
+        assertThatThrownBy(() -> productServiceImpl.findHistoriesByProductId(id))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("resource not found with id: " + id);
     }
