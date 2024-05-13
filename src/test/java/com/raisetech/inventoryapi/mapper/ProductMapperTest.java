@@ -175,4 +175,11 @@ class ProductMapperTest {
         assertThat(inventoryHistory).isEmpty();
     }
 
+    @Test
+    @Transactional
+    void 存在しない商品IDで在庫履歴取得時空を返すこと() {
+        List<InventoryHistory> inventoryHistory = productMapper.findHistoriesByProductId(0);
+        assertThat(inventoryHistory).isEmpty();
+    }
+
 }
