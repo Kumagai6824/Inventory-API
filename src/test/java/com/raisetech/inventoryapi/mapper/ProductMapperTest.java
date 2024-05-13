@@ -1,5 +1,6 @@
 package com.raisetech.inventoryapi.mapper;
 
+import com.raisetech.inventoryapi.entity.InventoryHistory;
 import com.raisetech.inventoryapi.entity.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.TimeZone;
@@ -19,6 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Sql(
+        scripts = {"classpath:/delete-inventory-products.sql", "classpath:/delete-products.sql", "classpath:/insert-products.sql", "classpath:/insert-inventory-products.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+)
 class ProductMapperTest {
 
     @Autowired
@@ -30,18 +36,16 @@ class ProductMapperTest {
     }
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void すべての製品情報が取得できること() {
         List<Product> products = productMapper.findAll();
         assertThat(products)
-                .hasSize(2)
+                .hasSize(4)
                 .contains(
                         new Product(1, "Bolt 1", null),
-                        new Product(2, "Washer", null)
+                        new Product(2, "Washer", null),
+                        new Product(3, "Gear", null),
+                        new Product(4, "Shaft", null)
                 );
     }
 
@@ -57,10 +61,6 @@ class ProductMapperTest {
     }
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void 指定した商品IDのデータを返すこと() {
         Optional<Product> product = productMapper.findById(1);
@@ -68,10 +68,6 @@ class ProductMapperTest {
     }
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void 存在しない商品IDを指定したときに空で返すこと() {
         Optional<Product> product = productMapper.findById(0);
@@ -81,10 +77,6 @@ class ProductMapperTest {
     }
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void 削除した商品IDを指定したときに空で返すこと() {
         productMapper.deleteProductById(1);
@@ -107,10 +99,6 @@ class ProductMapperTest {
     }
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void 更新処理が完了して正しく商品情報が設定されること() {
         productMapper.updateProductById(1, "Shaft");
@@ -118,10 +106,6 @@ class ProductMapperTest {
     }
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void 削除済みレコードを更新しても処理されないこと() {
         productMapper.deleteProductById(1);
@@ -131,36 +115,82 @@ class ProductMapperTest {
     }
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void 削除後に論理削除されたレコードが取得されないこと() {
         productMapper.deleteProductById(1);
         List<Product> products = productMapper.findAll();
         assertThat(products)
-                .hasSize(1)
+                .hasSize(3)
                 .contains(
-                        new Product(2, "Washer", null)
+                        new Product(2, "Washer", null),
+                        new Product(3, "Gear", null),
+                        new Product(4, "Shaft", null)
                 );
     }
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void 存在しない商品IDで削除してもレコードに影響がないこと() {
         productMapper.deleteProductById(0);
         List<Product> products = productMapper.findAll();
         assertThat(products)
-                .hasSize(2)
+                .hasSize(4)
                 .contains(
                         new Product(1, "Bolt 1", null),
-                        new Product(2, "Washer", null)
+                        new Product(2, "Washer", null),
+                        new Product(3, "Gear", null),
+                        new Product(4, "Shaft", null)
                 );
+    }
+
+
+    @Test
+    @Transactional
+    void 指定した商品IDの在庫履歴が取得できること() {
+        List<InventoryHistory> inventoryHistory = productMapper.findHistoriesByProductId(1);
+        OffsetDateTime expectedDateTime = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
+        assertThat(inventoryHistory)
+                .hasSize(1)
+                .contains(
+                        new InventoryHistory(1, 1, "Bolt 1", 100, expectedDateTime)
+                );
+    }
+
+    @Test
+    @Transactional
+    void 指定した商品IDの在庫がゼロ個の場合在庫履歴を取得できること() {
+        List<InventoryHistory> inventoryHistory = productMapper.findHistoriesByProductId(3);
+        OffsetDateTime expectedDateTime = OffsetDateTime.parse("2024-05-11T19:13:10+09:00");
+        assertThat(inventoryHistory)
+                .hasSize(1)
+                .contains(
+                        new InventoryHistory(3, 3, "Gear", 0, expectedDateTime)
+                );
+    }
+
+    @Test
+    @Transactional
+    void 指定した商品IDの在庫が未登録の場合空を返すこと() {
+        List<InventoryHistory> inventoryHistory = productMapper.findHistoriesByProductId(4);
+        assertThat(inventoryHistory).isEmpty();
+    }
+
+    @Test
+    @Transactional
+    void 存在しない商品IDで在庫履歴取得時空を返すこと() {
+        List<InventoryHistory> inventoryHistory = productMapper.findHistoriesByProductId(0);
+        assertThat(inventoryHistory).isEmpty();
+    }
+
+    @Test
+    @Transactional
+    void 論理削除した商品IDで在庫履歴が取得できること() {
+        productMapper.deleteProductById(1);
+        List<InventoryHistory> inventoryHistory = productMapper.findHistoriesByProductId(1);
+        OffsetDateTime expectedDateTime = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
+        assertThat(inventoryHistory)
+                .hasSize(1)
+                .contains(new InventoryHistory(1, 1, "Bolt 1", 100, expectedDateTime));
     }
 
 }
