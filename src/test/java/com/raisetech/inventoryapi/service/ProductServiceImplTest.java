@@ -159,6 +159,7 @@ class ProductServiceImplTest {
         List<InventoryHistory> history = new ArrayList<InventoryHistory>();
         history.add(new InventoryHistory(inventoryId, productId, "Test", quantity, dateTime));
 
+        doReturn(Optional.of(new Product("Test"))).when(productMapper).findById(productId);
         doReturn(history).when(productMapper).findHistoriesByProductId(productId);
         List<InventoryHistory> actual = productServiceImpl.findHistoriesByProductId(productId);
         assertThat(actual).isEqualTo(history);
