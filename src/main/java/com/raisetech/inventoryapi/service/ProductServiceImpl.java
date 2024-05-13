@@ -55,6 +55,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<InventoryHistory> findHistoriesByProductId(int id) {
+        //findByIdでは論理削除したデータは取得されないので、論理削除商品の在庫履歴が見れない
         productMapper.findById(id).orElseThrow(() -> new ResourceNotFoundException("resource not found with id: " + id));
         return productMapper.findHistoriesByProductId(id);
     }

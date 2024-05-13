@@ -183,4 +183,24 @@ class ProductServiceImplTest {
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("resource not found with id: " + id);
     }
+
+    @Test
+    public void 削除済み商品IDで在庫履歴が取得できること() {
+        int inventoryId = 1;
+        int productId = 1;
+
+        when(productMapper.findById(productId)).thenReturn(Optional.of(new Product()));
+
+        productServiceImpl.deleteProductById(productId);
+        verify(productMapper).deleteProductById(productId);
+
+        when(productMapper.findById(productId)).thenReturn(Optional.empty());
+
+        OffsetDateTime dateTime = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
+        List<InventoryHistory> history = List.of(new InventoryHistory(inventoryId, productId, "Test", 0, dateTime));
+
+        doReturn(history).when(productMapper).findHistoriesByProductId(productId);
+        List<InventoryHistory> actual = productServiceImpl.findHistoriesByProductId(productId);
+        assertThat(actual).isEqualTo(history);
+    }
 }
