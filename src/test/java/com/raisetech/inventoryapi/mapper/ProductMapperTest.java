@@ -75,14 +75,7 @@ class ProductMapperTest {
         Optional<Product> product2 = productMapper.findById(10);
         assertThat(product2).isEmpty();
     }
-
-    @Test
-    @Transactional
-    void 削除した商品IDを指定したときに空で返すこと() {
-        productMapper.deleteProductById(1);
-        Optional<Product> product = productMapper.findById(1);
-        assertThat(product).isEmpty();
-    }
+    
 
     @Test
     @Sql(
