@@ -189,17 +189,26 @@ class ProductServiceImplTest {
         int inventoryId = 1;
         int productId = 1;
 
-        when(productMapper.findById(productId)).thenReturn(Optional.of(new Product()));
+        Product existingProduct = new Product();
+        existingProduct.setId(productId);
+        existingProduct.setDeletedAt(null);
+
+        when(productMapper.findById(productId)).thenReturn(Optional.of(existingProduct));
 
         productServiceImpl.deleteProductById(productId);
         verify(productMapper).deleteProductById(productId);
 
-        when(productMapper.findById(productId)).thenReturn(Optional.empty());
+        Product deletedProduct = new Product();
+        deletedProduct.setId(productId);
+        deletedProduct.setDeletedAt(OffsetDateTime.now());
+
+        when(productMapper.findById(productId)).thenReturn(Optional.of(deletedProduct));
 
         OffsetDateTime dateTime = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
-        List<InventoryHistory> history = List.of(new InventoryHistory(inventoryId, productId, "Test", 0, dateTime));
+        List<InventoryHistory> history = List.of(new InventoryHistory(inventoryId, productId, "Test", 100, dateTime));
 
-        doReturn(history).when(productMapper).findHistoriesByProductId(productId);
+        when(productMapper.findHistoriesByProductId(productId)).thenReturn(history);
+
         List<InventoryHistory> actual = productServiceImpl.findHistoriesByProductId(productId);
         assertThat(actual).isEqualTo(history);
     }
