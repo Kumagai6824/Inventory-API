@@ -29,7 +29,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product findById(int id) {
         Optional<Product> productOptional = productMapper.findById(id);
-        
+
         Product product = productOptional.orElseThrow(() -> new ResourceNotFoundException("Product ID:" + id + " does not exist"));
         if (product.getDeletedAt() != null) {
             throw new ResourceNotFoundException("Product ID:" + id + " does not exist");
@@ -63,7 +63,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<InventoryHistory> findHistoriesByProductId(int id) {
-        //findByIdでは論理削除したデータは取得されないので、論理削除商品の在庫履歴が見れない
         productMapper.findById(id).orElseThrow(() -> new ResourceNotFoundException("resource not found with id: " + id));
         return productMapper.findHistoriesByProductId(id);
     }
