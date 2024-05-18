@@ -14,7 +14,6 @@ public interface ProductMapper {
     List<Product> findAll();
 
     @Select("SELECT * FROM products where id = #{id}")
-    @Result(property = "deletedAt", column = "deleted_at")
     Optional<Product> findById(int id);
 
     @Insert("INSERT INTO products (name) values (#{name})")
