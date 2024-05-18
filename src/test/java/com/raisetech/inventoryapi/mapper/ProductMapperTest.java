@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
@@ -75,7 +76,7 @@ class ProductMapperTest {
         Optional<Product> product2 = productMapper.findById(10);
         assertThat(product2).isEmpty();
     }
-    
+
 
     @Test
     @Sql(
@@ -101,9 +102,13 @@ class ProductMapperTest {
     @Test
     @Transactional
     void 削除済みレコードを更新しても処理されないこと() {
-        productMapper.deleteProductById(1);
-        productMapper.updateProductById(1, "updatedName");
-        assertThat(productMapper.findById(1)).isEmpty();
+        int productId = 1;
+        String presentName = productMapper.findById(productId).get().getName();
+        productMapper.deleteProductById(productId);
+        productMapper.updateProductById(productId, "updatedName");
+        String nameAfterUpdate = productMapper.findById(productId).get().getName();
+
+        assertEquals(presentName, nameAfterUpdate);
 
     }
 
