@@ -9,6 +9,7 @@ import com.raisetech.inventoryapi.mapper.ProductMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -27,7 +28,14 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product findById(int id) {
-        return this.productMapper.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product ID:" + id + " does not exist"));
+        Optional<Product> productOptional = productMapper.findById(id);
+        
+        Product product = productOptional.orElseThrow(() -> new ResourceNotFoundException("Product ID:" + id + " does not exist"));
+        if (product.getDeletedAt() != null) {
+            throw new ResourceNotFoundException("Product ID:" + id + " does not exist");
+        }
+
+        return product;
     }
 
     @Override

@@ -13,7 +13,7 @@ public interface ProductMapper {
     @Result(property = "deletedAt", column = "deleted_at")
     List<Product> findAll();
 
-    @Select("SELECT * FROM products where id = #{id} and deleted_at IS NULL")
+    @Select("SELECT * FROM products where id = #{id}")
     @Result(property = "deletedAt", column = "deleted_at")
     Optional<Product> findById(int id);
 
