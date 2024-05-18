@@ -45,7 +45,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void updateProductById(int id, String name) {
-        productMapper.findById(id).orElseThrow(() -> new ResourceNotFoundException("resource not found with id: " + id));
+        Optional<Product> productOptional = productMapper.findById(id);
+
+        Product product = productOptional.orElseThrow(() -> new ResourceNotFoundException("resource not found with id: " + id));
+        if (product.getDeletedAt() != null) {
+            throw new ResourceNotFoundException("resource not found with id: " + id);
+        }
         productMapper.updateProductById(id, name);
     }
 
