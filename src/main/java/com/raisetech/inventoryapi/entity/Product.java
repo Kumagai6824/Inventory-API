@@ -1,13 +1,12 @@
 package com.raisetech.inventoryapi.entity;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
 @RequiredArgsConstructor
-@Setter
+
 public class Product {
     private int id;
     private String name;
@@ -33,6 +32,10 @@ public class Product {
 
     public OffsetDateTime getDeletedAt() {
         return deletedAt;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
