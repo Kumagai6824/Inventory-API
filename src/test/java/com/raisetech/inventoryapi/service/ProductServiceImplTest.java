@@ -189,20 +189,14 @@ class ProductServiceImplTest {
         int inventoryId = 1;
         int productId = 1;
 
-        Product existingProduct = new Product();
-        existingProduct.setId(productId);
-        existingProduct.setDeletedAt(null);
+        Product existingProduct = new Product(productId, "test", null);
 
         when(productMapper.findById(productId)).thenReturn(Optional.of(existingProduct));
 
         productServiceImpl.deleteProductById(productId);
         verify(productMapper).deleteProductById(productId);
 
-        Product deletedProduct = new Product();
-        deletedProduct.setId(productId);
-        deletedProduct.setDeletedAt(OffsetDateTime.now());
-
-        when(productMapper.findById(productId)).thenReturn(Optional.of(deletedProduct));
+        when(productMapper.findById(productId)).thenReturn(Optional.of(existingProduct));
 
         OffsetDateTime dateTime = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
         List<InventoryHistory> history = List.of(new InventoryHistory(inventoryId, productId, "Test", 100, dateTime));
