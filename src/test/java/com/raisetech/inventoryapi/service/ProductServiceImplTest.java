@@ -123,21 +123,19 @@ class ProductServiceImplTest {
 
     @Test
     public void 商品を削除した際在庫が0個なら削除されること() throws Exception {
-        int id = 1;
-        Product product = new Product();
-        product.setId(id);
+        int productId = 1;
+        Product product = new Product(productId, "test", null);
 
         int quantity = 0;
-
         InventoryProduct inventoryProduct = new InventoryProduct();
         inventoryProduct.setQuantity(quantity);
 
-        when(productMapper.findById(id)).thenReturn(Optional.of(product));
-        when(inventoryProductMapper.getQuantityByProductId(id)).thenReturn(quantity);
+        when(productMapper.findById(productId)).thenReturn(Optional.of(product));
+        when(inventoryProductMapper.getQuantityByProductId(productId)).thenReturn(quantity);
 
-        productServiceImpl.deleteProductById(id);
+        productServiceImpl.deleteProductById(productId);
 
-        verify(productMapper, times(1)).deleteProductById(id);
+        verify(productMapper, times(1)).deleteProductById(productId);
     }
 
     @Test
