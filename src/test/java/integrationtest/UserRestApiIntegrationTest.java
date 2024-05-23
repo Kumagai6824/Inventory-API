@@ -365,4 +365,27 @@ public class UserRestApiIntegrationTest {
         assertEquals("Not Found", JsonPath.read(response, "$.error"));
         assertEquals("resource not found with id: " + id, JsonPath.read(response, "$.message"));
     }
+
+    @Test
+    @DataSet(value = {"products.yml", "inventoryProducts.yml"})
+    @Transactional
+    void 指定した商品IDの在庫履歴を全件取得できること() throws Exception {
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/products/histories/1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        JSONAssert.assertEquals("""
+                         [
+                            {
+                               "id":1,
+                               "productId": 1,
+                               "name": "Bolt 1",
+                               "quantity": 100,
+                               "history": "2023-12-10T23:58:10+09:00"
+                            }
+                         ]
+                        """
+                , response, JSONCompareMode.STRICT);
+
+    }
 }
