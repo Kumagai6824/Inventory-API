@@ -68,7 +68,7 @@ public class ProductController {
         return Map.of("message", "Successful operation");
     }
 
-    @GetMapping("/products/histories/{id}")
+    @GetMapping("/products/{id}/histories")
     public List<InventoryHistory> findHistoriesByProductId(
             @PathVariable(value = "id")
             int id) {
