@@ -388,4 +388,37 @@ public class UserRestApiIntegrationTest {
                 , response, JSONCompareMode.STRICT);
 
     }
+
+    @Test
+    @DataSet(value = {"products.yml", "inventoryProducts.yml"})
+    @Transactional
+    void 削除済み商品IDの在庫履歴を全件取得できること() throws Exception {
+        int productId = 3;
+        mockMvc.perform(MockMvcRequestBuilders.delete("/products/" + productId))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/products/" + productId + "/histories"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        JSONAssert.assertEquals("""
+                         [
+                            {
+                               "id": 3,
+                               "productId": %s,
+                               "name": "Test",
+                               "quantity": 500,
+                               "history": "2024-05-10T12:58:10+09:00"
+                            },
+                            {
+                               "id": 4,
+                               "productId": %s,
+                               "name": "Test",
+                               "quantity": -500,
+                               "history": "2024-05-11T12:58:10+09:00"
+                            }
+                         ]
+                        """.formatted(productId, productId)
+                , response, JSONCompareMode.STRICT);
+
+    }
 }
