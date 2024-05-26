@@ -3,3 +3,5 @@ products:
     name: "Bolt 1"
   - id: 2
     name: "Washer"
+  - id: 3
+    name: "Test"
