@@ -426,4 +426,18 @@ public class UserRestApiIntegrationTest {
                 , response, JSONCompareMode.STRICT);
 
     }
+
+    @Test
+    @DataSet(value = {"products.yml", "inventoryProducts.yml"})
+    @Transactional
+    void 存在しない商品IDで在庫履歴取得時404を返すこと() throws Exception {
+        int productId = 0;
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/products/" + productId + "/histories"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        assertEquals("/products/" + productId + "/histories", JsonPath.read(response, "$.path"));
+        assertEquals("Not Found", JsonPath.read(response, "$.error"));
+        assertEquals("resource not found with id: " + productId, JsonPath.read(response, "$.message"));
+    }
 }
