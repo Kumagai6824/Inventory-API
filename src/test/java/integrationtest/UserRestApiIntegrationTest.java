@@ -61,6 +61,11 @@ public class UserRestApiIntegrationTest {
                                "id":2,
                                "name":"Washer",
                                "deletedAt":null
+                            },
+                            {
+                               "id":3,
+                               "name":"Test",
+                               "deletedAt":null
                             }
                          ]           
                         """

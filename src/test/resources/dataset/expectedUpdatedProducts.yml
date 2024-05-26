@@ -3,3 +3,5 @@ products:
     name: "Shaft"
   - id: 2
     name: "Washer"
+  - id: 3
+    name: "Test"
