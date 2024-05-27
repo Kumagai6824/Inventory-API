@@ -176,6 +176,46 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/404NotFound'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/409Conflict'
+  /products/{id}/histories:
+    get:
+      tags:
+        - Products
+      summary: 商品IDによる在庫履歴の全件取得
+      operationId: findHistoriesById
+      description: |
+        指定した商品IDと一致する在庫履歴を全件取得する
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Histories'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/404NotFound'
   /inventory-products:
     get:
       tags:
@@ -353,6 +393,31 @@ components:
         name:
           type: string
           example: 'Gear main'
+    Histories:
+      type: object
+      required:
+        - id
+        - productId
+        - name
+        - quantity
+        - history
+      properties:
+        id:
+          type: integer
+          example: 1
+        productId:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: 'Bolt 1'
+        quantity:
+          type: integer
+          example: 100
+        history:
+          type: string
+          example: '2024-05-10T23:59:59+09:00'
+          format: date-time
     InventoryProducts:
       type: object
       required:
@@ -461,3 +526,31 @@ components:
           type: string
           example:
             '404'
+    409Conflict:
+      type: object
+      required:
+        - status
+        - path
+        - error
+        - timestamp
+        - message
+      properties:
+        status:
+          type: string
+          example:
+            '409'
+        path:
+          type: string
+          example: '/products/1'
+        error:
+          type: string
+          example:
+            'Conflict'
+        timestamp:
+          type: string
+          example:
+            '2024-03-26T22:19:19.376914800+09:00[Asia/Tokyo]'
+          format: date-time
+        message:
+          type: string
+          example: 'Cannot delete Product because the quantity is not 0'
