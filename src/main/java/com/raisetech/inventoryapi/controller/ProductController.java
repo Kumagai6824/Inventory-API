@@ -1,5 +1,6 @@
 package com.raisetech.inventoryapi.controller;
 
+import com.raisetech.inventoryapi.entity.InventoryHistory;
 import com.raisetech.inventoryapi.entity.Product;
 import com.raisetech.inventoryapi.form.CreateForm;
 import com.raisetech.inventoryapi.form.UpdateForm;
@@ -35,7 +36,7 @@ public class ProductController {
         return productService.findById(id);
 
     }
-    
+
 
     @PostMapping("/products")
     public ResponseEntity<Map<String, String>> createProduct
@@ -65,6 +66,13 @@ public class ProductController {
             int id) throws Exception {
         productService.deleteProductById(id);
         return Map.of("message", "Successful operation");
+    }
+
+    @GetMapping("/products/{id}/histories")
+    public List<InventoryHistory> findHistoriesByProductId(
+            @PathVariable(value = "id")
+            int id) {
+        return productService.findHistoriesByProductId(id);
     }
 
 

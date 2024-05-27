@@ -22,8 +22,21 @@ public class InventoryHistory {
         return id;
     }
 
+    public int getProductId() {
+        return productId;
+    }
+
+
     public String getName() {
         return name;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public OffsetDateTime getHistory() {
+        return history;
     }
 
     @Override

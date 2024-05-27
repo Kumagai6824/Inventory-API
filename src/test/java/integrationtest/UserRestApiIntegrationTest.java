@@ -61,6 +61,11 @@ public class UserRestApiIntegrationTest {
                                "id":2,
                                "name":"Washer",
                                "deletedAt":null
+                            },
+                            {
+                               "id":3,
+                               "name":"Test",
+                               "deletedAt":null
                             }
                          ]           
                         """
@@ -364,5 +369,75 @@ public class UserRestApiIntegrationTest {
         assertEquals("/products/" + id, JsonPath.read(response, "$.path"));
         assertEquals("Not Found", JsonPath.read(response, "$.error"));
         assertEquals("resource not found with id: " + id, JsonPath.read(response, "$.message"));
+    }
+
+    @Test
+    @DataSet(value = {"products.yml", "inventoryProducts.yml"})
+    @Transactional
+    void 指定した商品IDの在庫履歴を全件取得できること() throws Exception {
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/products/1/histories"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        JSONAssert.assertEquals("""
+                         [
+                            {
+                               "id":1,
+                               "productId": 1,
+                               "name": "Bolt 1",
+                               "quantity": 100,
+                               "history": "2023-12-10T23:58:10+09:00"
+                            }
+                         ]
+                        """
+                , response, JSONCompareMode.STRICT);
+
+    }
+
+    @Test
+    @DataSet(value = {"products.yml", "inventoryProducts.yml"})
+    @Transactional
+    void 削除済み商品IDの在庫履歴を全件取得できること() throws Exception {
+        int productId = 3;
+        mockMvc.perform(MockMvcRequestBuilders.delete("/products/" + productId))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/products/" + productId + "/histories"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        JSONAssert.assertEquals("""
+                         [
+                            {
+                               "id": 3,
+                               "productId": %s,
+                               "name": "Test",
+                               "quantity": 500,
+                               "history": "2024-05-10T12:58:10+09:00"
+                            },
+                            {
+                               "id": 4,
+                               "productId": %s,
+                               "name": "Test",
+                               "quantity": -500,
+                               "history": "2024-05-11T12:58:10+09:00"
+                            }
+                         ]
+                        """.formatted(productId, productId)
+                , response, JSONCompareMode.STRICT);
+
+    }
+
+    @Test
+    @DataSet(value = {"products.yml", "inventoryProducts.yml"})
+    @Transactional
+    void 存在しない商品IDで在庫履歴取得時404を返すこと() throws Exception {
+        int productId = 0;
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/products/" + productId + "/histories"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        assertEquals("/products/" + productId + "/histories", JsonPath.read(response, "$.path"));
+        assertEquals("Not Found", JsonPath.read(response, "$.error"));
+        assertEquals("resource not found with id: " + productId, JsonPath.read(response, "$.message"));
     }
 }
