@@ -9,6 +9,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -50,8 +51,15 @@ class InventoryProductMapperTest {
 
         int id = inventoryProduct.getId();
         OffsetDateTime expectedDateTime = inventoryProduct.getHistory();
+        OffsetDateTime expectedDateTime2 = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
         assertNotNull(id);
-        assertThat(inventoryProductMapper.findInventoryByProductId(productId)).contains(new InventoryProduct(id, productId, 500, expectedDateTime));
+
+        List<InventoryProduct> actualInventoryProducts = inventoryProductMapper.findInventoryByProductIdForTest(productId);
+        assertThat(actualInventoryProducts)
+                .contains(
+                        new InventoryProduct(1, productId, 100, expectedDateTime2),
+                        new InventoryProduct(id, productId, 500, expectedDateTime)
+                );
     }
 
 }
