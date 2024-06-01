@@ -50,15 +50,19 @@ class InventoryProductMapperTest {
         inventoryProductMapper.createInventoryProduct(inventoryProduct);
 
         int id = inventoryProduct.getId();
-        OffsetDateTime expectedDateTime = inventoryProduct.getHistory();
-        OffsetDateTime expectedDateTime2 = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
         assertNotNull(id);
 
         List<InventoryProduct> actualInventoryProducts = inventoryProductMapper.findInventoryByProductIdForTest(productId);
+
+        OffsetDateTime expectedDateTime1 = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
+        OffsetDateTime expectedDateTime2 = actualInventoryProducts.get(1).getHistory();
+
+        assertNotNull(expectedDateTime2);
         assertThat(actualInventoryProducts)
+                .hasSize(2)
                 .contains(
-                        new InventoryProduct(1, productId, 100, expectedDateTime2),
-                        new InventoryProduct(id, productId, 500, expectedDateTime)
+                        new InventoryProduct(1, productId, 100, expectedDateTime1),
+                        new InventoryProduct(id, productId, 500, expectedDateTime2)
                 );
     }
 
