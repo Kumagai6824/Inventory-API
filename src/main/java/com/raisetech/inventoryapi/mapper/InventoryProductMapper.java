@@ -16,7 +16,7 @@ public interface InventoryProductMapper {
     @Select("SELECT COALESCE(SUM(quantity), 0) FROM inventoryProducts where product_id = #{product_id}")
     Integer getQuantityByProductId(int productId);
 
-    @Insert("INSERT INTO inventoryProducts (product_id, quantity, history) values (#{product_id}, #{quantity})")
+    @Insert("INSERT INTO inventoryProducts (product_id, quantity, history) values (#{productId}, #{quantity}, now())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void createInventoryProduct(InventoryProduct inventoryProduct);
 }
