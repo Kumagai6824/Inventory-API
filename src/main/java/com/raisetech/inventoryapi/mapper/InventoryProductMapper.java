@@ -7,15 +7,11 @@ import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
-import java.util.Optional;
 
 @Mapper
 public interface InventoryProductMapper {
     @Select("SELECT * FROM inventoryProducts where product_id = #{product_id}")
-    Optional<InventoryProduct> findInventoryByProductId(int productId);
-
-    @Select("SELECT * FROM inventoryProducts where product_id = #{product_id}")
-    List<InventoryProduct> findInventoryByProductIdForTest(int productId);
+    List<InventoryProduct> findInventoryByProductId(int productId);
 
     @Select("SELECT COALESCE(SUM(quantity), 0) FROM inventoryProducts where product_id = #{product_id}")
     Integer getQuantityByProductId(int productId);

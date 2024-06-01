@@ -52,7 +52,7 @@ class InventoryProductMapperTest {
         int id = inventoryProduct.getId();
         assertNotNull(id);
 
-        List<InventoryProduct> actualInventoryProducts = inventoryProductMapper.findInventoryByProductIdForTest(productId);
+        List<InventoryProduct> actualInventoryProducts = inventoryProductMapper.findInventoryByProductId(productId);
 
         OffsetDateTime expectedDateTime1 = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
         OffsetDateTime expectedDateTime2 = actualInventoryProducts.get(1).getHistory();
