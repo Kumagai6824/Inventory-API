@@ -1,5 +1,7 @@
 package com.raisetech.inventoryapi.mapper;
 
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
+import com.github.database.rider.spring.api.DBRider;
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
@@ -8,16 +10,13 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.OffsetDateTime;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @MybatisTest
+@DBRider
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(
-        scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql", "classpath:/delete-inventory-products.sql", "classpath:/insert-inventory-products.sql"},
+        scripts = {"classpath:/reset-id.sql", "classpath:/delete-products.sql", "classpath:/insert-products.sql", "classpath:/reset-inventoryProductId.sql", "classpath:/delete-inventory-products.sql", "classpath:/insert-inventory-products.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 class InventoryProductMapperTest {
@@ -41,6 +40,7 @@ class InventoryProductMapperTest {
     }
 
     @Test
+    @ExpectedDataSet(value = "/dataset/expectedCreatedInventoryProducts.yml", ignoreCols = {"history"})
     @Transactional
     void 登録した在庫情報と新しく採番されたIDが設定されること() {
         int productId = 1;
@@ -48,22 +48,6 @@ class InventoryProductMapperTest {
         inventoryProduct.setProductId(productId);
         inventoryProduct.setQuantity(500);
         inventoryProductMapper.createInventoryProduct(inventoryProduct);
-
-        int id = inventoryProduct.getId();
-        assertNotNull(id);
-
-        List<InventoryProduct> actualInventoryProducts = inventoryProductMapper.findInventoryByProductId(productId);
-
-        OffsetDateTime expectedDateTime1 = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
-        OffsetDateTime expectedDateTime2 = actualInventoryProducts.get(1).getHistory();
-
-        assertNotNull(expectedDateTime2);
-        assertThat(actualInventoryProducts)
-                .hasSize(2)
-                .contains(
-                        new InventoryProduct(1, productId, 100, expectedDateTime1),
-                        new InventoryProduct(id, productId, 500, expectedDateTime2)
-                );
     }
 
 }
