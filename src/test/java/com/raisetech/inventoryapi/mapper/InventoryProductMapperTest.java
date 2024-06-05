@@ -10,7 +10,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @MybatisTest
 @DBRider
@@ -22,6 +26,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 class InventoryProductMapperTest {
     @Autowired
     InventoryProductMapper inventoryProductMapper;
+
+    @Test
+    @Transactional
+    @ExpectedDataSet(value = "/dataset/expectedInventoryProductId1.yml", ignoreCols = {"history"})
+    void 商品IDと一致する在庫情報を取得できること() {
+        int productId = 1;
+        InventoryProduct inventoryProduct = new InventoryProduct();
+        inventoryProduct.setProductId(productId);
+        inventoryProduct.setQuantity(500);
+        inventoryProductMapper.createInventoryProduct(inventoryProduct);
+
+        int id = inventoryProduct.getId();
+        assertNotNull(id);
+
+        List<Optional<InventoryProduct>> actualInventoryProducts = inventoryProductMapper.findInventoryByProductId(productId);
+        assertNotNull(actualInventoryProducts);
+        assertThat(actualInventoryProducts).hasSize(2);
+    }
 
     @Test
     @Transactional
