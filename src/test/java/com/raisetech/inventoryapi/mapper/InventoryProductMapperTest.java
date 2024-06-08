@@ -46,6 +46,7 @@ class InventoryProductMapperTest {
 
     @Test
     @Transactional
+    @ExpectedDataSet(value = "/dataset/expectedInventoryProductId1.yml", ignoreCols = {"history"})
     void 商品IDと一致する在庫情報を取得できること() {
         int productId = 1;
         InventoryProduct inventoryProduct = new InventoryProduct();
