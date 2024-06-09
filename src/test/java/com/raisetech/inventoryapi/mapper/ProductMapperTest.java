@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
@@ -25,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @MybatisTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DBRider
-@DataSet(value = {"products.yml", "inventoryProducts.yml"})
+@DataSet(value = {"products.yml", "inventoryProducts.yml"}, executeScriptsBefore = {"reset-id.sql", "reset-inventoryProductId.sql"}, cleanAfter = true, transactional = true)
 class ProductMapperTest {
 
     @Autowired
@@ -51,10 +50,7 @@ class ProductMapperTest {
     }
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-products.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
+    @DataSet(value = "empty-products.yml")
     @Transactional
     void レコードが存在しないときに取得されるListが空であること() {
         List<Product> products = productMapper.findAll();
@@ -156,11 +152,13 @@ class ProductMapperTest {
     @Transactional
     void 指定した商品IDの在庫がゼロ個の場合在庫履歴を取得できること() {
         List<InventoryHistory> inventoryHistory = productMapper.findHistoriesByProductId(3);
-        OffsetDateTime expectedDateTime = OffsetDateTime.parse("2024-05-11T19:13:10+09:00");
+        OffsetDateTime expectedDateTime = OffsetDateTime.parse("2024-05-10T12:58:10+09:00");
+        OffsetDateTime expectedDateTime2 = OffsetDateTime.parse("2024-05-11T12:58:10+09:00");
         assertThat(inventoryHistory)
-                .hasSize(1)
+                .hasSize(2)
                 .contains(
-                        new InventoryHistory(3, 3, "Gear", 0, expectedDateTime)
+                        new InventoryHistory(3, 3, "Gear", 500, expectedDateTime),
+                        new InventoryHistory(4, 3, "Gear", -500, expectedDateTime2)
                 );
     }
 
