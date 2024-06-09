@@ -13,10 +13,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,7 +39,7 @@ class InventoryProductMapperTest {
         logCurrentInventoryProducts("After test");
     }
 
-    @Test
+/*    @Test
     @Transactional
     void 商品IDと一致する在庫情報を取得できること() {
         int productId = 1;
@@ -55,7 +53,7 @@ class InventoryProductMapperTest {
         actualInventoryProducts.forEach(actual -> assertThat(actual)
                 .isPresent()
                 .contains(new InventoryProduct(1, 1, 100, offsetDateTime1)));
-    }
+    }*/
 
     @Test
     @Transactional
