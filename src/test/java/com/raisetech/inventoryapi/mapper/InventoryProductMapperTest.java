@@ -1,5 +1,6 @@
 package com.raisetech.inventoryapi.mapper;
 
+import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.raisetech.inventoryapi.entity.InventoryProduct;
@@ -10,7 +11,6 @@ import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
@@ -23,10 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @MybatisTest
 @DBRider
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Sql(
-        scripts = {"classpath:/reset-id.sql", "classpath:/delete-products.sql", "classpath:/insert-products.sql", "classpath:/reset-inventoryProductId.sql", "classpath:/delete-inventory-products.sql", "classpath:/insert-inventory-products.sql"},
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-)
+@DataSet(value = {"products.yml", "inventoryProducts.yml"}, executeScriptsBefore = {"reset-id.sql", "reset-inventoryProductId.sql"}, cleanAfter = true, transactional = true)
 class InventoryProductMapperTest {
     @Autowired
     InventoryProductMapper inventoryProductMapper;
