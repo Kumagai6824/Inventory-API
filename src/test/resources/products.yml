@@ -4,4 +4,6 @@ products:
   - id: 2
     name: "Washer"
   - id: 3
-    name: "Test"
+    name: "Gear"
+  - id: 4
+    name: "Shaft"
