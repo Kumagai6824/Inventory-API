@@ -64,7 +64,12 @@ public class UserRestApiIntegrationTest {
                             },
                             {
                                "id":3,
-                               "name":"Test",
+                               "name":"Gear",
+                               "deletedAt":null
+                            },
+                            {
+                               "id":4,
+                               "name":"Shaft",
                                "deletedAt":null
                             }
                          ]           
@@ -410,14 +415,14 @@ public class UserRestApiIntegrationTest {
                             {
                                "id": 3,
                                "productId": %s,
-                               "name": "Test",
+                               "name": "Gear",
                                "quantity": 500,
                                "history": "2024-05-10T12:58:10+09:00"
                             },
                             {
                                "id": 4,
                                "productId": %s,
-                               "name": "Test",
+                               "name": "Gear",
                                "quantity": -500,
                                "history": "2024-05-11T12:58:10+09:00"
                             }
