@@ -13,12 +13,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @MybatisTest
 @DBRider
@@ -46,20 +46,18 @@ class InventoryProductMapperTest {
 
     @Test
     @Transactional
-    @ExpectedDataSet(value = "/dataset/expectedInventoryProductId1.yml", ignoreCols = {"history"})
     void 商品IDと一致する在庫情報を取得できること() {
         int productId = 1;
-        InventoryProduct inventoryProduct = new InventoryProduct();
-        inventoryProduct.setProductId(productId);
-        inventoryProduct.setQuantity(500);
-        inventoryProductMapper.createInventoryProduct(inventoryProduct);
-
-        int id = inventoryProduct.getId();
-        assertNotNull(id);
 
         List<Optional<InventoryProduct>> actualInventoryProducts = inventoryProductMapper.findInventoryByProductId(productId);
-        assertNotNull(actualInventoryProducts);
-        assertThat(actualInventoryProducts).hasSize(2);
+        assertThat(actualInventoryProducts).isNotNull();
+
+        OffsetDateTime offsetDateTime1 = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
+        InventoryProduct expectedProduct = new InventoryProduct(1, 1, 100, offsetDateTime1);
+
+        actualInventoryProducts.forEach(actual -> assertThat(actual)
+                .isPresent()
+                .contains(new InventoryProduct(1, 1, 100, offsetDateTime1)));
     }
 
     @Test
