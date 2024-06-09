@@ -1,5 +1,7 @@
 package com.raisetech.inventoryapi.mapper;
 
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.spring.api.DBRider;
 import com.raisetech.inventoryapi.entity.InventoryHistory;
 import com.raisetech.inventoryapi.entity.Product;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,10 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @MybatisTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Sql(
-        scripts = {"classpath:/delete-inventory-products.sql", "classpath:/delete-products.sql", "classpath:/insert-products.sql", "classpath:/insert-inventory-products.sql"},
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-)
+@DBRider
+@DataSet(value = {"products.yml", "inventoryProducts.yml"})
 class ProductMapperTest {
 
     @Autowired
@@ -79,17 +79,15 @@ class ProductMapperTest {
 
 
     @Test
-    @Sql(
-            scripts = {"classpath:/delete-products.sql", "classpath:/reset-id.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
     @Transactional
     void 登録処理が完了して商品情報と新しく採番されたIDが設定されること() {
         Product product = new Product();
         product.setName("Gear1");
         productMapper.createProduct(product);
-        assertNotNull(product.getId());
-        assertThat(productMapper.findById(1)).contains(new Product(1, "Gear1", null));
+
+        int productId = product.getId();
+        assertNotNull(productId);
+        assertThat(productMapper.findById(productId)).contains(new Product(productId, "Gear1", null));
     }
 
     @Test
