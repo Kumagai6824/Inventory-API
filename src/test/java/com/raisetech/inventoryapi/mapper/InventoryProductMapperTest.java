@@ -39,22 +39,6 @@ class InventoryProductMapperTest {
         logCurrentInventoryProducts("After test");
     }
 
-/*    @Test
-    @Transactional
-    void 商品IDと一致する在庫情報を取得できること() {
-        int productId = 1;
-
-        List<Optional<InventoryProduct>> actualInventoryProducts = inventoryProductMapper.findInventoryByProductId(productId);
-        assertThat(actualInventoryProducts).isNotNull();
-
-        OffsetDateTime offsetDateTime1 = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
-        InventoryProduct expectedProduct = new InventoryProduct(1, 1, 100, offsetDateTime1);
-
-        actualInventoryProducts.forEach(actual -> assertThat(actual)
-                .isPresent()
-                .contains(new InventoryProduct(1, 1, 100, offsetDateTime1)));
-    }*/
-
     @Test
     @Transactional
     void 合計在庫数が取得できること() {
