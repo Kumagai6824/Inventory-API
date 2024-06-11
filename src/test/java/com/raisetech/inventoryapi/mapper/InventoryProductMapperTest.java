@@ -5,6 +5,7 @@ import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +39,41 @@ class InventoryProductMapperTest {
     @AfterEach
     void tearDown() {
         logCurrentInventoryProducts("After test");
+    }
+
+    @Test
+    @Transactional
+    void 指定した商品IDの在庫情報を取得できること() {
+        int productId = 3;
+        List<InventoryProduct> actualInventoryProducts = inventoryProductMapper.findInventoryByProductId(productId);
+
+        OffsetDateTime dateTime = OffsetDateTime.parse("2024-05-10T12:58:10+09:00");
+        OffsetDateTime dateTime2 = OffsetDateTime.parse("2024-05-11T12:58:10+09:00");
+
+        assertThat(actualInventoryProducts)
+                .hasSize(2)
+                .containsExactly(
+                        new InventoryProduct(3, productId, 500, dateTime),
+                        new InventoryProduct(4, productId, -500, dateTime2)
+                );
+    }
+
+    @Test
+    @Transactional
+    void 指定した商品IDの在庫が未登録のとき空を返すこと() {
+        int productId = 4;
+        List<InventoryProduct> actualInventoryProducts = inventoryProductMapper.findInventoryByProductId(productId);
+        Assertions.assertNotNull(actualInventoryProducts);
+        assertThat(actualInventoryProducts).isEmpty();
+    }
+
+    @Test
+    @Transactional
+    void 存在しない商品IDで在庫取得処理したとき空を返すこと() {
+        int productId = 0;
+        List<InventoryProduct> actualInventoryProducts = inventoryProductMapper.findInventoryByProductId(productId);
+        Assertions.assertNotNull(actualInventoryProducts);
+        assertThat(actualInventoryProducts).isEmpty();
     }
 
     @Test
