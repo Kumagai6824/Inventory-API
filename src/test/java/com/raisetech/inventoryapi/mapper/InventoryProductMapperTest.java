@@ -1,7 +1,6 @@
 package com.raisetech.inventoryapi.mapper;
 
 import com.github.database.rider.core.api.dataset.DataSet;
-import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 import org.junit.jupiter.api.AfterEach;
@@ -93,7 +92,6 @@ class InventoryProductMapperTest {
     }
 
     @Test
-    @ExpectedDataSet(value = "/dataset/expectedCreatedInventoryProducts.yml", ignoreCols = {"history"})
     @Transactional
     void 登録した在庫情報と新しく採番されたIDが設定されること() {
         int productId = 1;
@@ -101,6 +99,21 @@ class InventoryProductMapperTest {
         inventoryProduct.setProductId(productId);
         inventoryProduct.setQuantity(500);
         inventoryProductMapper.createInventoryProduct(inventoryProduct);
+
+        int id = inventoryProduct.getId();
+        Assertions.assertNotNull(id);
+
+        List<InventoryProduct> actualInventoryProducts = inventoryProductMapper.findInventoryByProductId(productId);
+
+        OffsetDateTime dateTime1 = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
+        OffsetDateTime dateTime2 = actualInventoryProducts.get(1).getHistory();
+
+        Assertions.assertNotNull(dateTime2);
+        assertThat(actualInventoryProducts)
+                .hasSize(2)
+                .containsExactly(new InventoryProduct(1, productId, 100, dateTime1),
+                        new InventoryProduct(id, productId, 500, dateTime2));
+
     }
 
     private void logCurrentInventoryProducts(String phase) {
