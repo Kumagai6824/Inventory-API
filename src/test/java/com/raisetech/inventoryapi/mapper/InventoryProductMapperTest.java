@@ -1,23 +1,79 @@
 package com.raisetech.inventoryapi.mapper;
 
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.spring.api.DBRider;
+import com.raisetech.inventoryapi.entity.InventoryProduct;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.test.context.jdbc.Sql;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @MybatisTest
+@DBRider
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Sql(
-        scripts = {"classpath:/delete-products.sql", "classpath:/insert-products.sql", "classpath:/delete-inventory-products.sql", "classpath:/insert-inventory-products.sql"},
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-)
+@DataSet(value = {"products.yml", "inventoryProducts.yml"}, executeScriptsBefore = {"reset-id.sql", "reset-inventoryProductId.sql"}, cleanAfter = true, transactional = true)
 class InventoryProductMapperTest {
     @Autowired
     InventoryProductMapper inventoryProductMapper;
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setUp() {
+        logCurrentInventoryProducts("Before test");
+    }
+
+    @AfterEach
+    void tearDown() {
+        logCurrentInventoryProducts("After test");
+    }
+
+    @Test
+    @Transactional
+    void 指定した商品IDの在庫情報を取得できること() {
+        int productId = 3;
+        List<InventoryProduct> actualInventoryProducts = inventoryProductMapper.findInventoryByProductId(productId);
+
+        OffsetDateTime dateTime = OffsetDateTime.parse("2024-05-10T12:58:10+09:00");
+        OffsetDateTime dateTime2 = OffsetDateTime.parse("2024-05-11T12:58:10+09:00");
+
+        assertThat(actualInventoryProducts)
+                .hasSize(2)
+                .containsExactly(
+                        new InventoryProduct(3, productId, 500, dateTime),
+                        new InventoryProduct(4, productId, -500, dateTime2)
+                );
+    }
+
+    @Test
+    @Transactional
+    void 指定した商品IDの在庫が未登録のとき空を返すこと() {
+        int productId = 4;
+        List<InventoryProduct> actualInventoryProducts = inventoryProductMapper.findInventoryByProductId(productId);
+        Assertions.assertNotNull(actualInventoryProducts);
+        assertThat(actualInventoryProducts).isEmpty();
+    }
+
+    @Test
+    @Transactional
+    void 存在しない商品IDで在庫取得処理したとき空を返すこと() {
+        int productId = 0;
+        List<InventoryProduct> actualInventoryProducts = inventoryProductMapper.findInventoryByProductId(productId);
+        Assertions.assertNotNull(actualInventoryProducts);
+        assertThat(actualInventoryProducts).isEmpty();
+    }
 
     @Test
     @Transactional
@@ -33,6 +89,39 @@ class InventoryProductMapperTest {
         int id = 0;
         Integer quantity = inventoryProductMapper.getQuantityByProductId(id);
         assertThat(quantity).isEqualTo(0);
+    }
+
+    @Test
+    @Transactional
+    void 登録した在庫情報と新しく採番されたIDが設定されること() {
+        int productId = 1;
+        InventoryProduct inventoryProduct = new InventoryProduct();
+        inventoryProduct.setProductId(productId);
+        inventoryProduct.setQuantity(500);
+        inventoryProductMapper.createInventoryProduct(inventoryProduct);
+
+        int id = inventoryProduct.getId();
+        Assertions.assertNotNull(id);
+
+        List<InventoryProduct> actualInventoryProducts = inventoryProductMapper.findInventoryByProductId(productId);
+
+        OffsetDateTime dateTime1 = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
+        OffsetDateTime dateTime2 = actualInventoryProducts.get(1).getHistory();
+
+        Assertions.assertNotNull(dateTime2);
+        assertThat(actualInventoryProducts)
+                .hasSize(2)
+                .containsExactly(new InventoryProduct(1, productId, 100, dateTime1),
+                        new InventoryProduct(id, productId, 500, dateTime2));
+
+    }
+
+    private void logCurrentInventoryProducts(String phase) {
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList("SELECT * FROM inventoryProducts");
+        System.out.println(phase + " - Current inventoryProducts:");
+        for (Map<String, Object> row : rows) {
+            System.out.println(row);
+        }
     }
 
 }
