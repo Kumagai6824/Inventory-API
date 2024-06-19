@@ -1,6 +1,7 @@
 package com.raisetech.inventoryapi.mapper;
 
 import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 import org.junit.jupiter.api.AfterEach;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @MybatisTest
 @DBRider
@@ -122,6 +125,17 @@ class InventoryProductMapperTest {
         for (Map<String, Object> row : rows) {
             System.out.println(row);
         }
+    }
+
+    @Test
+    @ExpectedDataSet(value = "/inventoryProducts.yml")
+    @Transactional
+    void 存在しない商品IDで在庫登録時登録されないこと() {
+        int productId = 0;
+        InventoryProduct inventoryProduct = new InventoryProduct();
+        inventoryProduct.setProductId(productId);
+        inventoryProduct.setQuantity(500);
+        assertThatThrownBy(() -> inventoryProductMapper.createInventoryProduct(inventoryProduct)).isInstanceOf(DataIntegrityViolationException.class);
     }
 
 }
