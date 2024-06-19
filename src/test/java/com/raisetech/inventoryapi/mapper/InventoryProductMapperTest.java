@@ -4,20 +4,16 @@ import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.raisetech.inventoryapi.entity.InventoryProduct;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -29,19 +25,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class InventoryProductMapperTest {
     @Autowired
     InventoryProductMapper inventoryProductMapper;
-
-    @Autowired
-    JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setUp() {
-        logCurrentInventoryProducts("Before test");
-    }
-
-    @AfterEach
-    void tearDown() {
-        logCurrentInventoryProducts("After test");
-    }
 
     @Test
     @Transactional
@@ -117,14 +100,6 @@ class InventoryProductMapperTest {
                 .containsExactly(new InventoryProduct(1, productId, 100, dateTime1),
                         new InventoryProduct(id, productId, 500, dateTime2));
 
-    }
-
-    private void logCurrentInventoryProducts(String phase) {
-        List<Map<String, Object>> rows = jdbcTemplate.queryForList("SELECT * FROM inventoryProducts");
-        System.out.println(phase + " - Current inventoryProducts:");
-        for (Map<String, Object> row : rows) {
-            System.out.println(row);
-        }
     }
 
     @Test
