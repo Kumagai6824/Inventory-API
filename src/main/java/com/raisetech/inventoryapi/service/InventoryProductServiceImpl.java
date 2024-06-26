@@ -27,6 +27,8 @@ public class InventoryProductServiceImpl implements InventoryProductService {
 
     @Override
     public void receivingInventoryProduct(InventoryProduct inventoryProduct) {
+        validateCreatedQuantity(inventoryProduct.getQuantity());
+
         int productId = inventoryProduct.getProductId();
         Optional<Product> productOptional = productMapper.findById(productId);
 
@@ -36,6 +38,13 @@ public class InventoryProductServiceImpl implements InventoryProductService {
         }
 
         inventoryProductMapper.createInventoryProduct(inventoryProduct);
+    }
+
+    @Override
+    public void validateCreatedQuantity(int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero");
+        }
     }
 
 }
