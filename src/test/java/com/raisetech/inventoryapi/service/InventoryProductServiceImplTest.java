@@ -76,4 +76,17 @@ class InventoryProductServiceImplTest {
                 .hasMessage("Product ID:" + productId + " does not exist");
 
     }
+
+    @Test
+    public void 数量ゼロ個で在庫登録時に例外をスローすること() throws Exception {
+        int productId = 1;
+        int quantity = 0;
+        InventoryProduct inventoryProduct = new InventoryProduct();
+        inventoryProduct.setProductId(productId);
+        inventoryProduct.setQuantity(quantity);
+
+        assertThatThrownBy(() -> inventoryProductServiceImpl.receivingInventoryProduct(inventoryProduct))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Quantity must be greater than zero");
+    }
 }
