@@ -7,5 +7,4 @@ public interface InventoryProductService {
 
     void receivingInventoryProduct(InventoryProduct inventoryProduct);
 
-    void validateCreatedQuantity(int quantity);
 }
