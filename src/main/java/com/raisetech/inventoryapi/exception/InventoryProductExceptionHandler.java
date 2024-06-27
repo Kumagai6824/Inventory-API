@@ -26,9 +26,9 @@ public class InventoryProductExceptionHandler {
         return new ResponseEntity(body, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(value = InvalidRequestException.class)
+    @ExceptionHandler(value = InvalidInputException.class)
     public ResponseEntity<Map<String, String>> handleInvalidRequest(
-            InvalidRequestException e, HttpServletRequest request
+            InvalidInputException e, HttpServletRequest request
     ) {
 
         Map<String, String> body = Map.of(

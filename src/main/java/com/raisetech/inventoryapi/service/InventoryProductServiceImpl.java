@@ -2,7 +2,7 @@ package com.raisetech.inventoryapi.service;
 
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 import com.raisetech.inventoryapi.entity.Product;
-import com.raisetech.inventoryapi.exception.InvalidRequestException;
+import com.raisetech.inventoryapi.exception.InvalidInputException;
 import com.raisetech.inventoryapi.exception.ResourceNotFoundException;
 import com.raisetech.inventoryapi.mapper.InventoryProductMapper;
 import com.raisetech.inventoryapi.mapper.ProductMapper;
@@ -29,7 +29,7 @@ public class InventoryProductServiceImpl implements InventoryProductService {
     @Override
     public void receivingInventoryProduct(InventoryProduct inventoryProduct) {
         if (inventoryProduct.getQuantity() <= 0) {
-            throw new InvalidRequestException("Quantity must be greater than zero");
+            throw new InvalidInputException("Quantity must be greater than zero");
         }
 
         int productId = inventoryProduct.getProductId();

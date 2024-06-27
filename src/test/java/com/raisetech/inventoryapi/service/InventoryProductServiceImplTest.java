@@ -2,7 +2,7 @@ package com.raisetech.inventoryapi.service;
 
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 import com.raisetech.inventoryapi.entity.Product;
-import com.raisetech.inventoryapi.exception.InvalidRequestException;
+import com.raisetech.inventoryapi.exception.InvalidInputException;
 import com.raisetech.inventoryapi.exception.ResourceNotFoundException;
 import com.raisetech.inventoryapi.mapper.InventoryProductMapper;
 import com.raisetech.inventoryapi.mapper.ProductMapper;
@@ -87,7 +87,7 @@ class InventoryProductServiceImplTest {
         inventoryProduct.setQuantity(quantity);
 
         assertThatThrownBy(() -> inventoryProductServiceImpl.receivingInventoryProduct(inventoryProduct))
-                .isInstanceOf(InvalidRequestException.class)
+                .isInstanceOf(InvalidInputException.class)
                 .hasMessage("Quantity must be greater than zero");
     }
 }
