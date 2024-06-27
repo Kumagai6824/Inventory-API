@@ -6,4 +6,5 @@ public interface InventoryProductService {
     Integer getQuantityByProductId(int productId);
 
     void receivingInventoryProduct(InventoryProduct inventoryProduct);
+
 }
