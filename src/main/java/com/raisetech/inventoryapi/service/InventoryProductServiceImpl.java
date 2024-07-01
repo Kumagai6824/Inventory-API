@@ -43,4 +43,23 @@ public class InventoryProductServiceImpl implements InventoryProductService {
         inventoryProductMapper.createInventoryProduct(inventoryProduct);
     }
 
+    @Override
+    public void shippingInventoryProduct(InventoryProduct inventoryProduct) {
+        int quantity = inventoryProduct.getQuantity();
+        if (quantity <= 0) {
+            throw new InvalidInputException("Quantity must be greater than zero");
+        }
+
+        int productId = inventoryProduct.getProductId();
+        Optional<Product> productOptional = productMapper.findById(productId);
+
+        Product product = productOptional.orElseThrow(() -> new ResourceNotFoundException("Product ID:" + productId + " does not exist"));
+        if (product.getDeletedAt() != null) {
+            throw new ResourceNotFoundException("Product ID:" + productId + " does not exist");
+        }
+
+        inventoryProduct.setQuantity(quantity * (-1));
+        inventoryProductMapper.createInventoryProduct(inventoryProduct);
+    }
+
 }

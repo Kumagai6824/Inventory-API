@@ -7,4 +7,6 @@ public interface InventoryProductService {
 
     void receivingInventoryProduct(InventoryProduct inventoryProduct);
 
+    void shippingInventoryProduct(InventoryProduct inventoryProduct);
+
 }
