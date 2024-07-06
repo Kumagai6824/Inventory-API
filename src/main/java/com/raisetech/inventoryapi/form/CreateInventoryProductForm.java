@@ -4,13 +4,11 @@ import com.raisetech.inventoryapi.entity.InventoryProduct;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 public class CreateInventoryProductForm {
     private int productId;
-    
+
     @NotNull
     @Min(1)
     private Integer quantity;
