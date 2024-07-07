@@ -448,7 +448,7 @@ public class UserRestApiIntegrationTest {
     }
 
     @Test
-    @DataSet(value = {"products.yml", "inventoryProducts.yml"}, executeScriptsBefore = {"reset-inventoryProductId.sql"})
+    @DataSet(value = {"products.yml", "inventoryProducts.yml"}, executeScriptsBefore = {"reset-id.sql", "reset-inventoryProductId.sql"}, cleanBefore = true, transactional = true)
     @ExpectedDataSet(value = "/dataset/expectedReceivedInventoryProducts.yml", ignoreCols = "history")
     @Transactional
     void 入庫処理ができ201を返しレコードが登録されていること() throws Exception {
