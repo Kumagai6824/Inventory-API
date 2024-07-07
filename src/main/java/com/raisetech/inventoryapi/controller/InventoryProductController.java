@@ -1,11 +1,14 @@
 package com.raisetech.inventoryapi.controller;
 
+import com.raisetech.inventoryapi.entity.InventoryProduct;
+import com.raisetech.inventoryapi.form.CreateInventoryProductForm;
 import com.raisetech.inventoryapi.service.InventoryProductService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Map;
 
 @RestController
@@ -24,5 +27,17 @@ public class InventoryProductController {
             int product_id) {
         Integer quantity = inventoryProductService.getQuantityByProductId(product_id);
         return Map.of("quantity", quantity);
+    }
+
+    @PostMapping("/inventory-products/received-items")
+    public ResponseEntity<Map<String, String>> receivingInventoryProduct
+            (@RequestBody @Validated CreateInventoryProductForm from, UriComponentsBuilder uriComponentsBuilder) {
+        InventoryProduct entity = from.convertToInventoryProductEntity();
+        inventoryProductService.receivingInventoryProduct(entity);
+
+        int id = entity.getId();
+        URI url = uriComponentsBuilder.path("/inventory-products/received-items/" + id).build().toUri();
+        return ResponseEntity.created(url).
+                body(Map.of("message", "item was successfully received"));
     }
 }

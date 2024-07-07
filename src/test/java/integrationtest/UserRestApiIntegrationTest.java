@@ -6,6 +6,7 @@ import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.jayway.jsonpath.JsonPath;
 import com.raisetech.inventoryapi.Work09Application;
+import com.raisetech.inventoryapi.entity.InventoryProduct;
 import com.raisetech.inventoryapi.entity.Product;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -444,5 +445,79 @@ public class UserRestApiIntegrationTest {
         assertEquals("/products/" + productId + "/histories", JsonPath.read(response, "$.path"));
         assertEquals("Not Found", JsonPath.read(response, "$.error"));
         assertEquals("resource not found with id: " + productId, JsonPath.read(response, "$.message"));
+    }
+
+    @Test
+    @DataSet(value = {"products.yml", "inventoryProducts.yml"}, executeScriptsBefore = {"reset-id.sql", "reset-inventoryProductId.sql"}, cleanBefore = true, transactional = true)
+    @ExpectedDataSet(value = "/dataset/expectedReceivedInventoryProducts.yml", ignoreCols = "history")
+    @Transactional
+    void 入庫処理ができ201を返しレコードが登録されていること() throws Exception {
+        InventoryProduct request = new InventoryProduct();
+        request.setProductId(1);
+        request.setQuantity(1000);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
+        String response = mockMvc.perform(MockMvcRequestBuilders.post("/inventory-products/received-items")
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andReturn().getResponse().getContentAsString((StandardCharsets.UTF_8));
+
+        JSONAssert.assertEquals("""
+                        {
+                           "message":"item was successfully received"
+                        }
+                        """
+                , response, JSONCompareMode.STRICT);
+    }
+
+    @Transactional
+    @DataSet(value = {"products.yml", "inventoryProducts.yml"})
+    @ParameterizedTest
+    @ValueSource(ints = {0, -500})
+    void 入庫処理時の数量が0以下の場合400を返すこと(int quantity) throws Exception {
+        InventoryProduct request = new InventoryProduct();
+        request.setProductId(1);
+        request.setQuantity(quantity);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
+        String responseActual = mockMvc.perform(MockMvcRequestBuilders.post("/inventory-products/received-items")
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        String responseExpected = """
+                {
+                   "status":"BAD_REQUEST",
+                   "message":"Bad request",
+                   "errors":[
+                      {
+                         "field":"quantity",
+                         "message":"must be greater than or equal to 1"
+                      }
+                   ]
+                }
+                """;
+
+        JSONAssert.assertEquals(responseExpected, responseActual, JSONCompareMode.STRICT);
+    }
+
+    @Test
+    @Transactional
+    @DataSet(value = {"products.yml", "inventoryProducts.yml"})
+    void 存在しない商品IDで入庫処理時に404を返すこと() throws Exception {
+        int productId = 0;
+        InventoryProduct request = new InventoryProduct();
+        request.setProductId(productId);
+        request.setQuantity(500);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
+        String response = mockMvc.perform(MockMvcRequestBuilders.post("/inventory-products/received-items")
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        assertEquals("/inventory-products/received-items", JsonPath.read(response, "$.path"));
+        assertEquals("Not Found", JsonPath.read(response, "$.error"));
+        assertEquals("Product ID:" + productId + " does not exist", JsonPath.read(response, "$.message"));
     }
 }
