@@ -38,13 +38,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @AutoConfigureMockMvc
 @DBRider
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@DataSet(value = {"products.yml", "inventoryProducts.yml"}, executeScriptsBefore = {"reset-id.sql", "reset-inventoryProductId.sql"}, cleanBefore = true, transactional = true)
 public class UserRestApiIntegrationTest {
 
     @Autowired
     MockMvc mockMvc;
 
     @Test
-    @DataSet(value = "products.yml")
     @Transactional
     void 商品情報が全件取得できること() throws Exception {
         String response = mockMvc.perform(MockMvcRequestBuilders.get("/products"))
@@ -80,7 +80,6 @@ public class UserRestApiIntegrationTest {
     }
 
     @Test
-    @DataSet(value = "products.yml")
     @Transactional
     void 指定したIDの商品情報を取得できること() throws Exception {
         String response = mockMvc.perform(MockMvcRequestBuilders.get("/products/1"))
@@ -99,7 +98,6 @@ public class UserRestApiIntegrationTest {
     }
 
     @Transactional
-    @DataSet(value = "products.yml")
     @ParameterizedTest
     @ValueSource(ints = {0, 100})
     void 存在しないIDを指定した際期待通り404を返すこと(int productId) throws Exception {
@@ -114,9 +112,8 @@ public class UserRestApiIntegrationTest {
 
     @Test
     @Transactional
-    @DataSet(value = "products.yml")
     void 削除したIDを指定した際404を返すこと() throws Exception {
-        int productId = 1;
+        int productId = 3;
         mockMvc.perform(MockMvcRequestBuilders.delete("/products/" + productId));
         String response = mockMvc.perform(MockMvcRequestBuilders.get("/products/" + productId))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
@@ -128,7 +125,6 @@ public class UserRestApiIntegrationTest {
     }
 
     @Test
-    @DataSet(value = "products.yml")
     @Transactional
     void 新規商品を登録でき201を返すこと() throws Exception {
         Product request = new Product("Shaft");
@@ -148,7 +144,6 @@ public class UserRestApiIntegrationTest {
     }
 
     @Test
-    @DataSet(value = "products.yml")
     @Transactional
     void 新規登録後DBにレコードが登録されていること() throws Exception {
         Product request = new Product("Shaft");
@@ -174,7 +169,6 @@ public class UserRestApiIntegrationTest {
     }
 
     @Transactional
-    @DataSet(value = "products.yml")
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"1234567890123456789012345678901"})
@@ -256,7 +250,6 @@ public class UserRestApiIntegrationTest {
     }
 
     @Test
-    @DataSet(value = "products.yml")
     @ExpectedDataSet(value = {"/dataset/expectedUpdatedProducts.yml"}, ignoreCols = {"id"})
     @Transactional
     void 商品を更新後DBに更新されたレコードがあり200を返すこと() throws Exception {
@@ -279,7 +272,6 @@ public class UserRestApiIntegrationTest {
 
     @Test
     @Transactional
-    @DataSet(value = "products.yml")
     void 商品更新時存在しないIDを指定した際に404を返すこと() throws Exception {
         Product request = new Product("Shaft");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -297,12 +289,11 @@ public class UserRestApiIntegrationTest {
 
     @Test
     @Transactional
-    @DataSet(value = "products.yml")
     void 削除した商品を更新した際に404を返すこと() throws Exception {
         Product request = new Product("Shaft");
         ObjectMapper objectMapper = new ObjectMapper();
         String requestJson = objectMapper.writeValueAsString((request));
-        int productId = 1;
+        int productId = 3;
         mockMvc.perform(MockMvcRequestBuilders.delete("/products/" + productId));
         String response = mockMvc.perform(MockMvcRequestBuilders.patch("/products/" + productId)
                         .content(requestJson).contentType(MediaType.APPLICATION_JSON))
@@ -365,7 +356,6 @@ public class UserRestApiIntegrationTest {
 
     @Test
     @Transactional
-    @DataSet(value = "products.yml")
     void 商品削除時存在しないIDを指定した際に404を返すこと() throws Exception {
         int id = 0;
         String response = mockMvc.perform(MockMvcRequestBuilders.delete("/products/" + id))
@@ -378,7 +368,6 @@ public class UserRestApiIntegrationTest {
     }
 
     @Test
-    @DataSet(value = {"products.yml", "inventoryProducts.yml"})
     @Transactional
     void 指定した商品IDの在庫履歴を全件取得できること() throws Exception {
         String response = mockMvc.perform(MockMvcRequestBuilders.get("/products/1/histories"))
@@ -401,7 +390,6 @@ public class UserRestApiIntegrationTest {
     }
 
     @Test
-    @DataSet(value = {"products.yml", "inventoryProducts.yml"})
     @Transactional
     void 削除済み商品IDの在庫履歴を全件取得できること() throws Exception {
         int productId = 3;
@@ -434,7 +422,6 @@ public class UserRestApiIntegrationTest {
     }
 
     @Test
-    @DataSet(value = {"products.yml", "inventoryProducts.yml"})
     @Transactional
     void 存在しない商品IDで在庫履歴取得時404を返すこと() throws Exception {
         int productId = 0;
@@ -448,7 +435,6 @@ public class UserRestApiIntegrationTest {
     }
 
     @Test
-    @DataSet(value = {"products.yml", "inventoryProducts.yml"}, executeScriptsBefore = {"reset-id.sql", "reset-inventoryProductId.sql"}, cleanBefore = true, transactional = true)
     @ExpectedDataSet(value = "/dataset/expectedReceivedInventoryProducts.yml", ignoreCols = "history")
     @Transactional
     void 入庫処理ができ201を返しレコードが登録されていること() throws Exception {
@@ -471,7 +457,6 @@ public class UserRestApiIntegrationTest {
     }
 
     @Transactional
-    @DataSet(value = {"products.yml", "inventoryProducts.yml"})
     @ParameterizedTest
     @ValueSource(ints = {0, -500})
     void 入庫処理時の数量が0以下の場合400を返すこと(int quantity) throws Exception {
@@ -503,7 +488,6 @@ public class UserRestApiIntegrationTest {
 
     @Test
     @Transactional
-    @DataSet(value = {"products.yml", "inventoryProducts.yml"})
     void 存在しない商品IDで入庫処理時に404を返すこと() throws Exception {
         int productId = 0;
         InventoryProduct request = new InventoryProduct();
