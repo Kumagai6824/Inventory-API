@@ -3,6 +3,7 @@ package com.raisetech.inventoryapi.service;
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 import com.raisetech.inventoryapi.entity.Product;
 import com.raisetech.inventoryapi.exception.InvalidInputException;
+import com.raisetech.inventoryapi.exception.InventoryShortageException;
 import com.raisetech.inventoryapi.exception.ResourceNotFoundException;
 import com.raisetech.inventoryapi.mapper.InventoryProductMapper;
 import com.raisetech.inventoryapi.mapper.ProductMapper;
@@ -105,6 +106,7 @@ class InventoryProductServiceImplTest {
 
         doReturn(product).when(productMapper).findById(productId);
         doNothing().when(inventoryProductMapper).createInventoryProduct(inventoryProduct);
+        doReturn(quantity).when(inventoryProductMapper).getQuantityByProductId(productId);
         inventoryProductServiceImpl.shippingInventoryProduct(inventoryProduct);
 
         ArgumentCaptor<InventoryProduct> argument = ArgumentCaptor.forClass(InventoryProduct.class);
@@ -150,6 +152,9 @@ class InventoryProductServiceImplTest {
     @Test
     public void 数量ゼロ個で出庫時に例外をスローすること() throws Exception {
         int productId = 1;
+        Optional<Product> product = Optional.of(new Product(productId, "test", null));
+        doReturn(product).when(productMapper).findById(productId);
+
         int quantity = 0;
         InventoryProduct inventoryProduct = new InventoryProduct();
         inventoryProduct.setProductId(productId);
@@ -158,5 +163,24 @@ class InventoryProductServiceImplTest {
         assertThatThrownBy(() -> inventoryProductServiceImpl.shippingInventoryProduct(inventoryProduct))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("Quantity must be greater than zero");
+    }
+
+    @Test
+    public void 在庫数より多い数量で出庫時に例外をスローすること() throws Exception {
+        int productId = 1;
+        Optional<Product> product = Optional.of(new Product(productId, "test", null));
+        doReturn(product).when(productMapper).findById(productId);
+
+        int inventoryQuantity = 500;
+        doReturn(inventoryQuantity).when(inventoryProductMapper).getQuantityByProductId(productId);
+
+        int shippingQuantity = inventoryQuantity + 1;
+        InventoryProduct inventoryProduct = new InventoryProduct();
+        inventoryProduct.setProductId(productId);
+        inventoryProduct.setQuantity(shippingQuantity);
+
+        assertThatThrownBy(() -> inventoryProductServiceImpl.shippingInventoryProduct(inventoryProduct))
+                .isInstanceOf(InventoryShortageException.class)
+                .hasMessage("Inventory shortage, only " + inventoryQuantity + " items left");
     }
 }
