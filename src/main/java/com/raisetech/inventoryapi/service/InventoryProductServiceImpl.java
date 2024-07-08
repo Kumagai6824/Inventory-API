@@ -3,6 +3,7 @@ package com.raisetech.inventoryapi.service;
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 import com.raisetech.inventoryapi.entity.Product;
 import com.raisetech.inventoryapi.exception.InvalidInputException;
+import com.raisetech.inventoryapi.exception.InventoryShortageException;
 import com.raisetech.inventoryapi.exception.ResourceNotFoundException;
 import com.raisetech.inventoryapi.mapper.InventoryProductMapper;
 import com.raisetech.inventoryapi.mapper.ProductMapper;
@@ -45,11 +46,6 @@ public class InventoryProductServiceImpl implements InventoryProductService {
 
     @Override
     public void shippingInventoryProduct(InventoryProduct inventoryProduct) {
-        int quantity = inventoryProduct.getQuantity();
-        if (quantity <= 0) {
-            throw new InvalidInputException("Quantity must be greater than zero");
-        }
-
         int productId = inventoryProduct.getProductId();
         Optional<Product> productOptional = productMapper.findById(productId);
 
@@ -58,7 +54,18 @@ public class InventoryProductServiceImpl implements InventoryProductService {
             throw new ResourceNotFoundException("Product ID:" + productId + " does not exist");
         }
 
-        inventoryProduct.setQuantity(quantity * (-1));
+        int shippingQuantity = inventoryProduct.getQuantity();
+        int inventoryQuantity = this.inventoryProductMapper.getQuantityByProductId(inventoryProduct.getProductId());
+
+        if (shippingQuantity <= 0) {
+            throw new InvalidInputException("Quantity must be greater than zero");
+        } else {
+            if (shippingQuantity > inventoryQuantity) {
+                throw new InventoryShortageException("Inventory shortage, only " + inventoryQuantity + " items left");
+            }
+        }
+
+        inventoryProduct.setQuantity(shippingQuantity * (-1));
         inventoryProductMapper.createInventoryProduct(inventoryProduct);
     }
 
