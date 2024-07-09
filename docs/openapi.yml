@@ -388,6 +388,53 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/404NotFound'
+  /inventory-products/shipped-items:
+    post:
+      tags:
+        - InventoryProducts
+      summary: 出庫処理
+      operationId: shippingInventoryProducts
+      description: |
+        部品を出庫する
+      requestBody:
+        description: 出庫する部品情報
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostRequestBodyOfInventoryProduct'
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/201ShippedItem'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/400BadRequestOfCreateInventory'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/404NotFound'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/409ConflictOfShippingInventoryProduct'
 components:
   schemas:
     Products:
@@ -493,6 +540,14 @@ components:
         message:
           type: string
           example: 'item was successfully received'
+    201ShippedItem:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: 'item was successfully shipped'
     400BadRequest:
       type: object
       required:
@@ -608,3 +663,31 @@ components:
         message:
           type: string
           example: 'Cannot delete Product because the quantity is not 0'
+    409ConflictOfShippingInventoryProduct:
+      type: object
+      required:
+        - status
+        - path
+        - error
+        - timestamp
+        - message
+      properties:
+        status:
+          type: string
+          example:
+            '409'
+        path:
+          type: string
+          example: '/inventory-products/shipped-items'
+        error:
+          type: string
+          example:
+            'Conflict'
+        timestamp:
+          type: string
+          example:
+            '2024-03-26T22:19:19.376914800+09:00[Asia/Tokyo]'
+          format: date-time
+        message:
+          type: string
+          example: 'Inventory shortage, only 10 items left'
