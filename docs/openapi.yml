@@ -59,7 +59,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/201Created'
+                  $ref: '#/components/schemas/201CreatedProduct'
         '400':
           description: Bad Request
           content:
@@ -241,36 +241,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/400BadRequest'
-    post:
-      tags:
-        - InventoryProducts
-      summary: 在庫情報の登録
-      operationId: createInventoryItem
-      description: |
-        在庫情報を新規に登録する
-      requestBody:
-        description: 登録する部品情報
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/InventoryProducts'
-      responses:
-        '201':
-          description: created
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/201Created'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/400BadRequest'
   /inventory-products/{productId}:
     get:
       tags:
@@ -379,6 +349,92 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/404NotFound'
+  /inventory-products/received-items:
+    post:
+      tags:
+        - InventoryProducts
+      summary: 入庫処理
+      operationId: receivingInventoryProducts
+      description: |
+        部品を入庫する
+      requestBody:
+        description: 入庫する部品情報
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostRequestBodyOfInventoryProduct'
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/201ReceivedItem'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/400BadRequestOfCreateInventory'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/404NotFound'
+  /inventory-products/shipped-items:
+    post:
+      tags:
+        - InventoryProducts
+      summary: 出庫処理
+      operationId: shippingInventoryProducts
+      description: |
+        部品を出庫する
+      requestBody:
+        description: 出庫する部品情報
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostRequestBodyOfInventoryProduct'
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/201ShippedItem'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/400BadRequestOfCreateInventory'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/404NotFound'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/409ConflictOfShippingInventoryProduct'
 components:
   schemas:
     Products:
@@ -439,6 +495,18 @@ components:
           type: string
           example: '2020-01-31T23:59:59+09:00'
           format: date-time
+    PostRequestBodyOfInventoryProduct:
+      type: object
+      required:
+        - product_Id
+        - quantity
+      properties:
+        product_id:
+          type: integer
+          example: 1
+        quantity:
+          type: integer
+          example: 1000
     PatchRequestBody:
       type: object
       properties:
@@ -456,14 +524,30 @@ components:
         message:
           type: string
           example: 'Successful operation'
-    201Created:
+    201CreatedProduct:
       type: object
       required:
         - message
       properties:
         message:
           type: string
-          example: 'New inventory item was successfully created'
+          example: 'New product was successfully created'
+    201ReceivedItem:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: 'item was successfully received'
+    201ShippedItem:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: 'item was successfully shipped'
     400BadRequest:
       type: object
       required:
@@ -497,6 +581,31 @@ components:
                   message:
                     type: string
                     example: '0 から 30 の間のサイズにしてください'
+    400BadRequestOfCreateInventory:
+      type: object
+      required:
+        - status
+        - message
+        - errors
+      properties:
+        status:
+          type: string
+          example: 'BAD_REQUEST'
+        message:
+          type: string
+          example: 'Bad request'
+        errors:
+          type: array
+          items:
+            oneOf:
+              - type: object
+                properties:
+                  field:
+                    type: string
+                    example: 'quantity'
+                  message:
+                    type: string
+                    example: 'must be greater than or equal to 1'
 
     404NotFound:
       type: object
@@ -554,3 +663,31 @@ components:
         message:
           type: string
           example: 'Cannot delete Product because the quantity is not 0'
+    409ConflictOfShippingInventoryProduct:
+      type: object
+      required:
+        - status
+        - path
+        - error
+        - timestamp
+        - message
+      properties:
+        status:
+          type: string
+          example:
+            '409'
+        path:
+          type: string
+          example: '/inventory-products/shipped-items'
+        error:
+          type: string
+          example:
+            'Conflict'
+        timestamp:
+          type: string
+          example:
+            '2024-03-26T22:19:19.376914800+09:00[Asia/Tokyo]'
+          format: date-time
+        message:
+          type: string
+          example: 'Inventory shortage, only 10 items left'
