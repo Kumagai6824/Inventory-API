@@ -40,4 +40,16 @@ public class InventoryProductController {
         return ResponseEntity.created(url).
                 body(Map.of("message", "item was successfully received"));
     }
+
+    @PostMapping("/inventory-products/shipped-items")
+    public ResponseEntity<Map<String, String>> shippingInventoryProduct
+            (@RequestBody @Validated CreateInventoryProductForm form, UriComponentsBuilder uriComponentsBuilder) {
+        InventoryProduct entity = form.convertToInventoryProductEntity();
+        inventoryProductService.shippingInventoryProduct(entity);
+
+        int id = entity.getId();
+        URI url = uriComponentsBuilder.path("/inventory-products/shipped-items/" + id).build().toUri();
+        return ResponseEntity.created(url).
+                body(Map.of("message", "item was successfully shipped"));
+    }
 }

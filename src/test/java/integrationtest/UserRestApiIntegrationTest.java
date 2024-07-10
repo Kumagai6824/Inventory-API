@@ -504,4 +504,95 @@ public class UserRestApiIntegrationTest {
         assertEquals("Not Found", JsonPath.read(response, "$.error"));
         assertEquals("Product ID:" + productId + " does not exist", JsonPath.read(response, "$.message"));
     }
+
+    @Test
+    @ExpectedDataSet(value = "/dataset/expectedShippedInventoryProducts.yml", ignoreCols = "history")
+    @Transactional
+    void 出庫処理ができ201を返しレコードが登録されていること() throws Exception {
+        InventoryProduct request = new InventoryProduct();
+        request.setProductId(1);
+        request.setQuantity(50);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
+        String response = mockMvc.perform(MockMvcRequestBuilders.post("/inventory-products/shipped-items")
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andReturn().getResponse().getContentAsString((StandardCharsets.UTF_8));
+
+        JSONAssert.assertEquals("""
+                        {
+                           "message":"item was successfully shipped"
+                        }
+                        """
+                , response, JSONCompareMode.STRICT);
+    }
+
+    @Transactional
+    @ParameterizedTest
+    @ValueSource(ints = {0, -500})
+    void 出庫処理時の数量が0以下の場合400を返すこと(int quantity) throws Exception {
+        InventoryProduct request = new InventoryProduct();
+        request.setProductId(1);
+        request.setQuantity(quantity);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
+        String responseActual = mockMvc.perform(MockMvcRequestBuilders.post("/inventory-products/shipped-items")
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        String responseExpected = """
+                {
+                   "status":"BAD_REQUEST",
+                   "message":"Bad request",
+                   "errors":[
+                      {
+                         "field":"quantity",
+                         "message":"must be greater than or equal to 1"
+                      }
+                   ]
+                }
+                """;
+
+        JSONAssert.assertEquals(responseExpected, responseActual, JSONCompareMode.STRICT);
+    }
+
+    @Test
+    @Transactional
+    void 存在しない商品IDで出庫処理時に404を返すこと() throws Exception {
+        int productId = 0;
+        InventoryProduct request = new InventoryProduct();
+        request.setProductId(productId);
+        request.setQuantity(500);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
+        String response = mockMvc.perform(MockMvcRequestBuilders.post("/inventory-products/shipped-items")
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        assertEquals("/inventory-products/shipped-items", JsonPath.read(response, "$.path"));
+        assertEquals("Not Found", JsonPath.read(response, "$.error"));
+        assertEquals("Product ID:" + productId + " does not exist", JsonPath.read(response, "$.message"));
+    }
+
+    @Test
+    @Transactional
+    void 在庫数より多い数で出庫処理時に409を返すこと() throws Exception {
+        int productId = 1;
+        InventoryProduct request = new InventoryProduct();
+        request.setProductId(productId);
+        int quantity = 500;
+        request.setQuantity(quantity);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
+        String response = mockMvc.perform(MockMvcRequestBuilders.post("/inventory-products/shipped-items")
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isConflict())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        assertEquals("/inventory-products/shipped-items", JsonPath.read(response, "$.path"));
+        assertEquals("Conflict", JsonPath.read(response, "$.error"));
+        assertEquals("Inventory shortage, only " + 100 + " items left", JsonPath.read(response, "$.message"));
+    }
 }
