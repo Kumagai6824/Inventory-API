@@ -43,8 +43,8 @@ public class InventoryProductController {
 
     @PostMapping("/inventory-products/shipped-items")
     public ResponseEntity<Map<String, String>> shippingInventoryProduct
-            (@RequestBody @Validated CreateInventoryProductForm from, UriComponentsBuilder uriComponentsBuilder) {
-        InventoryProduct entity = from.convertToInventoryProductEntity();
+            (@RequestBody @Validated CreateInventoryProductForm form, UriComponentsBuilder uriComponentsBuilder) {
+        InventoryProduct entity = form.convertToInventoryProductEntity();
         inventoryProductService.shippingInventoryProduct(entity);
 
         int id = entity.getId();
