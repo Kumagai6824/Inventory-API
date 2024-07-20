@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -111,6 +112,26 @@ class InventoryProductMapperTest {
         inventoryProduct.setProductId(productId);
         inventoryProduct.setQuantity(500);
         assertThatThrownBy(() -> inventoryProductMapper.createInventoryProduct(inventoryProduct)).isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    @Transactional
+    void 指定した商品IDで最後に登録された在庫を返すこと() {
+        int productId = 3;
+        Optional<InventoryProduct> actualInventoryProduct = inventoryProductMapper.findLatestInventoryByProductId(productId);
+
+        OffsetDateTime offsetDateTime = OffsetDateTime.parse("2024-05-11T12:58:10+09:00");
+        Optional<InventoryProduct> expectedInventoryProduct = Optional.of(new InventoryProduct(4, 3, -500, offsetDateTime));
+
+        assertThat(actualInventoryProduct).isEqualTo(expectedInventoryProduct);
+    }
+
+    @Test
+    @Transactional
+    void 存在しない商品IDで最後に登録された在庫取得時に空を返すこと() {
+        int productId = 0;
+        Optional<InventoryProduct> actualInventoryProduct = inventoryProductMapper.findLatestInventoryByProductId(productId);
+        assertThat(actualInventoryProduct).isEmpty();
     }
 
 }
