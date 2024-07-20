@@ -22,5 +22,5 @@ public interface InventoryProductMapper {
     void createInventoryProduct(InventoryProduct inventoryProduct);
 
     @Select("SELECT * FROM inventoryProducts where product_id = #{product_id} ORDER BY id desc LIMIT 1")
-    Optional<InventoryProduct> findLatestIdByProductId(int productId);
+    Optional<InventoryProduct> findLatestInventoryByProductId(int productId);
 }
