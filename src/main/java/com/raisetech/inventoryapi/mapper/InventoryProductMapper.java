@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 public interface InventoryProductMapper {
@@ -19,4 +20,7 @@ public interface InventoryProductMapper {
     @Insert("INSERT INTO inventoryProducts (product_id, quantity, history) values (#{productId}, #{quantity}, now())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void createInventoryProduct(InventoryProduct inventoryProduct);
+
+    @Select("SELECT * FROM inventoryProducts where product_id = #{product_id} ORDER BY id desc LIMIT 1")
+    Optional<InventoryProduct> findLatestIdByProductId(int productId);
 }
