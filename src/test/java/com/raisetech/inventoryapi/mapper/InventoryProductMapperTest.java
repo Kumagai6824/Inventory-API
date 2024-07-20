@@ -134,4 +134,29 @@ class InventoryProductMapperTest {
         assertThat(actualInventoryProduct).isEmpty();
     }
 
+    @Test
+    @Transactional
+    void 指定したIDで更新処理時に在庫数が更新されること() {
+        int id = 1;
+        int quantity = 6000;
+        inventoryProductMapper.updateInventoryProductById(id, quantity);
+
+        int productId = 1;
+        List<InventoryProduct> actualInventoryProducts = inventoryProductMapper.findInventoryByProductId(productId);
+
+        OffsetDateTime offsetDateTime = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
+        InventoryProduct expectedInventoryProduct = new InventoryProduct(id, productId, quantity, offsetDateTime);
+
+        assertThat(actualInventoryProducts).hasSize(1).containsExactly(expectedInventoryProduct);
+    }
+
+    @Test
+    @ExpectedDataSet(value = "/inventoryProducts.yml")
+    @Transactional
+    void 存在しないIDで更新処理時にDBに変化がないこと() {
+        int id = 0;
+        int quantity = 6000;
+        inventoryProductMapper.updateInventoryProductById(id, quantity);
+    }
+
 }
