@@ -153,7 +153,7 @@ class InventoryProductMapperTest {
     @Test
     @ExpectedDataSet(value = "/inventoryProducts.yml")
     @Transactional
-    void 存在しないIDで更新処理時にDBに変化がないこと() {
+    void 存在しないIDで更新処理時にinventoryProductsテーブルに変更がないこと() {
         int id = 0;
         int quantity = 6000;
         inventoryProductMapper.updateInventoryProductById(id, quantity);
