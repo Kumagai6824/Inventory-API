@@ -1,10 +1,7 @@
 package com.raisetech.inventoryapi.mapper;
 
 import com.raisetech.inventoryapi.entity.InventoryProduct;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,4 +20,7 @@ public interface InventoryProductMapper {
 
     @Select("SELECT * FROM inventoryProducts where product_id = #{product_id} ORDER BY id desc LIMIT 1")
     Optional<InventoryProduct> findLatestInventoryByProductId(int productId);
+
+    @Update("UPDATE inventoryProducts SET quantity = #{quantity} WHERE id =#{id}")
+    void updateInventoryProductById(int id, int quantity);
 }
