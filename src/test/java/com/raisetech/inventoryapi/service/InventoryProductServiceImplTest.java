@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
@@ -182,5 +183,100 @@ class InventoryProductServiceImplTest {
         assertThatThrownBy(() -> inventoryProductServiceImpl.shippingInventoryProduct(inventoryProduct))
                 .isInstanceOf(InventoryShortageException.class)
                 .hasMessage("Inventory shortage, only " + inventoryQuantity + " items left");
+    }
+
+    @Test
+    public void 入庫修正後に入庫数が更新されること() throws Exception {
+        int productId = 1;
+        doReturn(Optional.of(new Product(productId, "test", null))).when(productMapper).findById(productId);
+
+        int id = 1;
+        int inventoryQuantity = 100;
+        OffsetDateTime offsetDateTime = OffsetDateTime.parse("2024-06-24T10:10:01+09:00");
+        doReturn(Optional.of(new InventoryProduct(id, productId, inventoryQuantity, offsetDateTime))).when(inventoryProductMapper).findLatestInventoryByProductId(productId);
+
+        int updatingQuantity = 250;
+        inventoryProductServiceImpl.updateReceivedInventoryProductById(productId, id, updatingQuantity);
+
+        ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Integer> quantityCaptor = ArgumentCaptor.forClass(Integer.class);
+
+        verify(inventoryProductMapper, times(1)).updateInventoryProductById(idCaptor.capture(), quantityCaptor.capture());
+        assertThat(idCaptor.getValue()).isEqualTo(id);
+        assertThat(quantityCaptor.getValue()).isEqualTo(updatingQuantity);
+    }
+
+    @Test
+    public void 存在しない商品IDで入庫修正時に例外を返すこと() throws Exception {
+        int productId = 0;
+        int id = 1;
+        int quantity = 6000;
+
+        doReturn(Optional.empty()).when(productMapper).findById(productId);
+
+        assertThatThrownBy(() -> inventoryProductServiceImpl.updateReceivedInventoryProductById(productId, id, quantity))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Product ID:" + productId + " does not exist");
+    }
+
+    @Test
+    public void 論理削除済み商品IDで入庫修正時に例外を返すこと() throws Exception {
+        int productId = 1;
+        int id = 1;
+        int quantity = 100;
+        OffsetDateTime offsetDateTime = OffsetDateTime.parse("2024-06-24T10:10:01+09:00");
+        doReturn(Optional.of(new Product(productId, "test", offsetDateTime))).when(productMapper).findById(productId);
+
+        assertThatThrownBy(() -> inventoryProductServiceImpl.updateReceivedInventoryProductById(productId, id, quantity))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Product ID:" + productId + " does not exist");
+    }
+
+    @Test
+    public void 指定した商品IDの在庫情報が未登録の状態で入庫修正時に例外を返すこと() throws Exception {
+        int productId = 1;
+        doReturn(Optional.of(new Product(productId, "test", null))).when(productMapper).findById(productId);
+
+        doReturn(Optional.empty()).when(inventoryProductMapper).findLatestInventoryByProductId(productId);
+
+        int id = 1;
+        int quantity = 100;
+        assertThatThrownBy(() -> inventoryProductServiceImpl.updateReceivedInventoryProductById(productId, id, quantity))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Inventory item does not exist");
+    }
+
+    @Test
+    public void 最新ではない在庫IDで入庫修正時に例外を返すこと() throws Exception {
+        int productId = 1;
+        doReturn(Optional.of(new Product(productId, "test", null))).when(productMapper).findById(productId);
+
+        int latestId = 2;
+        int inventoryQuantity = 100;
+        OffsetDateTime offsetDateTime = OffsetDateTime.parse("2024-06-24T10:10:01+09:00");
+        doReturn(Optional.of(new InventoryProduct(latestId, productId, inventoryQuantity, offsetDateTime))).when(inventoryProductMapper).findLatestInventoryByProductId(productId);
+
+        int requestId = 1;
+        int requestQuantity = 250;
+        assertThatThrownBy(() -> inventoryProductServiceImpl.updateReceivedInventoryProductById(productId, requestId, requestQuantity))
+                .isInstanceOf(InvalidInputException.class)
+                .hasMessage("Cannot update id: " + requestId + ", Only the last update can be altered.");
+    }
+
+    @Test
+    public void 数量ゼロ個で入庫修正時に例外をスローすること() throws Exception {
+        int productId = 1;
+        doReturn(Optional.of(new Product(productId, "test", null))).when(productMapper).findById(productId);
+
+        int id = 1;
+        int inventoryQuantity = 100;
+        OffsetDateTime offsetDateTime = OffsetDateTime.parse("2024-06-24T10:10:01+09:00");
+        doReturn(Optional.of(new InventoryProduct(id, productId, inventoryQuantity, offsetDateTime))).when(inventoryProductMapper).findLatestInventoryByProductId(productId);
+
+
+        int requestQuantity = 0;
+        assertThatThrownBy(() -> inventoryProductServiceImpl.updateReceivedInventoryProductById(productId, id, requestQuantity))
+                .isInstanceOf(InvalidInputException.class)
+                .hasMessage("Quantity must be greater than zero");
     }
 }
