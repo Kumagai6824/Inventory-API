@@ -1,8 +1,8 @@
 package com.raisetech.inventoryapi.form;
 
 import com.raisetech.inventoryapi.entity.InventoryProduct;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 
 @Getter
@@ -10,7 +10,7 @@ public class UpdateInventoryProductForm {
     private int productId;
 
     @NotNull
-    @Min(1)
+    @Positive
     private Integer quantity;
 
     public UpdateInventoryProductForm(int productId, Integer quantity) {
