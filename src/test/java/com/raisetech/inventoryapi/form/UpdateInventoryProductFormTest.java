@@ -31,7 +31,7 @@ public class UpdateInventoryProductFormTest {
         assertThat(violations).hasSize(1);
         assertThat(violations)
                 .extracting(violation -> violation.getPropertyPath().toString(), ConstraintViolation::getMessage)
-                .containsExactlyInAnyOrder(tuple("quantity", "1 以上の値にしてください"));
+                .containsExactlyInAnyOrder(tuple("quantity", "0 より大きな値にしてください"));
     }
 
     @Test
@@ -42,7 +42,7 @@ public class UpdateInventoryProductFormTest {
         assertThat(violations).hasSize(1);
         assertThat(violations)
                 .extracting(violation -> violation.getPropertyPath().toString(), ConstraintViolation::getMessage)
-                .containsExactlyInAnyOrder(tuple("quantity", "1 以上の値にしてください"));
+                .containsExactlyInAnyOrder(tuple("quantity", "0 より大きな値にしてください"));
     }
 
     @Test
