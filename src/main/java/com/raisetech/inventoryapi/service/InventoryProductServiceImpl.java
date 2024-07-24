@@ -3,6 +3,7 @@ package com.raisetech.inventoryapi.service;
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 import com.raisetech.inventoryapi.entity.Product;
 import com.raisetech.inventoryapi.exception.InvalidInputException;
+import com.raisetech.inventoryapi.exception.InventoryNotLatestException;
 import com.raisetech.inventoryapi.exception.InventoryShortageException;
 import com.raisetech.inventoryapi.exception.ResourceNotFoundException;
 import com.raisetech.inventoryapi.mapper.InventoryProductMapper;
@@ -81,7 +82,7 @@ public class InventoryProductServiceImpl implements InventoryProductService {
         InventoryProduct latestInventoryProduct = inventoryProductOptional.orElseThrow(() -> new ResourceNotFoundException("Inventory item does not exist"));
 
         if (latestInventoryProduct.getId() != id) {
-            throw new InvalidInputException("Cannot update id: " + id + ", Only the last update can be altered.");
+            throw new InventoryNotLatestException("Cannot update id: " + id + ", Only the last update can be altered.");
         } else if (quantity <= 0) {
             throw new InvalidInputException("Quantity must be greater than zero");
         }
