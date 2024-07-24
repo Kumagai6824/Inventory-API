@@ -53,4 +53,18 @@ public class InventoryProductExceptionHandler {
                 "path", request.getRequestURI());
         return new ResponseEntity(body, HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(value = InventoryNotLatestException.class)
+    public ResponseEntity<Map<String, String>> handleInventoryNotLatest(
+            InventoryNotLatestException e, HttpServletRequest request
+    ) {
+
+        Map<String, String> body = Map.of(
+                "timestamp", ZonedDateTime.now().toString(),
+                "status", String.valueOf(HttpStatus.CONFLICT.value()),
+                "error", HttpStatus.CONFLICT.getReasonPhrase(),
+                "message", e.getMessage(),
+                "path", request.getRequestURI());
+        return new ResponseEntity(body, HttpStatus.CONFLICT);
+    }
 }
