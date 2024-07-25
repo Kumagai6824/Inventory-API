@@ -2,6 +2,7 @@ package com.raisetech.inventoryapi.controller;
 
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 import com.raisetech.inventoryapi.form.CreateInventoryProductForm;
+import com.raisetech.inventoryapi.form.UpdateInventoryProductForm;
 import com.raisetech.inventoryapi.service.InventoryProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -51,5 +52,15 @@ public class InventoryProductController {
         URI url = uriComponentsBuilder.path("/inventory-products/shipped-items/" + id).build().toUri();
         return ResponseEntity.created(url).
                 body(Map.of("message", "item was successfully shipped"));
+    }
+
+    @PatchMapping("/inventory-products/received-items/{id}")
+    public ResponseEntity<Map<String, String>> updateReceivedInventoryProductById
+            (@RequestBody @Validated UpdateInventoryProductForm form,
+             @PathVariable(value = "id") int id) throws Exception {
+        InventoryProduct entity = form.convertToInventoryProductEntity();
+        inventoryProductService.updateReceivedInventoryProductById(entity.getProductId(), id, entity.getQuantity());
+        return ResponseEntity.ok(Map.of("message", "Quantity was successfully updated"));
+
     }
 }
