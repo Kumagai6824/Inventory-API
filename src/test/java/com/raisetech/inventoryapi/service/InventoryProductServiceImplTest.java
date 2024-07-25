@@ -3,6 +3,7 @@ package com.raisetech.inventoryapi.service;
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 import com.raisetech.inventoryapi.entity.Product;
 import com.raisetech.inventoryapi.exception.InvalidInputException;
+import com.raisetech.inventoryapi.exception.InventoryNotLatestException;
 import com.raisetech.inventoryapi.exception.InventoryShortageException;
 import com.raisetech.inventoryapi.exception.ResourceNotFoundException;
 import com.raisetech.inventoryapi.mapper.InventoryProductMapper;
@@ -259,7 +260,7 @@ class InventoryProductServiceImplTest {
         int requestId = 1;
         int requestQuantity = 250;
         assertThatThrownBy(() -> inventoryProductServiceImpl.updateReceivedInventoryProductById(productId, requestId, requestQuantity))
-                .isInstanceOf(InvalidInputException.class)
+                .isInstanceOf(InventoryNotLatestException.class)
                 .hasMessage("Cannot update id: " + requestId + ", Only the last update can be altered.");
     }
 
