@@ -109,7 +109,7 @@ public class InventoryProductServiceImpl implements InventoryProductService {
         } else if (quantity <= 0) {
             throw new InvalidInputException("Quantity must be greater than zero");
         } else if (quantity > inventoryQuantity - lastUpdatedQuantity) {
-            throw new InventoryShortageException("Inventory shortage, only " + inventoryQuantity + " items left");
+            throw new InventoryShortageException("Inventory shortage, only " + (inventoryQuantity - lastUpdatedQuantity) + " items left");
         }
 
         inventoryProductMapper.updateInventoryProductById(id, quantity * (-1));
