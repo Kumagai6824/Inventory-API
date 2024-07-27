@@ -90,4 +90,29 @@ public class InventoryProductServiceImpl implements InventoryProductService {
         inventoryProductMapper.updateInventoryProductById(id, quantity);
     }
 
+    @Override
+    public void updateShippedInventoryProductById(int productId, int id, int quantity) {
+        Optional<Product> productOptional = productMapper.findById(productId);
+        Product product = productOptional.orElseThrow(() -> new ResourceNotFoundException("Product ID:" + productId + " does not exist"));
+        if (product.getDeletedAt() != null) {
+            throw new ResourceNotFoundException("Product ID:" + productId + " does not exist");
+        }
+
+        Optional<InventoryProduct> inventoryProductOptional = inventoryProductMapper.findLatestInventoryByProductId(productId);
+        InventoryProduct latestInventoryProduct = inventoryProductOptional.orElseThrow(() -> new ResourceNotFoundException("Inventory item does not exist"));
+
+        int inventoryQuantity = this.inventoryProductMapper.getQuantityByProductId(productId);
+
+        if (latestInventoryProduct.getId() != id) {
+            throw new InventoryNotLatestException("Cannot update id: " + id + ", Only the last update can be altered.");
+        } else if (quantity <= 0) {
+            throw new InvalidInputException("Quantity must be greater than zero");
+        } else if (quantity > inventoryQuantity) {
+            throw new InventoryShortageException("Inventory shortage, only " + inventoryQuantity + " items left");
+        }
+
+        inventoryProductMapper.updateInventoryProductById(id, quantity * (-1));
+    }
+
+
 }
