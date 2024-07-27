@@ -10,4 +10,6 @@ public interface InventoryProductService {
     void shippingInventoryProduct(InventoryProduct inventoryProduct);
 
     void updateReceivedInventoryProductById(int productId, int id, int quantity);
+
+    void updateShippedInventoryProductById(int productId, int id, int quantity);
 }
