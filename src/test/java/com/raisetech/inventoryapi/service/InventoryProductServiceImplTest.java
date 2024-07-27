@@ -384,13 +384,14 @@ class InventoryProductServiceImplTest {
         doReturn(Optional.of(new Product(productId, "test", null))).when(productMapper).findById(productId);
 
         int id = 1;
-        int inventoryQuantity = 500;
+        int lastUpdatedQuantity = 400;
         OffsetDateTime offsetDateTime = OffsetDateTime.parse("2024-06-24T10:10:01+09:00");
-        doReturn(Optional.of(new InventoryProduct(id, productId, inventoryQuantity, offsetDateTime))).when(inventoryProductMapper).findLatestInventoryByProductId(productId);
+        doReturn(Optional.of(new InventoryProduct(id, productId, lastUpdatedQuantity, offsetDateTime))).when(inventoryProductMapper).findLatestInventoryByProductId(productId);
 
+        int inventoryQuantity = 500;
         doReturn(inventoryQuantity).when(inventoryProductMapper).getQuantityByProductId(productId);
 
-        int requestQuantity = inventoryQuantity + 100;
+        int requestQuantity = inventoryQuantity - lastUpdatedQuantity + 10;
         assertThatThrownBy(() -> inventoryProductServiceImpl.updateShippedInventoryProductById(productId, id, requestQuantity))
                 .isInstanceOf(InventoryShortageException.class)
                 .hasMessage("Inventory shortage, only " + inventoryQuantity + " items left");

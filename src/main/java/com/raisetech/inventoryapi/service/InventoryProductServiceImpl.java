@@ -102,12 +102,13 @@ public class InventoryProductServiceImpl implements InventoryProductService {
         InventoryProduct latestInventoryProduct = inventoryProductOptional.orElseThrow(() -> new ResourceNotFoundException("Inventory item does not exist"));
 
         int inventoryQuantity = this.inventoryProductMapper.getQuantityByProductId(productId);
+        int lastUpdatedQuantity = latestInventoryProduct.getQuantity();
 
         if (latestInventoryProduct.getId() != id) {
             throw new InventoryNotLatestException("Cannot update id: " + id + ", Only the last update can be altered.");
         } else if (quantity <= 0) {
             throw new InvalidInputException("Quantity must be greater than zero");
-        } else if (quantity > inventoryQuantity) {
+        } else if (quantity > inventoryQuantity - lastUpdatedQuantity) {
             throw new InventoryShortageException("Inventory shortage, only " + inventoryQuantity + " items left");
         }
 
