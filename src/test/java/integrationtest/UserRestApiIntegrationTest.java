@@ -693,7 +693,7 @@ public class UserRestApiIntegrationTest {
         assertEquals("Not Found", JsonPath.read(response, "$.error"));
         assertEquals("Inventory item does not exist", JsonPath.read(response, "$.message"));
     }
-    
+
     @Test
     @Transactional
     void 最新ではない在庫IDで入庫修正時に409を返すこと() throws Exception {
@@ -751,5 +751,186 @@ public class UserRestApiIntegrationTest {
                 """;
 
         JSONAssert.assertEquals(responseExpected, response, JSONCompareMode.STRICT);
+    }
+
+    @Test
+    @ExpectedDataSet(value = {"/dataset/expectedUpdatedShippedInventoryProducts.yml"}, ignoreCols = {"id"})
+    @Transactional
+    void 在庫の出庫修正後に出庫数が更新され200を返すこと() throws Exception {
+        int id = 4;
+        int productId = 3;
+        int quantity = 100;
+        InventoryProduct request = new InventoryProduct();
+        request.setProductId(productId);
+        request.setQuantity(quantity);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        String updateResult = mockMvc.perform(MockMvcRequestBuilders.patch("/inventory-products/shipped-items/" + id)
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse().getContentAsString((StandardCharsets.UTF_8));
+
+        JSONAssert.assertEquals("""
+                        {
+                           "message":"Quantity was successfully updated"
+                        }
+                        """
+                , updateResult, JSONCompareMode.STRICT);
+    }
+
+    @Test
+    @Transactional
+    void 存在しない商品IDで出庫修正した際に404を返すこと() throws Exception {
+        int id = 4;
+        int productId = 0;
+        int quantity = 100;
+        InventoryProduct request = new InventoryProduct();
+        request.setProductId(productId);
+        request.setQuantity(quantity);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        String response = mockMvc.perform(MockMvcRequestBuilders.patch("/inventory-products/shipped-items/" + id)
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andReturn().getResponse().getContentAsString((StandardCharsets.UTF_8));
+
+        assertEquals("/inventory-products/shipped-items/" + id, JsonPath.read(response, "$.path"));
+        assertEquals("Not Found", JsonPath.read(response, "$.error"));
+        assertEquals("Product ID:" + productId + " does not exist", JsonPath.read(response, "$.message"));
+    }
+
+    @Test
+    @Transactional
+    void 論理削除済み商品IDで出庫修正した際に404を返すこと() throws Exception {
+        int id = 5;
+        int productId = 4;
+        InventoryProduct request = new InventoryProduct();
+        request.setProductId(productId);
+        request.setQuantity(0);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/products/" + productId));
+
+        request.setQuantity(500);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        String response = mockMvc.perform(MockMvcRequestBuilders.patch("/inventory-products/shipped-items/" + id)
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        assertEquals("/inventory-products/shipped-items/" + id, JsonPath.read(response, "$.path"));
+        assertEquals("Not Found", JsonPath.read(response, "$.error"));
+        assertEquals("Product ID:" + productId + " does not exist", JsonPath.read(response, "$.message"));
+    }
+
+    @Test
+    @Transactional
+    void 指定した商品IDの在庫情報が未登録の状態で出庫修正時に404を返すこと() throws Exception {
+        int productId = 4;
+        int quantity = 100;
+        String requestJson = """
+                 {
+                    "productId":%s,
+                    "quantity":%s
+                 }
+                """.formatted(productId, quantity);
+
+        int id = 20;
+        String response = mockMvc.perform(MockMvcRequestBuilders.patch("/inventory-products/shipped-items/" + id)
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        assertEquals("/inventory-products/shipped-items/" + id, JsonPath.read(response, "$.path"));
+        assertEquals("Not Found", JsonPath.read(response, "$.error"));
+        assertEquals("Inventory item does not exist", JsonPath.read(response, "$.message"));
+    }
+
+    @Test
+    @Transactional
+    void 最新ではない在庫IDで出庫修正時に409を返すこと() throws Exception {
+        int productId = 3;
+        int quantity = 100;
+
+        String requestJson = """
+                 {
+                    "productId":%s,
+                    "quantity":%s
+                 }
+                """.formatted(productId, quantity);
+
+        int id = 3;
+        String response = mockMvc.perform(MockMvcRequestBuilders.patch("/inventory-products/shipped-items/" + id)
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isConflict())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        assertEquals("/inventory-products/shipped-items/" + id, JsonPath.read(response, "$.path"));
+        assertEquals("Conflict", JsonPath.read(response, "$.error"));
+        assertEquals("Cannot update id: " + id + ", Only the last update can be altered.", JsonPath.read(response, "$.message"));
+    }
+
+    @Test
+    @Transactional
+    void 数量0個で出庫修正時に400を返すこと() throws Exception {
+        int productId = 3;
+        int quantity = 0;
+
+        String requestJson = """
+                 {
+                    "productId":%s,
+                    "quantity":%s
+                 }
+                """.formatted(productId, quantity);
+
+        int id = 1;
+        String response = mockMvc.perform(MockMvcRequestBuilders.patch("/inventory-products/shipped-items/" + id)
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        String responseExpected = """
+                {
+                   "status":"BAD_REQUEST",
+                   "message":"Bad request",
+                   "errors":[
+                      {
+                         "field":"quantity",
+                         "message":"must be greater than 0"
+                      }
+                   ]
+                }
+                """;
+
+        JSONAssert.assertEquals(responseExpected, response, JSONCompareMode.STRICT);
+    }
+
+    @Test
+    @Transactional
+    void 在庫数より多い数で出庫修正時に409を返すこと() throws Exception {
+        int productId = 3;
+        int quantity = 600;
+
+        String requestJson = """
+                 {
+                    "productId":%s,
+                    "quantity":%s
+                 }
+                """.formatted(productId, quantity);
+
+        int id = 4;
+        String response = mockMvc.perform(MockMvcRequestBuilders.patch("/inventory-products/shipped-items/" + id)
+                        .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isConflict())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        assertEquals("/inventory-products/shipped-items/" + id, JsonPath.read(response, "$.path"));
+        assertEquals("Conflict", JsonPath.read(response, "$.error"));
+        assertEquals("Inventory shortage, only " + 500 + " items left", JsonPath.read(response, "$.message"));
     }
 }

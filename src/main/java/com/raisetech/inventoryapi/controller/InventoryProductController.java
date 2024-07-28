@@ -63,4 +63,13 @@ public class InventoryProductController {
         return ResponseEntity.ok(Map.of("message", "Quantity was successfully updated"));
 
     }
+
+    @PatchMapping("/inventory-products/shipped-items/{id}")
+    public ResponseEntity<Map<String, String>> updateShippedInventoryProductById
+            (@RequestBody @Validated UpdateInventoryProductForm form,
+             @PathVariable(value = "id") int id) throws Exception {
+        InventoryProduct entity = form.convertToInventoryProductEntity();
+        inventoryProductService.updateShippedInventoryProductById(entity.getProductId(), id, entity.getQuantity());
+        return ResponseEntity.ok(Map.of("message", "Quantity was successfully updated"));
+    }
 }
