@@ -159,4 +159,24 @@ class InventoryProductMapperTest {
         inventoryProductMapper.updateInventoryProductById(id, quantity);
     }
 
+    @Test
+    @Transactional
+    void 指定したIDで在庫情報が取得できること() {
+        int id = 1;
+        Optional<InventoryProduct> inventoryProduct = inventoryProductMapper.findInventoryById(id);
+
+        OffsetDateTime offsetDateTime = OffsetDateTime.parse("2023-12-10T23:58:10+09:00");
+        assertThat(inventoryProduct).contains(new InventoryProduct(id, 1, 100, offsetDateTime));
+    }
+
+    @Test
+    @Transactional
+    void 存在しないIDで在庫情報取得時に空を返すこと() {
+        int id = 0;
+        Optional<InventoryProduct> inventoryProduct = inventoryProductMapper.findInventoryById(id);
+
+        Assertions.assertNotNull(inventoryProduct);
+        assertThat(inventoryProduct).isEmpty();
+    }
+
 }
