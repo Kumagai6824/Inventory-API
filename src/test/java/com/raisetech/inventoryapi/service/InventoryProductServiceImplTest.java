@@ -398,4 +398,26 @@ class InventoryProductServiceImplTest {
                 .hasMessage("Inventory shortage, only " + (inventoryQuantity - lastUpdatedQuantity) + " items left");
 
     }
+
+    @Test
+    public void 指定した在庫IDで在庫情報を取得できること() {
+        int id = 1;
+        InventoryProduct expect = new InventoryProduct(id, 1, 100, OffsetDateTime.parse("2024-06-24T10:10:01+09:00"));
+
+        doReturn(Optional.of(expect)).when(inventoryProductMapper).findInventoryById(id);
+
+        InventoryProduct actual = inventoryProductServiceImpl.findInventoryById(id);
+
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    @Test
+    public void 存在しない在庫IDで在庫取得時に例外を返すこと() {
+        int id = 0;
+        doReturn(Optional.empty()).when(inventoryProductMapper).findInventoryById(id);
+
+        assertThatThrownBy(() -> inventoryProductServiceImpl.findInventoryById(id))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("ID:" + id + " does not exist");
+    }
 }
