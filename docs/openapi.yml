@@ -241,38 +241,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/400BadRequest'
-  /inventory-products/{productId}:
-    get:
-      tags:
-        - InventoryProducts
-      summary: 商品IDによる在庫情報の取得
-      operationId: getInventoryItemsByProductId
-      description: |
-        指定した商品IDと一致する在庫情報を取得する
-      parameters:
-        - name: productId
-          in: path
-          required: true
-          schema:
-            type: integer
-          example: 1
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InventoryProducts'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/404NotFound'
   /inventory-products/received-items/{id}:
     patch:
       tags:
@@ -384,6 +352,37 @@ paths:
                     - $ref: '#/components/schemas/409ConflictOfUpdateShippedInventoryProduct'
                     - $ref: '#/components/schemas/409ConflictOfShippingInventoryProduct'
   /inventory-products/{id}:
+    get:
+      tags:
+        - InventoryProducts
+      summary: 在庫IDによる在庫情報の取得
+      operationId: getInventoryItemsById
+      description: |
+        指定した在庫IDと一致する在庫情報を取得する
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InventoryProducts'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/404InventoryProduct'
     delete:
       tags:
         - InventoryProducts
