@@ -23,4 +23,7 @@ public interface InventoryProductMapper {
 
     @Update("UPDATE inventoryProducts SET quantity = #{quantity} WHERE id =#{id}")
     void updateInventoryProductById(int id, int quantity);
+
+    @Select("SELECT * FROM inventoryProducts where id = #{id}")
+    Optional<InventoryProduct> findInventoryById(int id);
 }
