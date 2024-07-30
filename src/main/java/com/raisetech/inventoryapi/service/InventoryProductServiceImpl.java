@@ -115,5 +115,14 @@ public class InventoryProductServiceImpl implements InventoryProductService {
         inventoryProductMapper.updateInventoryProductById(id, quantity * (-1));
     }
 
+    @Override
+    public InventoryProduct findInventoryById(int id) {
+        Optional<InventoryProduct> inventoryProductOptional = inventoryProductMapper.findInventoryById(id);
+
+        InventoryProduct inventoryProduct = inventoryProductOptional.orElseThrow(() -> new ResourceNotFoundException("ID:" + id + " does not exist"));
+
+        return inventoryProduct;
+    }
+
 
 }
