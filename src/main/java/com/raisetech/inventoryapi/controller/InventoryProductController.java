@@ -64,4 +64,9 @@ public class InventoryProductController {
         inventoryProductService.updateShippedInventoryProductById(entity.getProductId(), id, entity.getQuantity());
         return ResponseEntity.ok(Map.of("message", "Quantity was successfully updated"));
     }
+
+    @GetMapping("/inventory-products/{id}")
+    public InventoryProduct findInventoryById(@PathVariable(value = "id") int id) throws Exception {
+        return inventoryProductService.findInventoryById(id);
+    }
 }
