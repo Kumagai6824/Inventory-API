@@ -933,4 +933,38 @@ public class UserRestApiIntegrationTest {
         assertEquals("Conflict", JsonPath.read(response, "$.error"));
         assertEquals("Inventory shortage, only " + 500 + " items left", JsonPath.read(response, "$.message"));
     }
+
+    @Test
+    @Transactional
+    void 指定した在庫IDで在庫情報を取得できること() throws Exception {
+        int id = 1;
+
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/inventory-products/" + id))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        JSONAssert.assertEquals("""
+                        {
+                           "id":1,
+                           "productId":1,
+                           "quantity":100,
+                           "history":"2023-12-10T23:58:10+09:00"
+                        }
+                        """
+                , response, JSONCompareMode.STRICT);
+    }
+
+    @Test
+    @Transactional
+    void 存在しない在庫IDで在庫情報を取得時に404を返すこと() throws Exception {
+        int id = 0;
+
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/inventory-products/" + id))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        assertEquals("/inventory-products/" + id, JsonPath.read(response, "$.path"));
+        assertEquals("Not Found", JsonPath.read(response, "$.error"));
+        assertEquals("ID:" + id + " does not exist", JsonPath.read(response, "$.message"));
+    }
 }
