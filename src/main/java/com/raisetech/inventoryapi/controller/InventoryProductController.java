@@ -22,14 +22,6 @@ public class InventoryProductController {
         this.inventoryProductService = inventoryProductService;
     }
 
-    @GetMapping("/inventory-products/{product_id}")
-    public Map<String, Integer> getQuantityByProductId(
-            @PathVariable(value = "product_id")
-            int product_id) {
-        Integer quantity = inventoryProductService.getQuantityByProductId(product_id);
-        return Map.of("quantity", quantity);
-    }
-
     @PostMapping("/inventory-products/received-items")
     public ResponseEntity<Map<String, String>> receivingInventoryProduct
             (@RequestBody @Validated CreateInventoryProductForm from, UriComponentsBuilder uriComponentsBuilder) {
