@@ -26,4 +26,7 @@ public interface InventoryProductMapper {
 
     @Select("SELECT * FROM inventoryProducts where id = #{id}")
     Optional<InventoryProduct> findInventoryById(int id);
+
+    @Delete("DELETE FROM inventoryProducts where id = #{id}")
+    void deleteInventoryById(int id);
 }
