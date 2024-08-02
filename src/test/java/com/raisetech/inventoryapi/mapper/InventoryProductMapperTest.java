@@ -179,4 +179,21 @@ class InventoryProductMapperTest {
         assertThat(inventoryProduct).isEmpty();
     }
 
+    @Test
+    @ExpectedDataSet(value = "/dataset/expectedDeletedInventoryProducts.yml")
+    @Transactional
+    void 指定したIDの在庫情報が削除されること() {
+        int id = 1;
+        inventoryProductMapper.deleteInventoryById(id);
+    }
+
+    @Test
+    @ExpectedDataSet(value = "/inventoryProducts.yml")
+    @Transactional
+    void 存在しないIDで在庫削除時にinventoryProductsテーブルに変化が無いこと() {
+        int id = 0;
+        inventoryProductMapper.deleteInventoryById(id);
+    }
+
+
 }
