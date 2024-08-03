@@ -124,5 +124,20 @@ public class InventoryProductServiceImpl implements InventoryProductService {
         return inventoryProduct;
     }
 
+    @Override
+    public void deleteInventoryById(int id) {
+        InventoryProduct inventoryProduct = inventoryProductMapper.findInventoryById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("ID:" + id + " does not exist"));
+
+        InventoryProduct latestInventoryProduct = inventoryProductMapper.findLatestInventoryByProductId(inventoryProduct.getProductId())
+                .orElseThrow(() -> new ResourceNotFoundException("Inventory item does not exist"));
+
+        if (latestInventoryProduct.getId() != id) {
+            throw new InventoryNotLatestException("Cannot update id: " + id + ", Only the last update can be altered.");
+        }
+
+        inventoryProductMapper.deleteInventoryById(id);
+    }
+
 
 }

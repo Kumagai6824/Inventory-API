@@ -14,4 +14,6 @@ public interface InventoryProductService {
     void updateShippedInventoryProductById(int productId, int id, int quantity);
 
     InventoryProduct findInventoryById(int id) throws Exception;
+
+    void deleteInventoryById(int id);
 }
