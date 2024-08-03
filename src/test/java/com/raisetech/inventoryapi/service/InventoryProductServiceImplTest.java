@@ -420,4 +420,47 @@ class InventoryProductServiceImplTest {
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("ID:" + id + " does not exist");
     }
+
+    @Test
+    public void 指定した在庫IDで在庫情報を削除できること() {
+        int id = 1;
+        int productId = 1;
+        Optional<InventoryProduct> inventoryProduct = Optional.of(new InventoryProduct(id, productId, 100, OffsetDateTime.parse("2024-06-24T10:10:01+09:00")));
+
+        doReturn(inventoryProduct).when(inventoryProductMapper).findInventoryById(id);
+        doReturn(inventoryProduct).when(inventoryProductMapper).findLatestInventoryByProductId(productId);
+
+        inventoryProductServiceImpl.deleteInventoryById(id);
+
+        verify(inventoryProductMapper, times(1)).deleteInventoryById(id);
+
+    }
+
+    @Test
+    public void 存在しない在庫IDで在庫削除時に例外を返すこと() {
+        int id = 0;
+        InventoryProduct inventoryProduct = new InventoryProduct(id, 1, 100, OffsetDateTime.parse("2024-06-24T10:10:01+09:00"));
+
+        doReturn(Optional.empty()).when(inventoryProductMapper).findInventoryById(id);
+
+        assertThatThrownBy(() -> inventoryProductServiceImpl.deleteInventoryById(id))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("ID:" + id + " does not exist");
+    }
+
+    @Test
+    public void 最新ではない在庫IDで在庫削除時に例外を返すこと() {
+        int requestId = 1;
+        int productId = 1;
+        Optional<InventoryProduct> inventoryProduct = Optional.of(new InventoryProduct(requestId, productId, 100, OffsetDateTime.parse("2024-06-24T10:10:01+09:00")));
+        doReturn(inventoryProduct).when(inventoryProductMapper).findInventoryById(requestId);
+
+        int latestId = 2;
+        Optional<InventoryProduct> latestInventoryProduct = Optional.of(new InventoryProduct(latestId, productId, 100, OffsetDateTime.parse("2024-06-24T10:10:01+09:00")));
+        doReturn(latestInventoryProduct).when(inventoryProductMapper).findLatestInventoryByProductId(productId);
+
+        assertThatThrownBy(() -> inventoryProductServiceImpl.deleteInventoryById(requestId))
+                .isInstanceOf(InventoryNotLatestException.class)
+                .hasMessage("Cannot update id: " + requestId + ", Only the last update can be altered.");
+    }
 }
