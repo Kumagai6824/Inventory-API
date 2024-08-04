@@ -69,4 +69,11 @@ public class InventoryProductController {
     public InventoryProduct findInventoryById(@PathVariable(value = "id") int id) throws Exception {
         return inventoryProductService.findInventoryById(id);
     }
+
+    @DeleteMapping("/inventory-products/{id}")
+    public ResponseEntity<Map<String, String>> deleteInventoryById
+            (@PathVariable(value = "id") int id) throws Exception {
+        inventoryProductService.deleteInventoryById(id);
+        return ResponseEntity.ok(Map.of("message", "Successful operation"));
+    }
 }

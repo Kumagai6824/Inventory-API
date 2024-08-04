@@ -967,4 +967,50 @@ public class UserRestApiIntegrationTest {
         assertEquals("Not Found", JsonPath.read(response, "$.error"));
         assertEquals("ID:" + id + " does not exist", JsonPath.read(response, "$.message"));
     }
+
+    @Test
+    @ExpectedDataSet(value = "/dataset/expectedDeletedInventoryProducts.yml")
+    @Transactional
+    void 指定した在庫IDで削除時に該当レコードが削除されメッセージを返すこと() throws Exception {
+        int id = 1;
+
+        String response = mockMvc.perform(MockMvcRequestBuilders.delete("/inventory-products/" + id))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        JSONAssert.assertEquals("""
+                        {
+                           "message":"Successful operation"
+                        }
+                        """
+                , response, JSONCompareMode.STRICT);
+    }
+
+    @Test
+    @Transactional
+    void 存在しない在庫IDで削除時に404を返すこと() throws Exception {
+        int id = 0;
+
+        String response = mockMvc.perform(MockMvcRequestBuilders.delete("/inventory-products/" + id))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        assertEquals("/inventory-products/" + id, JsonPath.read(response, "$.path"));
+        assertEquals("Not Found", JsonPath.read(response, "$.error"));
+        assertEquals("ID:" + id + " does not exist", JsonPath.read(response, "$.message"));
+    }
+
+    @Test
+    @Transactional
+    void 最新ではない在庫IDで在庫削除時に409を返すこと() throws Exception {
+        int id = 3;
+
+        String response = mockMvc.perform(MockMvcRequestBuilders.delete("/inventory-products/" + id))
+                .andExpect(MockMvcResultMatchers.status().isConflict())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        assertEquals("/inventory-products/" + id, JsonPath.read(response, "$.path"));
+        assertEquals("Conflict", JsonPath.read(response, "$.error"));
+        assertEquals("Cannot update id: " + id + ", Only the last update can be altered.", JsonPath.read(response, "$.message"));
+    }
 }
