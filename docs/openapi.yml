@@ -216,14 +216,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/404NotFound'
-  /inventory-products:
+  /inventory-products/current-inventories:
     get:
       tags:
         - InventoryProducts
-      summary: 在庫情報の取得
-      operationId: getInventoryItems
+      summary: 現在庫数の全件取得
+      operationId: getCurrentInventories
       description: |
-        すべての在庫情報を取得する
+        すべての商品の現在庫数を取得する
       responses:
         '200':
           description: OK
@@ -232,15 +232,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/InventoryProducts'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/400BadRequest'
+                  $ref: '#/components/schemas/CurrentInventories'
   /inventory-products/received-items/{id}:
     patch:
       tags:
@@ -547,6 +539,22 @@ components:
           type: string
           example: '2024-05-10T23:59:59+09:00'
           format: date-time
+    CurrentInventories:
+      type: object
+      required:
+        - productId
+        - name
+        - quantity
+      properties:
+        productId:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: 'Bolt 1'
+        quantity:
+          type: integer
+          example: 1000
     InventoryProducts:
       type: object
       required:
