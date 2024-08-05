@@ -1,5 +1,6 @@
 package com.raisetech.inventoryapi.service;
 
+import com.raisetech.inventoryapi.entity.CurrentInventory;
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 import com.raisetech.inventoryapi.entity.Product;
 import com.raisetech.inventoryapi.exception.InvalidInputException;
@@ -10,7 +11,9 @@ import com.raisetech.inventoryapi.mapper.InventoryProductMapper;
 import com.raisetech.inventoryapi.mapper.ProductMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class InventoryProductServiceImpl implements InventoryProductService {
@@ -139,5 +142,19 @@ public class InventoryProductServiceImpl implements InventoryProductService {
         inventoryProductMapper.deleteInventoryById(id);
     }
 
+    @Override
+    public List<CurrentInventory> getCurrentInventories() {
+        List<Product> products = productMapper.findAll();
 
+        List<CurrentInventory> currentInventories = products.stream()
+                .map(product -> {
+                    int productId = product.getId();
+                    String name = product.getName();
+                    int quantity = inventoryProductMapper.getQuantityByProductId(productId);
+                    return new CurrentInventory(productId, name, quantity);
+                })
+                .collect(Collectors.toList());
+
+        return currentInventories;
+    }
 }
