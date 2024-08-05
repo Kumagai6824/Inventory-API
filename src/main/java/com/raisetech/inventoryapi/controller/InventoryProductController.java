@@ -1,5 +1,6 @@
 package com.raisetech.inventoryapi.controller;
 
+import com.raisetech.inventoryapi.entity.CurrentInventory;
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 import com.raisetech.inventoryapi.form.CreateInventoryProductForm;
 import com.raisetech.inventoryapi.form.UpdateInventoryProductForm;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -75,5 +77,10 @@ public class InventoryProductController {
             (@PathVariable(value = "id") int id) throws Exception {
         inventoryProductService.deleteInventoryById(id);
         return ResponseEntity.ok(Map.of("message", "Successful operation"));
+    }
+
+    @GetMapping("/inventory-products/current-inventories")
+    public List<CurrentInventory> getCurrentInventories() {
+        return inventoryProductService.getCurrentInventories();
     }
 }
