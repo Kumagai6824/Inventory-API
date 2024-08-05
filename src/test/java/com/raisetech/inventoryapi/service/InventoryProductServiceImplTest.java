@@ -1,5 +1,6 @@
 package com.raisetech.inventoryapi.service;
 
+import com.raisetech.inventoryapi.entity.CurrentInventory;
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 import com.raisetech.inventoryapi.entity.Product;
 import com.raisetech.inventoryapi.exception.InvalidInputException;
@@ -17,6 +18,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -462,5 +466,54 @@ class InventoryProductServiceImplTest {
         assertThatThrownBy(() -> inventoryProductServiceImpl.deleteInventoryById(requestId))
                 .isInstanceOf(InventoryNotLatestException.class)
                 .hasMessage("Cannot update id: " + requestId + ", Only the last update can be altered.");
+    }
+
+    @Test
+    public void 現在庫数を取得できること() {
+        List<Product> products = new ArrayList<Product>(Arrays.asList(
+                new Product(1, "test", null),
+                new Product(2, "test2", null)));
+
+        doReturn(products).when(productMapper).findAll();
+        doReturn(100).when(inventoryProductMapper).getQuantityByProductId(1);
+        doReturn(500).when(inventoryProductMapper).getQuantityByProductId(2);
+
+        List<CurrentInventory> expectedCurrentInventories = new ArrayList<CurrentInventory>(Arrays.asList(
+                new CurrentInventory(1, "test", 100),
+                new CurrentInventory(2, "test2", 500)
+        ));
+
+        List<CurrentInventory> actualCurrentInventories = inventoryProductServiceImpl.getCurrentInventories();
+
+        assertThat(actualCurrentInventories).isEqualTo(expectedCurrentInventories);
+    }
+
+    @Test
+    public void 現在庫数を取得時に在庫が存在しないとき数量0のレコードを返すこと() {
+        List<Product> products = new ArrayList<Product>(Arrays.asList(
+                new Product(1, "test", null),
+                new Product(2, "test2", null)));
+
+        doReturn(products).when(productMapper).findAll();
+        doReturn(0).when(inventoryProductMapper).getQuantityByProductId(1);
+        doReturn(0).when(inventoryProductMapper).getQuantityByProductId(2);
+
+        List<CurrentInventory> expectedCurrentInventories = new ArrayList<CurrentInventory>(Arrays.asList(
+                new CurrentInventory(1, "test", 0),
+                new CurrentInventory(2, "test2", 0)
+        ));
+
+        List<CurrentInventory> actualCurrentInventories = inventoryProductServiceImpl.getCurrentInventories();
+
+        assertThat(actualCurrentInventories).isEqualTo(expectedCurrentInventories);
+    }
+
+    @Test
+    public void 現在庫数を取得時に商品が存在しないとき空を返すこと() {
+        doReturn(List.of()).when(productMapper).findAll();
+
+        List<CurrentInventory> actualCurrentInventories = inventoryProductServiceImpl.getCurrentInventories();
+
+        assertThat(actualCurrentInventories).isEqualTo(List.of());
     }
 }
