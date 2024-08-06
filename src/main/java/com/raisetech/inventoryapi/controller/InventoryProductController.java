@@ -1,6 +1,6 @@
 package com.raisetech.inventoryapi.controller;
 
-import com.raisetech.inventoryapi.entity.CurrentInventory;
+import com.raisetech.inventoryapi.entity.Inventory;
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 import com.raisetech.inventoryapi.form.CreateInventoryProductForm;
 import com.raisetech.inventoryapi.form.UpdateInventoryProductForm;
@@ -80,7 +80,7 @@ public class InventoryProductController {
     }
 
     @GetMapping("/inventory-products/current-inventories")
-    public List<CurrentInventory> getCurrentInventories() {
+    public List<Inventory> getCurrentInventories() {
         return inventoryProductService.getCurrentInventories();
     }
 }

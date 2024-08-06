@@ -1,6 +1,6 @@
 package com.raisetech.inventoryapi.service;
 
-import com.raisetech.inventoryapi.entity.CurrentInventory;
+import com.raisetech.inventoryapi.entity.Inventory;
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 import com.raisetech.inventoryapi.entity.Product;
 import com.raisetech.inventoryapi.exception.InvalidInputException;
@@ -143,15 +143,15 @@ public class InventoryProductServiceImpl implements InventoryProductService {
     }
 
     @Override
-    public List<CurrentInventory> getCurrentInventories() {
+    public List<Inventory> getCurrentInventories() {
         List<Product> products = productMapper.findAll();
 
-        List<CurrentInventory> currentInventories = products.stream()
+        List<Inventory> currentInventories = products.stream()
                 .map(product -> {
                     int productId = product.getId();
                     String name = product.getName();
                     int quantity = inventoryProductMapper.getQuantityByProductId(productId);
-                    return new CurrentInventory(productId, name, quantity);
+                    return new Inventory(productId, name, quantity);
                 })
                 .collect(Collectors.toList());
 
