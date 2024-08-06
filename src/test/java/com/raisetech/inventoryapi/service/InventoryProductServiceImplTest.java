@@ -1,6 +1,6 @@
 package com.raisetech.inventoryapi.service;
 
-import com.raisetech.inventoryapi.entity.CurrentInventory;
+import com.raisetech.inventoryapi.entity.Inventory;
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 import com.raisetech.inventoryapi.entity.Product;
 import com.raisetech.inventoryapi.exception.InvalidInputException;
@@ -478,12 +478,12 @@ class InventoryProductServiceImplTest {
         doReturn(100).when(inventoryProductMapper).getQuantityByProductId(1);
         doReturn(500).when(inventoryProductMapper).getQuantityByProductId(2);
 
-        List<CurrentInventory> expectedCurrentInventories = new ArrayList<CurrentInventory>(Arrays.asList(
-                new CurrentInventory(1, "test", 100),
-                new CurrentInventory(2, "test2", 500)
+        List<Inventory> expectedCurrentInventories = new ArrayList<Inventory>(Arrays.asList(
+                new Inventory(1, "test", 100),
+                new Inventory(2, "test2", 500)
         ));
 
-        List<CurrentInventory> actualCurrentInventories = inventoryProductServiceImpl.getCurrentInventories();
+        List<Inventory> actualCurrentInventories = inventoryProductServiceImpl.getCurrentInventories();
 
         assertThat(actualCurrentInventories).isEqualTo(expectedCurrentInventories);
     }
@@ -498,12 +498,12 @@ class InventoryProductServiceImplTest {
         doReturn(0).when(inventoryProductMapper).getQuantityByProductId(1);
         doReturn(0).when(inventoryProductMapper).getQuantityByProductId(2);
 
-        List<CurrentInventory> expectedCurrentInventories = new ArrayList<CurrentInventory>(Arrays.asList(
-                new CurrentInventory(1, "test", 0),
-                new CurrentInventory(2, "test2", 0)
+        List<Inventory> expectedCurrentInventories = new ArrayList<Inventory>(Arrays.asList(
+                new Inventory(1, "test", 0),
+                new Inventory(2, "test2", 0)
         ));
 
-        List<CurrentInventory> actualCurrentInventories = inventoryProductServiceImpl.getCurrentInventories();
+        List<Inventory> actualCurrentInventories = inventoryProductServiceImpl.getCurrentInventories();
 
         assertThat(actualCurrentInventories).isEqualTo(expectedCurrentInventories);
     }
@@ -512,7 +512,7 @@ class InventoryProductServiceImplTest {
     public void 現在庫数を取得時に商品が存在しないとき空を返すこと() {
         doReturn(List.of()).when(productMapper).findAll();
 
-        List<CurrentInventory> actualCurrentInventories = inventoryProductServiceImpl.getCurrentInventories();
+        List<Inventory> actualCurrentInventories = inventoryProductServiceImpl.getCurrentInventories();
 
         assertThat(actualCurrentInventories).isEqualTo(List.of());
     }

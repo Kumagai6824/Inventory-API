@@ -1,6 +1,6 @@
 package com.raisetech.inventoryapi.service;
 
-import com.raisetech.inventoryapi.entity.CurrentInventory;
+import com.raisetech.inventoryapi.entity.Inventory;
 import com.raisetech.inventoryapi.entity.InventoryProduct;
 
 import java.util.List;
@@ -20,5 +20,5 @@ public interface InventoryProductService {
 
     void deleteInventoryById(int id);
 
-    List<CurrentInventory> getCurrentInventories();
+    List<Inventory> getCurrentInventories();
 }
