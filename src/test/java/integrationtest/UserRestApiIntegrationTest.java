@@ -1013,4 +1013,52 @@ public class UserRestApiIntegrationTest {
         assertEquals("Conflict", JsonPath.read(response, "$.error"));
         assertEquals("Cannot update id: " + id + ", Only the last update can be altered.", JsonPath.read(response, "$.message"));
     }
+
+    @Test
+    @Transactional
+    void 現在庫数を全件取得出来ること() throws Exception {
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/inventory-products/current-inventories"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        JSONAssert.assertEquals("""
+                         [
+                            {
+                               "productId":1,
+                               "name":"Bolt 1",
+                               "quantity":100
+                            },
+                            {
+                               "productId":2,
+                               "name":"Washer",
+                               "quantity":200
+                            },
+                            {
+                               "productId":3,
+                               "name":"Gear",
+                               "quantity":0
+                            },
+                            {
+                               "productId":4,
+                               "name":"Shaft",
+                               "quantity":0
+                            }
+                         ]
+                        """
+                , response, JSONCompareMode.STRICT);
+    }
+
+    @Test
+    @DataSet(value = "empty-products.yml")
+    @Transactional
+    void 現在庫数を全件取得時に商品が存在しないとき空を返すこと() throws Exception {
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/inventory-products/current-inventories"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        JSONAssert.assertEquals("""
+                         []
+                        """
+                , response, JSONCompareMode.STRICT);
+    }
 }
