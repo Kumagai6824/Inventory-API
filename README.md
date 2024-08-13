@@ -25,6 +25,52 @@
 
 swagger[Inventory-API](https://kumagai6824.github.io/Inventory-API/swagger/)
 
+## クラス図（エンティティ部分）
+
+```mermaid
+classDiagram
+        class Product {
+            -int id
+            -String name
+            -DateTime deletedAt
+        }
+
+        note for InventoryProduct "Receiving/Shipping Info itself"
+        class InventoryProduct {
+            -int id
+            -int productId
+            -int quantity
+            -DateTime history
+        }
+
+        note for InventoryHistory "Managing every histories from InventoryProducts per Products"
+        class InventoryHistory {
+            -int id
+            -int productId
+            -String name
+            -int quantity
+            -DateTime history
+        }
+
+        note for Inventory "Inventory for each Products"
+        class Inventory {
+            -int productId
+            -String name
+            -int quantity
+        }
+
+    Product "1..*" --> "0..*" InventoryProduct : has
+    InventoryProduct "1..*" -- "1..*" InventoryHistory
+    Product "1..*" -- "0..*" InventoryHistory
+    Product "1..*" -- "0..*" Inventory
+    InventoryProduct "1..*" -- "1..*" Inventory
+
+    style Product stroke:#6f6
+    style InventoryProduct stroke:#6f6
+    style InventoryHistory stroke:#6f6
+    style Inventory stroke:#6f6
+```
+
 ## E-R図
 
 ![ERD](images/ERD.png)
