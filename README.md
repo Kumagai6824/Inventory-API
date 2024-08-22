@@ -117,4 +117,6 @@ classDiagram
 |SPRING_DATASOURCE_USERNAME|MySQLのユーザ名|user|
 |SPRING_DATASOURCE_PASSWORD|MySQLのパスワード|password|
 
-<!-- APIの使い方 -->
+### AWS構成図
+
+![AWS diagram](images/awsdiagram.svg)
