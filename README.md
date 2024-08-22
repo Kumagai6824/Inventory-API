@@ -140,37 +140,3 @@ $ curl http://shinichirokumagai.com/products
 100    85    0    85    0     0    556      0 --:--:-- --:--:-- --:--:--   559[{"id":1,"name":"Bolt 1","deletedAt":null},{"id":2,"name":"Washer","deletedAt":null}]
 
 ```
-
-### ローカル環境の場合
-
-次のようにローカル環境で実行します（Dockerを使います）。
-
-1. GitHubリポジトリをローカル環境にCloneします
-
-```
-git clone https://github.com/Kumagai6824/Inventory-API.git
-```
-
-2. APIのディレクトリでDocker を立ち上げます
-
-```
-docker compose up
-```
-
-3. APIを立ち上げます
-
-```
-./gradlew bootRun
-```
-
-4. curlなどで次のようにリクエストしレスポンスが来ます
-
-#### 例）商品情報の取得
-
-```
-$ curl http://localhost:8080/products
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100    85    0    85    0     0    556      0 --:--:-- --:--:-- --:--:--   559[{"id":1,"name":"Bolt 1","deletedAt":null},{"id":2,"name":"Washer","deletedAt":null}]
-
-```
