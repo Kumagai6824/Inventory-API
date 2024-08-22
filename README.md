@@ -118,25 +118,3 @@ classDiagram
 |SPRING_DATASOURCE_PASSWORD|MySQLのパスワード|password|
 
 <!-- APIの使い方 -->
-
-## APIの使い方
-
-curlコマンドなどでHTTPリクエストをします。
-
-各URL、リクエスト内容は[API仕様書](https://kumagai6824.github.io/Inventory-API/swagger/)に記載しています。
-
-### サーバーへのリクエストの場合
-
-AWSサーバーはコストの関係上、必要時のみ立てており、通常は止めています。ご了承ください。
-
-サーバー稼働時は次のようなリクエストを行います。
-
-#### 例）商品情報の取得
-
-```
-$ curl http://shinichirokumagai.com/products
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100    85    0    85    0     0    556      0 --:--:-- --:--:-- --:--:--   559[{"id":1,"name":"Bolt 1","deletedAt":null},{"id":2,"name":"Washer","deletedAt":null}]
-
-```
