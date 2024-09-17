@@ -120,3 +120,9 @@ classDiagram
 ### AWS構成図
 
 ![AWS diagram](images/awsdiagram.svg)
+
+### APIの機能紹介
+
+#### 商品情報の取得
+
+![GET PRODUCTS gif](images/get-products.gif)
