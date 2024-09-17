@@ -121,8 +121,83 @@ classDiagram
 
 ![AWS diagram](images/awsdiagram.svg)
 
-### APIの機能紹介
+## APIの機能紹介
 
-#### 商品情報の取得
+### 商品情報の取り扱い
+
+#### 1.商品情報の取得
+
+登録済みの商品を全件取得します。
 
 ![GET PRODUCTS gif](images/get-products.gif)
+
+#### 2.商品情報の登録
+
+新たに商品を登録します。
+
+![CREATE PRODUCTS gif](images/create-product.gif)
+
+#### 3.商品IDでの商品情報の取得
+
+指定した商品IDで該当の商品情報を取得します。
+
+![GET PRODUCTS BYID gif](images/get-product-byid.gif)
+
+#### 4.商品IDでの商品名の更新
+
+指定した商品IDの商品名を更新します。
+
+![UPDATE PRODUCTS gif](images/update-product.gif)
+
+#### 5.商品IDでの商品名の削除
+
+指定した商品IDの商品名を削除します。
+
+![DELETE PRODUCT gif](images/delete-product.gif)
+
+### 在庫情報の取り扱い
+
+#### 6.現在庫の取得
+
+現在庫を全て取得します。
+
+![CURRENT INVENTORY gif](images/current-inventory.gif)
+
+#### 7.入庫処理
+
+商品を入庫します。
+
+![RECEIVING INVENTORY gif](images/create-receiving.gif)
+
+#### 8.在庫履歴の取得
+
+指定した商品IDの在庫履歴を取得します。
+
+![HISTORY gif](images/history.gif)
+
+#### 9.入庫処理の修正
+
+最後に実施した入庫処理に限り入庫数を修正できます。
+
+![UPDATE RECEIVING gif](images/update-receiving.gif)
+
+#### 10.出庫処理
+
+商品を出庫します。
+
+![SHIPPING INVENTORY gif](images/create-shipping.gif)
+
+#### 11.出庫処理の修正
+
+最後に実施した出庫処理に限り出庫数を修正できます。
+在庫数を超える出庫数への修正は出来ません。
+
+![UPDATE SHIPPING gif](images/update-shipping.gif)
+
+#### 12.在庫情報の削除
+
+最後に登録された在庫情報に限り、在庫IDを指定して削除できます。
+
+![DELETE INVENTORY gif](images/delete-inventory.gif)
+
+
