@@ -5,9 +5,12 @@
 ## 使用した主な技術・ツール
 
 <!-- PROJECT LOGO -->
+
 [![Java][Java]][Java-url]
 [![Spring][Spring]][Spring-url]
 [![SpringBoot][SpringBoot]][SpringBoot-url]
+[![HTML5][HTML5]][HTML5-url]
+[![JavaScript][JavaScript]][JavaScript-url]
 [![Docker][Docker]][Docker-url]
 [![MySQL][MySQL]][MySQL-url]
 [![AWS][AWS]][AWS-url]
@@ -16,44 +19,56 @@
 <!-- MARKDOWN LINKS & IMAGES -->
 
 [Java]: https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white
-
 [Java-url]: https://getbootstrap.com
-
 [Spring]: https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white
-
 [Spring-url]: https://reactjs.org/
-
 [SpringBoot]: https://img.shields.io/badge/SpringBoot-6DB33F?style=for-the-badge&logo=Spring&logoColor=white
-
 [SpringBoot-url]: https://laravel.com
-
+[HTML5]: https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white
+[HTML5-url]: https://developer.mozilla.org/ja/docs/Web/HTML
+[JavaScript]: https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black
+[JavaScript-url]: https://developer.mozilla.org/ja/docs/Web/JavaScript
 [Docker]: https://img.shields.io/badge/-Docker-EEE.svg?logo=docker&style=for-the-badge
-
 [Docker-url]: https://angular.io/
-
 [MySQL]: https://img.shields.io/badge/-MySQL-4479A1?style=for-the-badge&logo=mysql&labelColor=4479A1&logoColor=FFF
-
 [MySQL-url]: https://jquery.com
-
 [AWS]: https://img.shields.io/badge/Amazon_AWS-232F3E?style=for-the-badge&logo=amazon-web-services&logoColor=white
-
 [AWS-url]: https://vuejs.org/
-
 [IntelliJ]: https://img.shields.io/badge/Intellij%20Idea-000?logo=intellij-idea&style=for-the-badge
-
 [IntelliJ-url]: https://svelte.dev/
 
 ## API概要
 
-製品在庫を管理するAPIです。
+製品在庫を管理するAPIおよび動作確認用簡易Web UIです。
 
 - 商品情報（商品ID、商品名）のCRUD
 - 在庫情報（在庫ID、商品ID、数量、履歴日付）のCRUD
+- ブラウザ上から直感的に操作可能な動作確認用フロントエンド（ダッシュボード）
 
 ## 作成背景
 
 - シンプルな構成で、活用しやすいAPIとしたい
 - 在庫管理という基礎的なシステムの開発を通じてCRUDを備えたRestAPI開発の学習、理解につなげたい
+- API単体にとどまらず、ブラウザ上での入出力動作（Fetch API連携）を視覚的に体験・テストできるようにしたい
+
+## 簡易ダッシュボード（フロントエンド）
+
+APIの各種エンドポイントをブラウザから直感的にテスト・操作するためのHTML/JavaScriptによる簡易管理画面を提供しています。
+
+### 起動・アクセス方法
+
+1. アプリケーションを起動します（`./gradlew bootRun` 等）
+2. ブラウザで以下のURLにアクセスします：
+   - **`http://localhost:8080/index.html`** （または `http://localhost:8080/`）
+
+### 提供機能
+
+- **商品管理**：一覧表示、新規登録、名称変更、削除
+- **在庫・入出庫管理**：現在在庫一覧の更新、入庫/出庫登録、履歴数量の修正
+
+_(ここに画面キャプチャやGIFアニメーションを配置)_
+
+<!-- ![Dashboard Overview](images/dashboard.png) -->
 
 ## API仕様書
 
@@ -104,100 +119,3 @@ classDiagram
     style InventoryHistory stroke:#6f6
     style Inventory stroke:#6f6
 ```
-
-## E-R図
-
-![ERD](images/ERD.png)
-
-## 環境変数
-
-|変数名|役割|デフォルト値|
-|----|----|----|
-|SPRING_DATASOURCE_URL|MySQLのURL|jdbc:mysql://localhost:3308/inventory_database|
-|SPRING_DATASOURCE_USERNAME|MySQLのユーザ名|user|
-|SPRING_DATASOURCE_PASSWORD|MySQLのパスワード|password|
-
-### AWS構成図
-
-![AWS diagram](images/awsdiagram.svg)
-
-## APIの機能紹介
-
-### 商品情報の取り扱い
-
-#### 1.商品情報の取得
-
-登録済みの商品を全件取得します。
-
-![GET PRODUCTS gif](images/get-products.gif)
-
-#### 2.商品情報の登録
-
-新たに商品を登録します。
-
-![CREATE PRODUCTS gif](images/create-product.gif)
-
-#### 3.商品IDでの商品情報の取得
-
-指定した商品IDで該当の商品情報を取得します。
-
-![GET PRODUCTS BYID gif](images/get-product-byid.gif)
-
-#### 4.商品IDでの商品名の更新
-
-指定した商品IDの商品名を更新します。
-
-![UPDATE PRODUCTS gif](images/update-product.gif)
-
-#### 5.商品IDでの商品名の削除
-
-指定した商品IDの商品名を削除します。
-
-![DELETE PRODUCT gif](images/delete-product.gif)
-
-### 在庫情報の取り扱い
-
-#### 6.現在庫の取得
-
-現在庫を全て取得します。
-
-![CURRENT INVENTORY gif](images/current-inventory.gif)
-
-#### 7.入庫処理
-
-商品を入庫します。
-
-![RECEIVING INVENTORY gif](images/create-receiving.gif)
-
-#### 8.在庫履歴の取得
-
-指定した商品IDの在庫履歴を取得します。
-
-![HISTORY gif](images/history.gif)
-
-#### 9.入庫処理の修正
-
-最後に実施した入庫処理に限り入庫数を修正できます。
-
-![UPDATE RECEIVING gif](images/update-receiving.gif)
-
-#### 10.出庫処理
-
-商品を出庫します。
-
-![SHIPPING INVENTORY gif](images/create-shipping.gif)
-
-#### 11.出庫処理の修正
-
-最後に実施した出庫処理に限り出庫数を修正できます。
-在庫数を超える出庫数への修正は出来ません。
-
-![UPDATE SHIPPING gif](images/update-shipping.gif)
-
-#### 12.在庫情報の削除
-
-最後に登録された在庫情報に限り、在庫IDを指定して削除できます。
-
-![DELETE INVENTORY gif](images/delete-inventory.gif)
-
-
