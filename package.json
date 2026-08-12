@@ -1,0 +1,25 @@
+{
+  "name": "inventory-api",
+  "version": "1.0.0",
+  "description": "このAPIはRaiseTech第9回課題をベースに作成中です。",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kumagai6824/Inventory-API.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kumagai6824/Inventory-API/issues"
+  },
+  "homepage": "https://github.com/Kumagai6824/Inventory-API#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.2.0"
+  }
+}

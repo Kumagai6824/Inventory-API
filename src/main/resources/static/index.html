@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>在庫管理システム</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 20px;
+        line-height: 1.5;
+        background: #f4f6f8;
+      }
+      h1 {
+        color: #333;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      .card {
+        background: #fff;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      input,
+      button {
+        padding: 8px;
+        margin: 4px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      button.danger {
+        background: #dc3545;
+      }
+      button.danger:hover {
+        background: #a71d2a;
+      }
+      pre {
+        background: #e9ecef;
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      li {
+        padding: 6px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>在庫・商品管理ダッシュボード</h1>
+
+    <div class="grid">
+      <!-- 左コラム：商品管理 -->
+      <div>
+        <div class="card">
+          <h2>商品一覧 (/products)</h2>
+          <button onclick="fetchProducts()">一覧更新</button>
+          <ul id="productList"></ul>
+        </div>
+
+        <div class="card" style="margin-top: 20px">
+          <h2>新規商品登録</h2>
+          <input
+            type="text"
+            id="newProductName"
+            placeholder="商品名 (30文字以内)"
+            maxlength="30"
+          /><br />
+          <button onclick="createProduct()">登録</button>
+        </div>
+
+        <div class="card" style="margin-top: 20px">
+          <h2>商品更新・削除</h2>
+          <input
+            type="number"
+            id="targetProductId"
+            placeholder="商品ID"
+          /><br />
+          <input
+            type="text"
+            id="updateProductName"
+            placeholder="新しい商品名"
+            maxlength="30"
+          /><br />
+          <button onclick="updateProduct()">名称変更</button>
+          <button class="danger" onclick="deleteProduct()">削除</button>
+        </div>
+      </div>
+
+      <!-- 右コラム：在庫・入出庫管理 -->
+      <div>
+        <div class="card">
+          <h2>現在在庫一覧 (/inventory-products/current-inventories)</h2>
+          <button onclick="fetchInventories()">在庫一覧更新</button>
+          <pre id="inventoryResult">未取得</pre>
+        </div>
+
+        <div class="card" style="margin-top: 20px">
+          <h2>入出庫登録</h2>
+          <input
+            type="number"
+            id="invProductId"
+            placeholder="商品ID (productId)"
+          /><br />
+          <input
+            type="number"
+            id="invQuantity"
+            placeholder="数量 (1以上)"
+            min="1"
+          /><br />
+          <button onclick="postInventory('received-items')">入荷登録</button>
+          <button onclick="postInventory('shipped-items')">出荷登録</button>
+        </div>
+
+        <div class="card" style="margin-top: 20px">
+          <h2>入出庫更新 (/inventory-products/{id})</h2>
+          <input
+            type="number"
+            id="invRecordId"
+            placeholder="履歴ID (id)"
+          /><br />
+          <input
+            type="number"
+            id="patchProductId"
+            placeholder="商品ID (productId)"
+          /><br />
+          <input
+            type="number"
+            id="patchQuantity"
+            placeholder="変更後の数量"
+            min="1"
+          /><br />
+          <button onclick="patchInventory('received-items')">
+            入荷数量更新
+          </button>
+          <button onclick="patchInventory('shipped-items')">
+            出荷数量更新
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_BASE = "http://localhost:8080";
+
+      // 共通 fetch ヘルパー
+      async function apiRequest(url, method = "GET", body = null) {
+        const options = {
+          method,
+          headers: { "Content-Type": "application/json" },
+        };
+        if (body) options.body = JSON.stringify(body);
+
+        try {
+          const res = await fetch(`${API_BASE}${url}`, options);
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || "エラーが発生しました");
+          return data;
+        } catch (err) {
+          alert("APIエラー: " + err.message);
+        }
+      }
+
+      // 1. 商品一覧取得
+      async function fetchProducts() {
+        const data = await apiRequest("/products");
+        if (data) {
+          const list = document.getElementById("productList");
+          list.innerHTML = data
+            .map((p) => `<li><span>ID: ${p.id} | ${p.name}</span></li>`)
+            .join("");
+        }
+      }
+
+      // 2. 商品作成 (CreateForm: name)
+      async function createProduct() {
+        const name = document.getElementById("newProductName").value;
+        if (!name) return alert("商品名を入力してください");
+        const res = await apiRequest("/products", "POST", { name });
+        if (res) {
+          alert(res.message);
+          fetchProducts();
+        }
+      }
+
+      // 3. 商品名更新 (UpdateForm: name)
+      async function updateProduct() {
+        const id = document.getElementById("targetProductId").value;
+        const name = document.getElementById("updateProductName").value;
+        if (!id || !name) return alert("IDと商品名を入力してください");
+        const res = await apiRequest(`/products/${id}`, "PATCH", { name });
+        if (res) {
+          alert(res.message);
+          fetchProducts();
+        }
+      }
+
+      // 4. 商品削除
+      async function deleteProduct() {
+        const id = document.getElementById("targetProductId").value;
+        if (!id) return alert("商品IDを入力してください");
+        const res = await apiRequest(`/products/${id}`, "DELETE");
+        if (res) {
+          alert(res.message);
+          fetchProducts();
+        }
+      }
+
+      // 5. 現在在庫取得
+      async function fetchInventories() {
+        const data = await apiRequest(
+          "/inventory-products/current-inventories",
+        );
+        if (data) {
+          document.getElementById("inventoryResult").innerText = JSON.stringify(
+            data,
+            null,
+            2,
+          );
+        }
+      }
+
+      // 6. 入荷・出荷登録 (CreateInventoryProductForm: productId, quantity)
+      async function postInventory(type) {
+        const productId = parseInt(
+          document.getElementById("invProductId").value,
+        );
+        const quantity = parseInt(document.getElementById("invQuantity").value);
+        if (!productId || !quantity)
+          return alert("商品IDと数量を入力してください");
+
+        const res = await apiRequest(`/inventory-products/${type}`, "POST", {
+          productId,
+          quantity,
+        });
+        if (res) {
+          alert(res.message);
+          fetchInventories();
+        }
+      }
+
+      // 7. 入荷・出荷数量の変更 (UpdateInventoryProductForm: productId, quantity)
+      async function patchInventory(type) {
+        const id = document.getElementById("invRecordId").value;
+        const productId = parseInt(
+          document.getElementById("patchProductId").value,
+        );
+        const quantity = parseInt(
+          document.getElementById("patchQuantity").value,
+        );
+        if (!id || !productId || !quantity)
+          return alert("履歴ID、商品ID、数量を入力してください");
+
+        const res = await apiRequest(
+          `/inventory-products/${type}/${id}`,
+          "PATCH",
+          { productId, quantity },
+        );
+        if (res) {
+          alert(res.message);
+          fetchInventories();
+        }
+      }
+    </script>
+  </body>
+</html>
