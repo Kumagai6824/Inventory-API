@@ -46,3 +46,21 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           status: ${{ job.status }}
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Playwright Browsers
+        run: |
+          npm ci
+          npx playwright install --with-deps
+
+      - name: Run Spring Boot in Background
+        run: ./gradlew bootRun &
+
+      - name: Wait for Spring Boot to be ready
+        run: npx wait-on http://localhost:8080/index.html
+
+      - name: Run Playwright tests
+        run: npx playwright test

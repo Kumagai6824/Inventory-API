@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 test.describe("在庫管理ダッシュボード UIテスト", () => {
   test.beforeEach(async ({ page }) => {
     // Spring Bootが起動しているローカル環境のダッシュボードへアクセス
-    await page.goto("http://localhost:8080/");
+    await page.goto("http://localhost:8080/index.html");
   });
 
   test("ページタイトルと主要な要素が表示されていること", async ({ page }) => {
