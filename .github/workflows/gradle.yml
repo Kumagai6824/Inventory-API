@@ -60,7 +60,12 @@ jobs:
         run: ./gradlew bootRun &
 
       - name: Wait for Spring Boot to be ready
-        run: npx wait-on http://localhost:8080/index.html
+        run: |
+          echo "Waiting for Spring Boot to start..."
+          until curl -s http://localhost:8080/index.html > /dev/null; do
+            sleep 2
+          done
+          echo "Spring Boot is ready!"
 
       - name: Run Playwright tests
         run: npx playwright test
