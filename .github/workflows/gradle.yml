@@ -47,9 +47,9 @@ jobs:
         with:
           status: ${{ job.status }}
       - name: Install Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install Playwright Browsers
         run: |
