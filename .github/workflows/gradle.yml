@@ -56,16 +56,5 @@ jobs:
           npm ci
           npx playwright install --with-deps
 
-      - name: Run Spring Boot in Background
-        run: ./gradlew bootRun &
-
-      - name: Wait for Spring Boot to be ready
-        run: |
-          echo "Waiting for Spring Boot to start..."
-          until curl -s http://localhost:8080/index.html > /dev/null; do
-            sleep 2
-          done
-          echo "Spring Boot is ready!"
-
       - name: Run Playwright tests
         run: npx playwright test
